@@ -14,6 +14,7 @@ class CompaniesModel extends Model
     protected $fillable = [
         'name',
         'sector',
-        'location'
+        'location',
+        'status'
     ];
 }
