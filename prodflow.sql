@@ -19,6 +19,18 @@
 CREATE DATABASE IF NOT EXISTS `prodflow` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci */;
 USE `prodflow`;
 
+-- Dumping structure for table prodflow.clients
+CREATE TABLE IF NOT EXISTS `clients` (
+  `cid` int(11) NOT NULL AUTO_INCREMENT,
+  `client` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`cid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Data exporting was unselected.
+
 -- Dumping structure for table prodflow.companies
 CREATE TABLE IF NOT EXISTS `companies` (
   `cid` int(11) NOT NULL AUTO_INCREMENT,
@@ -26,6 +38,19 @@ CREATE TABLE IF NOT EXISTS `companies` (
   `sector` varchar(255) DEFAULT NULL,
   `location` varchar(255) DEFAULT NULL,
   `status` varchar(50) DEFAULT 'Active',
+  PRIMARY KEY (`cid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table prodflow.contracts
+CREATE TABLE IF NOT EXISTS `contracts` (
+  `cid` int(11) NOT NULL AUTO_INCREMENT,
+  `employee_id` int(11) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'Active',
+  `company_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`cid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
@@ -48,6 +73,18 @@ CREATE TABLE IF NOT EXISTS `machines` (
   `mid` int(11) NOT NULL AUTO_INCREMENT,
   `machine` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`mid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table prodflow.maintenances
+CREATE TABLE IF NOT EXISTS `maintenances` (
+  `mid` int(11) NOT NULL AUTO_INCREMENT,
+  `machine_id` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  `description` longtext DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`mid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
@@ -79,6 +116,20 @@ CREATE TABLE IF NOT EXISTS `materials_stock` (
 
 -- Data exporting was unselected.
 
+-- Dumping structure for table prodflow.planification
+CREATE TABLE IF NOT EXISTS `planification` (
+  `pid` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` int(11) DEFAULT NULL,
+  `planned_qty` decimal(10,2) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'Unrealized',
+  `company_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`pid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Data exporting was unselected.
+
 -- Dumping structure for table prodflow.production
 CREATE TABLE IF NOT EXISTS `production` (
   `pid` int(11) NOT NULL AUTO_INCREMENT,
@@ -100,6 +151,18 @@ CREATE TABLE IF NOT EXISTS `products` (
   `price` decimal(10,2) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`pid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table prodflow.salaries
+CREATE TABLE IF NOT EXISTS `salaries` (
+  `sid` int(11) NOT NULL AUTO_INCREMENT,
+  `employee_id` int(11) DEFAULT NULL,
+  `salary` decimal(10,2) DEFAULT NULL,
+  `comment` varchar(255) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`sid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
@@ -131,6 +194,18 @@ CREATE TABLE IF NOT EXISTS `staff` (
 
 -- Data exporting was unselected.
 
+-- Dumping structure for table prodflow.suppliers
+CREATE TABLE IF NOT EXISTS `suppliers` (
+  `sid` int(11) NOT NULL AUTO_INCREMENT,
+  `supplier` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`sid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Data exporting was unselected.
+
 -- Dumping structure for table prodflow.users
 CREATE TABLE IF NOT EXISTS `users` (
   `uid` int(11) NOT NULL AUTO_INCREMENT,
@@ -140,6 +215,30 @@ CREATE TABLE IF NOT EXISTS `users` (
   `company_id` int(11) DEFAULT NULL,
   `role` varchar(50) DEFAULT 'staff',
   PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table prodflow.vocations
+CREATE TABLE IF NOT EXISTS `vocations` (
+  `vid` int(11) NOT NULL AUTO_INCREMENT,
+  `employee_id` int(11) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `comment` varchar(255) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`vid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table prodflow.warehouses
+CREATE TABLE IF NOT EXISTS `warehouses` (
+  `wid` int(11) NOT NULL AUTO_INCREMENT,
+  `warehouse` varchar(255) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`wid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
