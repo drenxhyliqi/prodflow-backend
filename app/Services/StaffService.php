@@ -12,13 +12,11 @@ class StaffService
 
     public function getAllStaff(int $limit, ?int $companyId = null)
     {
-        $search = request()->query('search');
-
-        if (is_string($search) && $search !== '') {
-            return $this->repository->getSearchedStaff($search, $limit, $companyId);
+        if (isset($_GET['search']) && ! empty($_GET['search'])) {
+            return $this->repository->getSearchedStaff($_GET['search'], $limit, $companyId);
+        } else {
+            return $this->repository->getAllStaff($limit, $companyId);
         }
-
-        return $this->repository->getAllStaff($limit, $companyId);
     }
 
     public function getStaffById(int $id, ?int $companyId = null)
