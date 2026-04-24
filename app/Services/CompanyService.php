@@ -14,9 +14,9 @@ class CompanyService
     //---------------
     public function getAllCompanies($limit)
     {
-        if(isset($_GET['search']) && !empty($_GET['search'])){
+        if (isset($_GET['search']) && ! empty($_GET['search'])) {
             return $this->repository->getSearchedCompanies($_GET['search'], $limit);
-        }else{
+        } else {
             return $this->repository->getAllCompanies($limit);
         }
     }
