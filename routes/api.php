@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Companies;
 use App\Http\Controllers\Staff;
-use App\Http\Controllers\Users;
+use App\Http\Controllers\Products;
+use App\Http\Controllers\Clients;
 use Illuminate\Support\Facades\Route;
+
 
 // Companies
 Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {
@@ -21,7 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [Users::class, 'logout']);
 });
 
-// Staff — table `staff`, scoped by company_id
+// Staff
 Route::controller(Staff::class)->group(function () {
     Route::post('/admin/create_staff', 'create')->name('create_staff');
     Route::get('/admin/staff', 'read')->name('staffManagement');
@@ -37,4 +39,13 @@ Route::controller(Products::class)->group(function () {
     Route::get('/admin/edit_product/{id}', 'edit')->name('edit_product');
     Route::post('/admin/update_product', 'update')->name('update_product');
     Route::get('/admin/delete_product/{id}', 'delete')->name('delete_product');
+});
+
+// Clients
+Route::controller(Clients::class)->group(function () {
+    Route::post('/admin/create_client', 'create')->name('create_client');
+    Route::get('/admin/clients', 'read')->name('clientsManagement');
+    Route::get('/admin/edit_client/{id}', 'edit')->name('edit_client');
+    Route::post('/admin/update_client', 'update')->name('update_client');
+    Route::get('/admin/delete_client/{id}', 'delete')->name('delete_client');
 });
