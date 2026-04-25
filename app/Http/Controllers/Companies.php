@@ -44,9 +44,12 @@ class Companies extends Controller
         }
     }
     //---------------
-    public function read()
+    public function read(Request $request)
     {
-        return $this->service->getAllCompanies(10);
+        $search = $request->query('search');
+        return response()->json(
+            $this->service->getAllCompanies(10, $search)
+        );
     }
     //---------------
     public function edit($id)
@@ -64,7 +67,7 @@ class Companies extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|numeric|min:1|exists:companies,id',
+            'cid' => 'required|numeric|min:1|exists:companies,cid',
             'name' => 'required|string|min:1|max:255',
             'sector' => 'required|string|min:1|max:255',
             'location' => 'required|string|min:1|max:255',
@@ -73,12 +76,14 @@ class Companies extends Controller
         if ($validator->fails()) {
             return back()->with('error', 'All fields must be filled in according to the rules.');
         } else {
-            return $this->service->updateCompany($request->input('id'), $request->only(['name', 'sector', 'location']));
+            return $this->service->updateCompany($request->input('cid'), $request->only(['name', 'sector', 'location']));
         }
     }
     //---------------
     public function delete($id)
     {
-        return $this->service->deleteCompany($id);
+        return response()->json(
+            $this->service->deleteCompany($id)
+        );
     }
 }

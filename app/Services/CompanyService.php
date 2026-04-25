@@ -12,13 +12,13 @@ class CompanyService
         $this->repository = $repository;
     }
     //---------------
-    public function getAllCompanies($limit)
+    public function getAllCompanies($limit = 10, $search = null)
     {
-        if (isset($_GET['search']) && ! empty($_GET['search'])) {
-            return $this->repository->getSearchedCompanies($_GET['search'], $limit);
-        } else {
-            return $this->repository->getAllCompanies($limit);
+        $limit = (int) $limit ?: 10;
+        if (!empty($search)) {
+            return $this->repository->getSearchedCompanies($search, $limit);
         }
+        return $this->repository->getAllCompanies($limit);
     }
     //---------------
     public function getCompanyById(int $id)
@@ -47,6 +47,10 @@ class CompanyService
     //---------------
     public function deleteCompany(int $id): bool
     {
+        $company = $this->repository->findCompany($id);
+        if (!$company) {
+            return false;
+        }
         return $this->repository->delete($id);
     }
     //---------------

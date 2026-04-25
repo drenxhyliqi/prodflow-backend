@@ -16,7 +16,7 @@ class CompanyRepository
     public function getAllCompanies($limit)
     {
         return DB::table($this->table)
-            ->orderByDesc('id')
+            ->orderByDesc('cid')
             ->paginate($limit);
     }
     //---------------
@@ -24,21 +24,21 @@ class CompanyRepository
     {
         return DB::table($this->table)
             ->where('name', 'like', "%{$search}%")
-            ->orderByDesc('id')
+            ->orderByDesc('cid')
             ->paginate($limit);
     }
     //---------------
     public function findCompany(int $id)
     {
         return DB::table($this->table)
-            ->where('id', $id)
+            ->where('cid', $id)
             ->first();
     }
     //---------------
     public function checkCompanyExist(int $id): bool
     {
         return DB::table($this->table)
-            ->where('id', $id)
+            ->where('cid', $id)
             ->exists();
     }
     //---------------
@@ -51,14 +51,14 @@ class CompanyRepository
     public function update(int $id, array $data): bool
     {
         return DB::table($this->table)
-            ->where('id', $id)
+            ->where('cid', $id)
             ->update($data) > 0;
     }
     //---------------
     public function changeStatus(int $id, $status): bool
     {
         return DB::table($this->table)
-            ->where('id', $id)
+            ->where('cid', $id)
             ->update([
                 'status' => $status
             ]) > 0;
@@ -67,7 +67,7 @@ class CompanyRepository
     public function delete(int $id): bool
     {
         return DB::table($this->table)
-            ->where('id', $id)
+            ->where('cid', $id)
             ->delete() > 0;
     }
 }

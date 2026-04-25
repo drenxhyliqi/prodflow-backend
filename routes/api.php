@@ -11,7 +11,7 @@ use App\Http\Controllers\Users;
 
 
 // Companies
-Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {
+Route::controller(Companies::class)->group(function () {
     Route::post('/admin/create_company', 'create')->name('create_company');
     Route::get('/admin/companies', 'read')->name('companiesManagement');
     Route::get('/admin/edit_company/{id}', 'edit')->name('edit_company');
