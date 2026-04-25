@@ -5,6 +5,7 @@ use App\Http\Controllers\Staff;
 use App\Http\Controllers\Products;
 use App\Http\Controllers\Clients;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Sales;
 
 
 // Companies
@@ -48,4 +49,13 @@ Route::controller(Clients::class)->group(function () {
     Route::get('/admin/edit_client/{id}', 'edit')->name('edit_client');
     Route::post('/admin/update_client', 'update')->name('update_client');
     Route::get('/admin/delete_client/{id}', 'delete')->name('delete_client');
+});
+
+// Sales
+Route::controller(Sales::class)->group(function () {
+    Route::post('/admin/create_sale', 'create')->name('create_sale');
+    Route::get('/admin/sales', 'read')->name('salesManagement');
+    Route::get('/admin/edit_sale/{id}', 'edit')->name('edit_sale');
+    Route::post('/admin/update_sale', 'update')->name('update_sale');
+    Route::get('/admin/delete_sale/{id}', 'delete')->name('delete_sale');
 });
