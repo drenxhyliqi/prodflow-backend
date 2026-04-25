@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sales;
 use App\Http\Controllers\Expenses;
 use App\Http\Controllers\Users;
+use App\Http\Controllers\Machines;
 
 
 // Companies
@@ -69,4 +70,13 @@ Route::controller(Expenses::class)->group(function () {
     Route::get('/admin/edit_expense/{id}', 'edit')->name('edit_expense');
     Route::post('/admin/update_expense', 'update')->name('update_expense');
     Route::get('/admin/delete_expense/{id}', 'delete')->name('delete_expense');
+});
+
+// Machines
+Route::controller(Machines::class)->group(function () {
+    Route::post('/admin/create_machine', 'create')->name('create_machine');
+    Route::get('/admin/machines', 'read')->name('machinesManagement');
+    Route::get('/admin/edit_machine/{id}', 'edit')->name('edit_machine');
+    Route::post('/admin/update_machine', 'update')->name('update_machine');
+    Route::get('/admin/delete_machine/{id}', 'delete')->name('delete_machine');
 });
