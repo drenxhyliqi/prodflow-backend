@@ -6,6 +6,8 @@ use App\Http\Controllers\Products;
 use App\Http\Controllers\Clients;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sales;
+use App\Http\Controllers\Expenses;
+use App\Http\Controllers\Users;
 
 
 // Companies
@@ -58,4 +60,13 @@ Route::controller(Sales::class)->group(function () {
     Route::get('/admin/edit_sale/{id}', 'edit')->name('edit_sale');
     Route::post('/admin/update_sale', 'update')->name('update_sale');
     Route::get('/admin/delete_sale/{id}', 'delete')->name('delete_sale');
+});
+
+// Expenses
+Route::controller(Expenses::class)->group(function () {
+    Route::post('/admin/create_expense', 'create')->name('create_expense');
+    Route::get('/admin/expenses', 'read')->name('expensesManagement');
+    Route::get('/admin/edit_expense/{id}', 'edit')->name('edit_expense');
+    Route::post('/admin/update_expense', 'update')->name('update_expense');
+    Route::get('/admin/delete_expense/{id}', 'delete')->name('delete_expense');
 });

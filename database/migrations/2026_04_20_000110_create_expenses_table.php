@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('expenses', function (Blueprint $table) {
@@ -14,9 +13,6 @@ return new class extends Migration
             $table->decimal('price', 10, 2)->nullable();
             $table->date('date')->nullable();
             $table->unsignedInteger('company_id')->nullable();
-
-            $table->index('company_id');
-            $table->foreign('company_id')->references('cid')->on('companies')->nullOnDelete();
         });
     }
 
