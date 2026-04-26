@@ -14,11 +14,18 @@ class Products extends Controller
 
     public function create(Request $request)
     {
+        $user = $request->user();
+        if (! $user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized.',
+            ], 401);
+        }
+
         $validator = Validator::make($request->all(), [
             'product' => 'required|string|min:1|max:255',
             'unit' => 'required|string|min:1|max:255',
             'price' => 'required|numeric|min:0',
-            'company_id' => 'required|integer|exists:companies,cid',
         ]);
 
         if ($validator->fails()) {
@@ -29,7 +36,8 @@ class Products extends Controller
             ], 422);
         }
 
-        $payload = $request->only(['product', 'unit', 'price', 'company_id']);
+        $payload = $request->only(['product', 'unit', 'price']);
+        $payload['company_id'] = (int) $user->company_id;
 
         if ($this->service->createProducts($payload)) {
             return response()->json([
@@ -46,38 +54,30 @@ class Products extends Controller
 
     public function read(Request $request)
     {
-        $validator = Validator::make($request->query(), [
-            'company_id' => 'required|integer|exists:companies,cid',
-        ]);
-
-        if ($validator->fails()) {
+        $user = $request->user();
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'company_id is required for listing products data.',
-                'errors' => $validator->errors(),
-            ], 422);
+                'message' => 'Unauthorized.',
+            ], 401);
         }
 
-        $companyId = (int) $request->query('company_id');
+        $companyId = (int) $user->company_id;
 
         return $this->service->getAllProducts(10, $companyId);
     }
 
     public function edit(Request $request, int $id)
     {
-        $validator = Validator::make($request->query(), [
-            'company_id' => 'required|integer|exists:companies,cid',
-        ]);
-
-        if ($validator->fails()) {
+        $user = $request->user();
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'company_id is required.',
-                'errors' => $validator->errors(),
-            ], 422);
+                'message' => 'Unauthorized.',
+            ], 401);
         }
 
-        $companyId = (int) $request->query('company_id');
+        $companyId = (int) $user->company_id;
 
         if (! $this->service->checkProductsExist($id, $companyId)) {
             return response()->json([
@@ -91,9 +91,16 @@ class Products extends Controller
 
     public function update(Request $request)
     {
+        $user = $request->user();
+        if (! $user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized.',
+            ], 401);
+        }
+
         $validator = Validator::make($request->all(), [
             'pid' => 'required|integer|exists:products,pid',
-            'company_id' => 'required|integer|exists:companies,cid',
             'product' => 'required|string|min:1|max:255',
             'unit' => 'required|string|min:1|max:255',
             'price' => 'required|numeric|min:0',
@@ -107,7 +114,7 @@ class Products extends Controller
             ], 422);
         }
 
-        $companyId = (int) $request->input('company_id');
+        $companyId = (int) $user->company_id;
         $pid = (int) $request->input('pid');
 
         if (! $this->service->checkProductsExist($pid, $companyId)) {
@@ -129,19 +136,15 @@ class Products extends Controller
 
     public function delete(Request $request, int $id)
     {
-        $validator = Validator::make($request->query(), [
-            'company_id' => 'required|integer|exists:companies,cid',
-        ]);
-
-        if ($validator->fails()) {
+        $user = $request->user();
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'company_id is required.',
-                'errors' => $validator->errors(),
-            ], 422);
+                'message' => 'Unauthorized.',
+            ], 401);
         }
 
-        $companyId = (int) $request->query('company_id');
+        $companyId = (int) $user->company_id;
 
         if (! $this->service->checkProductsExist($id, $companyId)) {
             return response()->json([
