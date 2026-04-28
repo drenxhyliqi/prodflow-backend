@@ -46,13 +46,43 @@ class Companies extends Controller
     //---------------
     public function read(Request $request)
     {
-        $search = $request->query('search');
+        $search = $request->query('search', '');
         return response()->json(
-            $this->service->getAllCompanies(10, $search)
+            $this->service->getCompanies(10, $search)
         );
     }
     //---------------
-    public function edit($id)
+    public function readAll()
+    {
+        return response()->json(
+            $this->service->getAllCompanies()
+        );
+    }
+    //---------------
+    public function activeCompany(Request $request)
+    {
+        return response()->json(
+            $request->user()->company_id
+        );
+    }
+    //---------------
+    public function setActive(Request $request, int $id)
+    {
+        if(!$this->service->findOrFail($id)){
+            return response()->json([
+                'success' => false,
+                'message' => 'Company not found.'
+            ], 404);
+        }else{
+            $user = $request->user();
+            $user->company_id = $id;
+            $user->save();
+
+            return response()->json($user->company_id);
+        }
+    }
+    //---------------
+    public function edit(int $id)
     {
         if(!$this->service->findOrFail($id)){
             return response()->json([
@@ -74,16 +104,38 @@ class Companies extends Controller
         ]);
 
         if ($validator->fails()) {
-            return back()->with('error', 'All fields must be filled in according to the rules.');
+            return response()->json([
+                'success' => false,
+                'message' => 'All fields must be completed according to the rules.',
+                'errors'  => $validator->errors()
+            ], 422);
         } else {
-            return $this->service->updateCompany($request->input('cid'), $request->only(['name', 'sector', 'location']));
+            if ($this->service->updateCompany($request->input('cid'), $request->only(['name', 'sector', 'location']))) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'The company was successfully updated.'
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No data was updated.'
+                ], 500);
+            }
         }
     }
     //---------------
-    public function delete($id)
+    public function delete(int $id)
     {
-        return response()->json(
-            $this->service->deleteCompany($id)
-        );
+        if ($this->service->deleteCompany($id)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'The company was successfully deleted.'
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong, please try again!'
+            ], 500);
+        }
     }
 }

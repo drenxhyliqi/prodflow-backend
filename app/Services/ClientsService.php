@@ -12,42 +12,46 @@ class ClientsService
         $this->repository = $repository;
     }
     //---------------
-    public function getAllClients($limit)
+    public function getAllClients(int $companyId, int $limit, string $search = '')
     {
-        if (isset($_GET['search']) && !empty($_GET['search'])) {
-            return $this->repository->getSearchedClients($_GET['search'], $limit);
-        } else {
-            return $this->repository->getAllClients($limit);
+        $limit = (int) $limit ?: 10;
+        if (!empty($search)) {
+            return $this->repository->getSearchedClients($companyId, $limit, $search);
         }
+
+        return $this->repository->getAllClients($companyId, $limit);
     }
     //---------------
-    public function getClientById(int $id)
+    public function getClientById(int $id, int $companyId)
     {
-        return $this->repository->findClient($id);
+        return $this->repository->findClient($id, $companyId);
     }
     //---------------
-    public function findOrFail(int $id)
+    public function findOrFail(int $id, int $companyId)
     {
-        return $this->repository->checkClientExist($id);
+        return $this->repository->checkClientExist($id, $companyId);
     }
     //---------------
-    public function createClient(array $data)
+    public function createClient(array $data, int $companyId)
     {
-        return $this->repository->create($data);
+        return $this->repository->create($data, $companyId);
     }
     //---------------
-    public function updateClient(int $id, array $data): bool
+    public function updateClient(int $id, array $data, int $companyId): bool
     {
-        $client = $this->repository->findClient($id);
+        $client = $this->repository->findClient($id, $companyId);
         if (!$client) {
             return false;
         }
-        return $this->repository->update($id, $data);
+        return $this->repository->update($id, $data, $companyId);
     }
     //---------------
-    public function deleteClient(int $id): bool
+    public function deleteClient(int $id, int $companyId): bool
     {
-        return $this->repository->delete($id);
+        $company = $this->repository->findClient($id, $companyId);
+        if (!$company) {
+            return false;
+        }
+        return $this->repository->delete($id, $companyId);
     }
-    //---------------
 }

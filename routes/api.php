@@ -11,12 +11,24 @@ use App\Http\Controllers\Users;
 
 
 // Companies
-Route::controller(Companies::class)->group(function () {
+Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {
     Route::post('/admin/create_company', 'create')->name('create_company');
     Route::get('/admin/companies', 'read')->name('companiesManagement');
+    Route::get('/admin/all_companies', 'readAll')->name('allCompaniesManagement');
+    Route::get('/admin/active_company', 'activeCompany')->name('activeCompany');
+    Route::post('/admin/set_active_company/{id}', 'setActive')->name('set_active_company');
     Route::get('/admin/edit_company/{id}', 'edit')->name('edit_company');
     Route::post('/admin/update_company', 'update')->name('update_company');
     Route::get('/admin/delete_company/{id}', 'delete')->name('delete_company');
+});
+
+// Clients
+Route::middleware('auth:sanctum')->controller(Clients::class)->group(function () {
+    Route::post('/admin/create_client', 'create')->name('create_client');
+    Route::get('/admin/clients', 'read')->name('clientsManagement');
+    Route::get('/admin/edit_client/{id}', 'edit')->name('edit_client');
+    Route::post('/admin/update_client', 'update')->name('update_client');
+    Route::get('/admin/delete_client/{id}', 'delete')->name('delete_client');
 });
 
 // Users

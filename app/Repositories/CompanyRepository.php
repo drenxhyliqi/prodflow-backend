@@ -13,19 +13,26 @@ class CompanyRepository
         $this->table = $model->getTable();
     }
     //---------------
-    public function getAllCompanies($limit)
+    public function getCompanies($limit)
     {
         return DB::table($this->table)
             ->orderByDesc('cid')
             ->paginate($limit);
     }
     //---------------
-    public function getSearchedCompanies($search, $limit)
+    public function getSearchedCompanies(string $search, int $limit)
     {
         return DB::table($this->table)
             ->where('name', 'like', "%{$search}%")
             ->orderByDesc('cid')
             ->paginate($limit);
+    }
+    //---------------
+    public function getAllCompanies()
+    {
+        return DB::table($this->table)
+            ->orderByDesc('cid')
+            ->get();
     }
     //---------------
     public function findCompany(int $id)
@@ -55,7 +62,7 @@ class CompanyRepository
             ->update($data) > 0;
     }
     //---------------
-    public function changeStatus(int $id, $status): bool
+    public function changeStatus(int $id, string $status): bool
     {
         return DB::table($this->table)
             ->where('cid', $id)
