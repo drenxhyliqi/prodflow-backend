@@ -12,13 +12,18 @@ class CompanyService
         $this->repository = $repository;
     }
     //---------------
-    public function getAllCompanies($limit = 10, $search = null)
+    public function getCompanies(int $limit = 10, string $search = '')
     {
         $limit = (int) $limit ?: 10;
         if (!empty($search)) {
             return $this->repository->getSearchedCompanies($search, $limit);
         }
-        return $this->repository->getAllCompanies($limit);
+        return $this->repository->getCompanies($limit);
+    }
+    //---------------
+    public function getAllCompanies()
+    {
+        return $this->repository->getAllCompanies();
     }
     //---------------
     public function getCompanyById(int $id)
@@ -56,15 +61,11 @@ class CompanyService
     //---------------
     public function activateCompany(int $id): bool
     {
-        return $this->repository->changeStatus($id, [
-            'status' => 'Active'
-        ]);
+        return $this->repository->changeStatus($id, 'Active');
     }
     //---------------
     public function deactivateCompany(int $id): bool
     {
-        return $this->repository->changeStatus($id, [
-            'status' => 'Deactive'
-        ]);
+        return $this->repository->changeStatus($id, 'Deactive');
     }
 }

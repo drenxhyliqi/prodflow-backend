@@ -30,7 +30,9 @@ class Clients extends Controller
                 'errors' => $validator->errors()
             ], 422);
         } else {
-            if ($this->service->createClient($request->only(['client', 'phone', 'location']))) {
+            $data = $request->only(['client', 'phone', 'location']);
+            $companyId = $request->user()->company_id;
+            if ($this->service->createClient($data, $companyId)) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Client registered successfully.'
@@ -44,41 +46,74 @@ class Clients extends Controller
         }
     }
     //---------------
-    public function read()
+    public function read(Request $request)
     {
-        return $this->service->getAllClients(10);
+        $search = $request->query('search', '');
+        $companyId = $request->user()->company_id;
+        return response()->json(
+            $this->service->getAllClients($companyId, 10, $search)
+        );
     }
     //---------------
-    public function edit($id)
+    public function edit(Request $request, int $id)
     {
-        if (!$this->service->findOrFail($id)) {
+        $companyId = $request->user()->company_id;
+        if (!$this->service->findOrFail($id, $companyId)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Client not found.'
             ], 404);
         } else {
-            return $this->service->getClientById($id);
+            return $this->service->getClientById($id, $companyId);
         }
     }
     //---------------
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|numeric|min:1|exists:clients,cid',
+            'cid' => 'required|numeric|min:1|exists:clients,cid',
             'client' => 'required|string|min:1|max:255',
             'phone' => 'required|string|min:1|max:255',
             'location' => 'required|string|min:1|max:255',
         ]);
 
         if ($validator->fails()) {
-            return back()->with('error', 'All fields must be filled in according to the rules.');
+            return response()->json([
+                'success' => false,
+                'message' => 'All fields must be completed according to the rules.',
+                'errors'  => $validator->errors()
+            ], 422);
         } else {
-            return $this->service->updateClient($request->input('id'), $request->only(['client', 'phone', 'location']));
+            $id = $request->cid;
+            $data = $request->only(['client', 'phone', 'location']);
+            $companyId = $request->user()->company_id;
+            if ($this->service->updateClient($id, $data, $companyId)) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'The client was successfully updated.'
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No data was updated.'
+                ], 500);
+            }
         }
     }
     //---------------
-    public function delete($id)
+    public function delete(Request $request, int $id)
     {
-        return $this->service->deleteClient($id);
+        $companyId = $request->user()->company_id;
+        if ($this->service->deleteClient($id, $companyId)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'The client was successfully deleted.'
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong, please try again!'
+            ], 500);
+        }
     }
 }
