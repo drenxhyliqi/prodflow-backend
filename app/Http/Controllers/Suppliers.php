@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ExpensesService;
+use App\Services\SuppliersService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class Expenses extends Controller
+class Suppliers extends Controller
 {
-    protected ExpensesService $service;
-    public function __construct(ExpensesService $service)
+    protected SuppliersService $service;
+    public function __construct(SuppliersService $service)
     {
         $this->service = $service;
     }
@@ -17,9 +17,9 @@ class Expenses extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'comment' => 'required|string|min:1|max:255',
-            'price' => 'required|numeric|min:1',
-            'date' => 'required|date'
+            'supplier' => 'required|string|min:1|max:255',
+            'phone' => 'required|string|min:1|max:255',
+            'location' => 'required|string|min:1|max:255'
         ]);
 
         if ($validator->fails()) {
@@ -29,12 +29,12 @@ class Expenses extends Controller
                 'errors' => $validator->errors()
             ], 422);
         } else {
-            $data = $request->only(['comment', 'price', 'date']);
+            $data = $request->only(['supplier', 'phone', 'location']);
             $companyId = $request->user()->company_id;
-            if ($this->service->createExpense($data, $companyId)) {
+            if ($this->service->createSupplier($data, $companyId)) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Expense registered successfully.'
+                    'message' => 'Supplier registered successfully.'
                 ], 201);
             } else {
                 return response()->json([
@@ -50,7 +50,7 @@ class Expenses extends Controller
         $search = $request->query('search', '');
         $companyId = $request->user()->company_id;
         return response()->json(
-            $this->service->getAllExpenses($companyId, 10, $search)
+            $this->service->getAllSuppliers($companyId, 10, $search)
         );
     }
     //---------------
@@ -60,20 +60,20 @@ class Expenses extends Controller
         if (!$this->service->findOrFail($id, $companyId)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Expense not found.'
+                'message' => 'Supplier not found.'
             ], 404);
         } else {
-            return $this->service->getExpenseById($id, $companyId);
+            return $this->service->getSupplierById($id, $companyId);
         }
     }
     //---------------
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'eid' => 'required|numeric|min:1|exists:expenses,eid',
-            'comment' => 'required|string|min:1|max:255',
-            'price' => 'required|numeric|min:1',
-            'date' => 'required|date'
+            'sid' => 'required|numeric|min:1|exists:suppliers,sid',
+            'supplier' => 'required|string|min:1|max:255',
+            'phone' => 'required|string|min:1|max:255',
+            'location' => 'required|string|min:1|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -83,13 +83,13 @@ class Expenses extends Controller
                 'errors'  => $validator->errors()
             ], 422);
         } else {
-            $id = $request->eid;
-            $data = $request->only(['comment', 'price', 'date']);
+            $id = $request->sid;
+            $data = $request->only(['supplier', 'phone', 'location']);
             $companyId = $request->user()->company_id;
-            if ($this->service->updateExpense($id, $data, $companyId)) {
+            if ($this->service->updateSupplier($id, $data, $companyId)) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'The expense was successfully updated.'
+                    'message' => 'The supplier was successfully updated.'
                 ], 201);
             } else {
                 return response()->json([
@@ -103,10 +103,10 @@ class Expenses extends Controller
     public function delete(Request $request, int $id)
     {
         $companyId = $request->user()->company_id;
-        if ($this->service->deleteExpense($id, $companyId)) {
+        if ($this->service->deleteSupplier($id, $companyId)) {
             return response()->json([
                 'success' => true,
-                'message' => 'The expense was successfully deleted.'
+                'message' => 'The supplier was successfully deleted.'
             ], 201);
         } else {
             return response()->json([

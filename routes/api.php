@@ -7,8 +7,8 @@ use App\Http\Controllers\Clients;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sales;
 use App\Http\Controllers\Expenses;
+use App\Http\Controllers\Suppliers;
 use App\Http\Controllers\Users;
-
 
 // Companies
 Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {
@@ -31,6 +31,25 @@ Route::middleware('auth:sanctum')->controller(Clients::class)->group(function ()
     Route::get('/admin/delete_client/{id}', 'delete')->name('delete_client');
 });
 
+// Expenses
+Route::middleware('auth:sanctum')->controller(Expenses::class)->group(function () {
+    Route::post('/admin/create_expense', 'create')->name('create_expense');
+    Route::get('/admin/expenses', 'read')->name('expensesManagement');
+    Route::get('/admin/edit_expense/{id}', 'edit')->name('edit_expense');
+    Route::post('/admin/update_expense', 'update')->name('update_expense');
+    Route::get('/admin/delete_expense/{id}', 'delete')->name('delete_expense');
+});
+
+
+// Suppliers
+Route::middleware('auth:sanctum')->controller(Suppliers::class)->group(function () {
+    Route::post('/admin/create_supplier', 'create')->name('create_supplier');
+    Route::get('/admin/suppliers', 'read')->name('suppliersManagement');
+    Route::get('/admin/edit_supplier/{id}', 'edit')->name('edit_supplier');
+    Route::post('/admin/update_supplier', 'update')->name('update_supplier');
+    Route::get('/admin/delete_supplier/{id}', 'delete')->name('delete_supplier');
+});
+
 // Users
 Route::post('/login', [Users::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
@@ -39,7 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Staff
-Route::controller(Staff::class)->group(function () {
+Route::middleware('auth:sanctum')->controller(Staff::class)->group(function () {
     Route::post('/admin/create_staff', 'create')->name('create_staff');
     Route::get('/admin/staff', 'read')->name('staffManagement');
     Route::get('/admin/edit_staff/{id}', 'edit')->name('edit_staff');
@@ -48,7 +67,7 @@ Route::controller(Staff::class)->group(function () {
 });
 
 // Products
-Route::controller(Products::class)->group(function () {
+Route::middleware('auth:sanctum')->controller(Products::class)->group(function () {
     Route::post('/admin/create_product', 'create')->name('create_product');
     Route::get('/admin/products', 'read')->name('productsManagement');
     Route::get('/admin/edit_product/{id}', 'edit')->name('edit_product');
@@ -56,29 +75,11 @@ Route::controller(Products::class)->group(function () {
     Route::get('/admin/delete_product/{id}', 'delete')->name('delete_product');
 });
 
-// Clients
-Route::controller(Clients::class)->group(function () {
-    Route::post('/admin/create_client', 'create')->name('create_client');
-    Route::get('/admin/clients', 'read')->name('clientsManagement');
-    Route::get('/admin/edit_client/{id}', 'edit')->name('edit_client');
-    Route::post('/admin/update_client', 'update')->name('update_client');
-    Route::get('/admin/delete_client/{id}', 'delete')->name('delete_client');
-});
-
 // Sales
-Route::controller(Sales::class)->group(function () {
+Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
     Route::post('/admin/create_sale', 'create')->name('create_sale');
     Route::get('/admin/sales', 'read')->name('salesManagement');
     Route::get('/admin/edit_sale/{id}', 'edit')->name('edit_sale');
     Route::post('/admin/update_sale', 'update')->name('update_sale');
     Route::get('/admin/delete_sale/{id}', 'delete')->name('delete_sale');
-});
-
-// Expenses
-Route::controller(Expenses::class)->group(function () {
-    Route::post('/admin/create_expense', 'create')->name('create_expense');
-    Route::get('/admin/expenses', 'read')->name('expensesManagement');
-    Route::get('/admin/edit_expense/{id}', 'edit')->name('edit_expense');
-    Route::post('/admin/update_expense', 'update')->name('update_expense');
-    Route::get('/admin/delete_expense/{id}', 'delete')->name('delete_expense');
 });
