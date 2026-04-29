@@ -67,6 +67,24 @@ class ProductsRepository
         return DB::table($this->table)->insert($data);
     }
 
+    public function hasDuplicateProduct(
+        string $product,
+        string $unit,
+        int $companyId,
+        ?int $excludeId = null
+    ): bool {
+        $query = DB::table($this->table)
+            ->where('company_id', $companyId)
+            ->whereRaw('LOWER(product) = ?', [mb_strtolower(trim($product))])
+            ->whereRaw('LOWER(unit) = ?', [mb_strtolower(trim($unit))]);
+
+        if ($excludeId !== null) {
+            $query->where('pid', '!=', $excludeId);
+        }
+
+        return $query->exists();
+    }
+
     public function update(int $id, array $data, ?int $companyId = null): bool
     {
         $query = DB::table($this->table)->where('pid', $id);

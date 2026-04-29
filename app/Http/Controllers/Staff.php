@@ -14,12 +14,19 @@ class Staff extends Controller
 
     public function create(Request $request)
     {
+        $user = $request->user();
+        if (! $user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized.',
+            ], 401);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:1|max:255',
             'surname' => 'required|string|min:1|max:255',
             'position' => 'required|string|min:1|max:255',
             'contact' => 'nullable|string|max:255',
-            'company_id' => 'required|integer|exists:companies,cid',
         ]);
 
         if ($validator->fails()) {
@@ -30,9 +37,22 @@ class Staff extends Controller
             ], 422);
         }
 
-        $payload = $request->only(['name', 'surname', 'position', 'contact', 'company_id']);
+        $payload = $request->only(['name', 'surname', 'position', 'contact']);
+        $payload['company_id'] = $user->company_id;
         if (($payload['contact'] ?? null) === '') {
             $payload['contact'] = null;
+        }
+
+        if ($this->service->hasDuplicateStaff(
+            $payload['name'],
+            $payload['surname'],
+            $payload['position'],
+            $payload['company_id']
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This staff member already exists.',
+            ], 409);
         }
 
         if ($this->service->createStaff($payload)) {
@@ -50,38 +70,30 @@ class Staff extends Controller
 
     public function read(Request $request)
     {
-        $validator = Validator::make($request->query(), [
-            'company_id' => 'required|integer|exists:companies,cid',
-        ]);
-
-        if ($validator->fails()) {
+        $user = $request->user();
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'company_id is required for listing staff data.',
-                'errors' => $validator->errors(),
-            ], 422);
+                'message' => 'Unauthorized.',
+            ], 401);
         }
 
-        $companyId = (int) $request->query('company_id');
+        $companyId = $user->company_id;
 
         return $this->service->getAllStaff(10, $companyId);
     }
 
     public function edit(Request $request, int $id)
     {
-        $validator = Validator::make($request->query(), [
-            'company_id' => 'required|integer|exists:companies,cid',
-        ]);
-
-        if ($validator->fails()) {
+        $user = $request->user();
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'company_id is required.',
-                'errors' => $validator->errors(),
-            ], 422);
+                'message' => 'Unauthorized.',
+            ], 401);
         }
 
-        $companyId = (int) $request->query('company_id');
+        $companyId = $user->company_id;
 
         if (! $this->service->checkStaffExist($id, $companyId)) {
             return response()->json([
@@ -95,9 +107,16 @@ class Staff extends Controller
 
     public function update(Request $request)
     {
+        $user = $request->user();
+        if (! $user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized.',
+            ], 401);
+        }
+
         $validator = Validator::make($request->all(), [
             'sid' => 'required|integer|exists:staff,sid',
-            'company_id' => 'required|integer|exists:companies,cid',
             'name' => 'required|string|min:1|max:255',
             'surname' => 'required|string|min:1|max:255',
             'position' => 'required|string|min:1|max:255',
@@ -112,8 +131,8 @@ class Staff extends Controller
             ], 422);
         }
 
-        $companyId = (int) $request->input('company_id');
-        $sid = (int) $request->input('sid');
+        $companyId = $user->company_id;
+        $sid = $request->input('sid');
 
         if (! $this->service->checkStaffExist($sid, $companyId)) {
             return response()->json([
@@ -127,6 +146,19 @@ class Staff extends Controller
             $data['contact'] = null;
         }
 
+        if ($this->service->hasDuplicateStaff(
+            $data['name'],
+            $data['surname'],
+            $data['position'],
+            $companyId,
+            $sid
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Another staff member with the same details already exists.',
+            ], 409);
+        }
+
         $updated = $this->service->updateStaff($sid, $data, $companyId);
 
         return response()->json([
@@ -137,19 +169,15 @@ class Staff extends Controller
 
     public function delete(Request $request, int $id)
     {
-        $validator = Validator::make($request->query(), [
-            'company_id' => 'required|integer|exists:companies,cid',
-        ]);
-
-        if ($validator->fails()) {
+        $user = $request->user();
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'company_id is required.',
-                'errors' => $validator->errors(),
-            ], 422);
+                'message' => 'Unauthorized.',
+            ], 401);
         }
 
-        $companyId = (int) $request->query('company_id');
+        $companyId = $user->company_id;
 
         if (! $this->service->checkStaffExist($id, $companyId)) {
             return response()->json([
@@ -161,5 +189,16 @@ class Staff extends Controller
         return response()->json([
             'success' => $this->service->deleteStaff($id, $companyId),
         ]);
+    }
+
+    private function resolveCompanyId(Request $request, object $user): int
+    {
+        $companyId = $request->input('company_id', $request->query('company_id'));
+
+        if ($companyId === null || $companyId === '') {
+            return $user->company_id;
+        }
+
+        return $companyId;
     }
 }

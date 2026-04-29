@@ -68,6 +68,26 @@ class StaffRepository
         return DB::table($this->table)->insert($data);
     }
 
+    public function hasDuplicateStaff(
+        string $name,
+        string $surname,
+        string $position,
+        int $companyId,
+        ?int $excludeId = null
+    ): bool {
+        $query = DB::table($this->table)
+            ->where('company_id', $companyId)
+            ->whereRaw('LOWER(name) = ?', [mb_strtolower(trim($name))])
+            ->whereRaw('LOWER(surname) = ?', [mb_strtolower(trim($surname))])
+            ->whereRaw('LOWER(position) = ?', [mb_strtolower(trim($position))]);
+
+        if ($excludeId !== null) {
+            $query->where('sid', '!=', $excludeId);
+        }
+
+        return $query->exists();
+    }
+
     public function update(int $id, array $data, ?int $companyId = null): bool
     {
         $query = DB::table($this->table)->where('sid', $id);
