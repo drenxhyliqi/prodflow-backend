@@ -34,6 +34,15 @@ class ProductsService
         return $this->repository->create($data);
     }
 
+    public function hasDuplicateProduct(
+        string $product,
+        string $unit,
+        int $companyId,
+        ?int $excludeId = null
+    ): bool {
+        return $this->repository->hasDuplicateProduct($product, $unit, $companyId, $excludeId);
+    }
+
     public function updateProducts(int $id, array $data, ?int $companyId = null): bool
     {
         $products = $this->repository->findProductsById($id, $companyId);

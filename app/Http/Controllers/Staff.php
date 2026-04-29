@@ -38,9 +38,21 @@ class Staff extends Controller
         }
 
         $payload = $request->only(['name', 'surname', 'position', 'contact']);
-        $payload['company_id'] = (int) $user->company_id;
+        $payload['company_id'] = $user->company_id;
         if (($payload['contact'] ?? null) === '') {
             $payload['contact'] = null;
+        }
+
+        if ($this->service->hasDuplicateStaff(
+            $payload['name'],
+            $payload['surname'],
+            $payload['position'],
+            $payload['company_id']
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This staff member already exists.',
+            ], 409);
         }
 
         if ($this->service->createStaff($payload)) {
@@ -66,7 +78,7 @@ class Staff extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         return $this->service->getAllStaff(10, $companyId);
     }
@@ -81,7 +93,7 @@ class Staff extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         if (! $this->service->checkStaffExist($id, $companyId)) {
             return response()->json([
@@ -119,8 +131,8 @@ class Staff extends Controller
             ], 422);
         }
 
-        $companyId = (int) $user->company_id;
-        $sid = (int) $request->input('sid');
+        $companyId = $user->company_id;
+        $sid = $request->input('sid');
 
         if (! $this->service->checkStaffExist($sid, $companyId)) {
             return response()->json([
@@ -132,6 +144,19 @@ class Staff extends Controller
         $data = $request->only(['name', 'surname', 'position', 'contact']);
         if (($data['contact'] ?? null) === '') {
             $data['contact'] = null;
+        }
+
+        if ($this->service->hasDuplicateStaff(
+            $data['name'],
+            $data['surname'],
+            $data['position'],
+            $companyId,
+            $sid
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Another staff member with the same details already exists.',
+            ], 409);
         }
 
         $updated = $this->service->updateStaff($sid, $data, $companyId);
@@ -152,7 +177,7 @@ class Staff extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         if (! $this->service->checkStaffExist($id, $companyId)) {
             return response()->json([
@@ -164,5 +189,16 @@ class Staff extends Controller
         return response()->json([
             'success' => $this->service->deleteStaff($id, $companyId),
         ]);
+    }
+
+    private function resolveCompanyId(Request $request, object $user): int
+    {
+        $companyId = $request->input('company_id', $request->query('company_id'));
+
+        if ($companyId === null || $companyId === '') {
+            return $user->company_id;
+        }
+
+        return $companyId;
     }
 }

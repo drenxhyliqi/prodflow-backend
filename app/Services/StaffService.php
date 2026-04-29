@@ -34,6 +34,16 @@ class StaffService
         return $this->repository->create($data);
     }
 
+    public function hasDuplicateStaff(
+        string $name,
+        string $surname,
+        string $position,
+        int $companyId,
+        ?int $excludeId = null
+    ): bool {
+        return $this->repository->hasDuplicateStaff($name, $surname, $position, $companyId, $excludeId);
+    }
+
     public function updateStaff(int $id, array $data, ?int $companyId = null): bool
     {
         $staff = $this->repository->findStaffById($id, $companyId);

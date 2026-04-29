@@ -39,6 +39,17 @@ class Products extends Controller
         $payload = $request->only(['product', 'unit', 'price']);
         $payload['company_id'] = (int) $user->company_id;
 
+        if ($this->service->hasDuplicateProduct(
+            $payload['product'],
+            $payload['unit'],
+            $payload['company_id']
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This product already exists.',
+            ], 409);
+        }
+
         if ($this->service->createProducts($payload)) {
             return response()->json([
                 'success' => true,
@@ -125,6 +136,18 @@ class Products extends Controller
         }
 
         $data = $request->only(['product', 'unit', 'price']);
+
+        if ($this->service->hasDuplicateProduct(
+            $data['product'],
+            $data['unit'],
+            $companyId,
+            $pid
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Another product with the same details already exists.',
+            ], 409);
+        }
 
         $updated = $this->service->updateProducts($pid, $data, $companyId);
 
