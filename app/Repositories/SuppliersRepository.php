@@ -2,47 +2,47 @@
 
 namespace App\Repositories;
 
-use App\Models\ExpensesModel;
+use App\Models\SuppliersModel;
 use Illuminate\Support\Facades\DB;
 
-class ExpensesRepository
+class SuppliersRepository
 {
     protected string $table;
-    public function __construct(ExpensesModel $model)
+    public function __construct(SuppliersModel $model)
     {
         $this->table = $model->getTable();
 
     }
     //---------------
-    public function getAllExpenses(int $companyId, int $limit)
+    public function getAllSuppliers(int $companyId, int $limit)
     {
         return DB::table($this->table)
             ->where('company_id', $companyId)
-            ->orderByDesc('eid')
+            ->orderByDesc('sid')
             ->paginate($limit);
     }
     //---------------
-    public function getSearchedExpenses(int $companyId, int $limit, string $search)
+    public function getSearchedSuppliers(int $companyId, int $limit, string $search)
     {
         return DB::table($this->table)
             ->where('company_id', $companyId)
-            ->where('comment', 'like', "%{$search}%")
-            ->orderByDesc('eid')
+            ->where('supplier', 'like', "%{$search}%")
+            ->orderByDesc('sid')
             ->paginate($limit);
     }
     //---------------
-    public function findExpense(int $id, int $companyId)
+    public function findSupplier(int $id, int $companyId)
     {
         return DB::table($this->table)
-            ->where('eid', $id)
+            ->where('sid', $id)
             ->where('company_id', $companyId)
             ->first();
     }
     //---------------
-    public function checkExpenseExist(int $id, int $companyId): bool
+    public function checkSupplierExist(int $id, int $companyId): bool
     {
         return DB::table($this->table)
-            ->where('eid', $id)
+            ->where('sid', $id)
             ->where('company_id', $companyId)
             ->exists();
     }
@@ -58,7 +58,7 @@ class ExpensesRepository
     public function update(int $id, array $data, int $companyId): bool
     {
         return DB::table($this->table)
-            ->where('eid', $id)
+            ->where('sid', $id)
             ->where('company_id', $companyId)
             ->update($data) > 0;
     }
@@ -66,7 +66,7 @@ class ExpensesRepository
     public function delete(int $id, int $companyId): bool
     {
         return DB::table($this->table)
-            ->where('eid', $id)
+            ->where('sid', $id)
             ->where('company_id', $companyId)
             ->delete() > 0;
     }

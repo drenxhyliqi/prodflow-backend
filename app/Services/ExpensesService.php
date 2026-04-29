@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Repositories\ExpensesRepository;
 
 class ExpensesService
@@ -11,42 +12,46 @@ class ExpensesService
         $this->repository = $repository;
     }
     //---------------
-    public function getAllExpenses($limit)
+    public function getAllExpenses(int $companyId, int $limit, string $search = '')
     {
-        if (isset($_GET['search']) && !empty($_GET['search'])) {
-            return $this->repository->getSearchedExpenses($_GET['search'], $limit);
-        } else {
-            return $this->repository->getAllExpenses($limit);
+        $limit = (int) $limit ?: 10;
+        if (!empty($search)) {
+            return $this->repository->getSearchedExpenses($companyId, $limit, $search);
         }
+
+        return $this->repository->getAllExpenses($companyId, $limit);
     }
     //---------------
-    public function getExpenseById(int $id)
+    public function getExpenseById(int $id, int $companyId)
     {
-        return $this->repository->findExpense($id);
+        return $this->repository->findExpense($id, $companyId);
     }
     //---------------
-    public function findOrFail(int $id)
+    public function findOrFail(int $id, int $companyId)
     {
-        return $this->repository->checkExpensesExist($id);
+        return $this->repository->checkExpenseExist($id, $companyId);
     }
     //---------------
-    public function createExpense(array $data)
+    public function createExpense(array $data, int $companyId)
     {
-        return $this->repository->create($data);
+        return $this->repository->create($data, $companyId);
     }
     //---------------
-    public function updateExpense(int $id, array $data): bool
+    public function updateExpense(int $id, array $data, int $companyId): bool
     {
-        $expense = $this->repository->findExpense($id);
+        $expense = $this->repository->findExpense($id, $companyId);
         if (!$expense) {
             return false;
         }
-        return $this->repository->update($id, $data);
+        return $this->repository->update($id, $data, $companyId);
     }
     //---------------
-    public function deleteExpense(int $id): bool
+    public function deleteExpense(int $id, int $companyId): bool
     {
-        return $this->repository->delete($id);
+        $expense = $this->repository->findExpense($id, $companyId);
+        if (!$expense) {
+            return false;
+        }
+        return $this->repository->delete($id, $companyId);
     }
-    //---------------
 }

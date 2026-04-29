@@ -6,7 +6,6 @@ use App\Services\ClientsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-
 class Clients extends Controller
 {
     protected ClientsService $service;

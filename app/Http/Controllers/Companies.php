@@ -6,7 +6,6 @@ use App\Services\CompanyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-
 class Companies extends Controller
 {
     protected CompanyService $service;
