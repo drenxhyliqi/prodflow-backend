@@ -42,6 +42,7 @@ class Production extends Controller
         $payload['company_id'] = $companyId;
         $productId = (int) $payload['product_id'];
         $machineId = (int) $payload['machine_id'];
+        $qty = (float) $payload['qty'];
 
         if (! $this->service->checkProductBelongsToCompany($productId, $companyId)) {
             return response()->json([
@@ -55,6 +56,19 @@ class Production extends Controller
                 'success' => false,
                 'message' => 'Selected machine does not belong to this company.',
             ], 422);
+        }
+
+        if ($this->service->hasDuplicateProduction(
+            $productId,
+            $machineId,
+            $qty,
+            (string) $payload['date'],
+            $companyId
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This production record already exists with the same product, machine, quantity and date.',
+            ], 409);
         }
 
         if ($this->service->createProduction($payload)) {
@@ -137,6 +151,7 @@ class Production extends Controller
         $pid = (int) $request->input('pid');
         $productId = (int) $request->input('product_id');
         $machineId = (int) $request->input('machine_id');
+        $qty = (float) $request->input('qty');
 
         if (! $this->service->checkProductionExist($pid, $companyId)) {
             return response()->json([
@@ -160,6 +175,21 @@ class Production extends Controller
         }
 
         $data = $request->only(['product_id', 'machine_id', 'qty', 'date']);
+
+        if ($this->service->hasDuplicateProduction(
+            $productId,
+            $machineId,
+            $qty,
+            (string) $data['date'],
+            $companyId,
+            $pid
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Another production record with the same product, machine, quantity and date already exists.',
+            ], 409);
+        }
+
         $updated = $this->service->updateProduction($pid, $data, $companyId);
 
         return response()->json([

@@ -9,8 +9,9 @@ use App\Http\Controllers\Sales;
 use App\Http\Controllers\Expenses;
 use App\Http\Controllers\Production;
 use App\Http\Controllers\Machines;
+use App\Http\Controllers\Materials;
+use App\Http\Controllers\MaterialsStock;
 use App\Http\Controllers\Users;
-use App\Http\Controllers\Machines;
 
 
 // Companies
@@ -58,6 +59,24 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/edit_product/{id}', 'edit')->name('edit_product');
         Route::post('/admin/update_product', 'update')->name('update_product');
         Route::get('/admin/delete_product/{id}', 'delete')->name('delete_product');
+    });
+
+    // Materials
+    Route::controller(Materials::class)->group(function () {
+        Route::post('/admin/create_material', 'create')->name('create_material');
+        Route::get('/admin/materials', 'read')->name('materialsManagement');
+        Route::get('/admin/edit_material/{id}', 'edit')->name('edit_material');
+        Route::post('/admin/update_material', 'update')->name('update_material');
+        Route::get('/admin/delete_material/{id}', 'delete')->name('delete_material');
+    });
+
+    // Materials Stock
+    Route::controller(MaterialsStock::class)->group(function () {
+        Route::post('/admin/create_material_stock', 'create')->name('create_material_stock');
+        Route::get('/admin/materials_stock', 'read')->name('materialsStockManagement');
+        Route::get('/admin/edit_material_stock/{id}', 'edit')->name('edit_material_stock');
+        Route::post('/admin/update_material_stock', 'update')->name('update_material_stock');
+        Route::get('/admin/delete_material_stock/{id}', 'delete')->name('delete_material_stock');
     });
 
     // Clients

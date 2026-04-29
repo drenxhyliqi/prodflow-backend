@@ -107,6 +107,28 @@ class ProductionRepository
         return DB::table($this->table)->insert($data);
     }
 
+    public function hasDuplicateProduction(
+        int $productId,
+        int $machineId,
+        float $qty,
+        string $date,
+        int $companyId,
+        ?int $excludeId = null
+    ): bool {
+        $query = DB::table($this->table)
+            ->where('company_id', $companyId)
+            ->where('product_id', $productId)
+            ->where('machine_id', $machineId)
+            ->where('qty', $qty)
+            ->whereDate('date', $date);
+
+        if ($excludeId !== null) {
+            $query->where('pid', '!=', $excludeId);
+        }
+
+        return $query->exists();
+    }
+
     public function update(int $id, array $data, ?int $companyId = null): bool
     {
         $query = DB::table($this->table)->where('pid', $id);
