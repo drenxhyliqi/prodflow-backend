@@ -2,59 +2,52 @@
 
 namespace App\Repositories;
 
-use App\Models\MachinesModel;
+use App\Models\WarehousesModel;
 use Illuminate\Support\Facades\DB;
 
-class MachinesRepository
+class WarehousesRepository
 {
     protected string $table;
 
-    public function __construct(MachinesModel $model)
+    public function __construct(WarehousesModel $model)
     {
         $this->table = $model->getTable();
     }
 
-    //---------------
-    public function getAllMachines(int $companyId, int $limit)
+    public function getAllWarehouses(int $companyId, int $limit)
     {
         return DB::table($this->table)
             ->where('company_id', $companyId)
-            ->orderByDesc('mid')
+            ->orderByDesc('wid')
             ->paginate($limit);
     }
 
-    //---------------
-    public function getSearchedMachines(int $companyId, int $limit, string $search)
+    public function getSearchedWarehouses(int $companyId, int $limit, string $search)
     {
         return DB::table($this->table)
             ->where('company_id', $companyId)
-            ->where(function ($query) use ($search) {
-                $query->where('machine', 'like', "%{$search}%")
-                      ->orWhere('type', 'like', "%{$search}%");
-            })
-            ->orderByDesc('mid')
+            ->where('warehouse', 'like', "%{$search}%")
+            ->orWhere('location', 'like', "%{$search}%")
+            ->orderByDesc('wid')
             ->paginate($limit);
     }
 
-    //---------------
-    public function findMachine(int $id, int $companyId)
+    public function findWarehouse(int $id, int $companyId)
     {
         return DB::table($this->table)
-            ->where('mid', $id)
+            ->where('wid', $id)
             ->where('company_id', $companyId)
             ->first();
     }
 
-    //---------------
-    public function checkMachineExist(int $id, int $companyId): bool
+    public function checkWarehouseExist(int $id, int $companyId): bool
     {
         return DB::table($this->table)
-            ->where('mid', $id)
+            ->where('wid', $id)
             ->where('company_id', $companyId)
             ->exists();
     }
 
-    //---------------
     public function create(array $data, int $companyId): bool
     {
         return DB::table($this->table)
@@ -63,20 +56,18 @@ class MachinesRepository
             ]));
     }
 
-    //---------------
     public function update(int $id, array $data, int $companyId): bool
     {
         return DB::table($this->table)
-            ->where('mid', $id)
+            ->where('wid', $id)
             ->where('company_id', $companyId)
             ->update($data) >= 0;
     }
 
-    //---------------
     public function delete(int $id, int $companyId): bool
     {
         return DB::table($this->table)
-            ->where('mid', $id)
+            ->where('wid', $id)
             ->where('company_id', $companyId)
             ->delete() > 0;
     }

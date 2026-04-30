@@ -2,25 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\MachinesService;
+use App\Services\WarehousesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class Machines extends Controller
+class Warehouses extends Controller
 {
-    protected MachinesService $service;
+    protected WarehousesService $service;
 
-    public function __construct(MachinesService $service)
+    public function __construct(WarehousesService $service)
     {
         $this->service = $service;
     }
 
-    //---------------
+    //==================
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'machine' => 'required|string|min:1|max:255',
-            'type' => 'required|string|min:1|max:255'
+            'warehouse' => 'required|string|min:1|max:255',
+            'location' => 'required|string|min:1|max:255'
         ]);
 
         if ($validator->fails()) {
@@ -30,13 +30,13 @@ class Machines extends Controller
                 'errors' => $validator->errors()
             ], 422);
         } else {
-            $data = $request->only(['machine', 'type']);
+            $data = $request->only(['warehouse', 'location']);
             $companyId = $request->user()->company_id;
 
-            if ($this->service->createMachine($data, $companyId)) {
+            if ($this->service->createWarehouse($data, $companyId)) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Machine registered successfully.'
+                    'message' => 'Warehouse registered successfully.'
                 ], 201);
             } else {
                 return response()->json([
@@ -47,38 +47,38 @@ class Machines extends Controller
         }
     }
 
-    //---------------
+    //==================
     public function read(Request $request)
     {
         $search = $request->query('search', '');
         $companyId = $request->user()->company_id;
         
         return response()->json(
-            $this->service->getAllMachines($companyId, 10, $search)
+            $this->service->getAllWarehouses($companyId, 10, $search)
         );
     }
 
-    //---------------
+    //==================
     public function edit(Request $request, int $id)
     {
         $companyId = $request->user()->company_id;
         if (!$this->service->findOrFail($id, $companyId)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Machine not found.'
+                'message' => 'Warehouse not found.'
             ], 404);
         } else {
-            return $this->service->getMachineById($id, $companyId);
+            return $this->service->getWarehouseById($id, $companyId);
         }
     }
 
-    //---------------
+    //==================
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'mid' => 'required|numeric|min:1|exists:machines,mid',
-            'machine' => 'required|string|min:1|max:255',
-            'type' => 'required|string|min:1|max:255',
+            'wid' => 'required|numeric|min:1|exists:warehouses,wid',
+            'warehouse' => 'required|string|min:1|max:255',
+            'location' => 'required|string|min:1|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -88,14 +88,14 @@ class Machines extends Controller
                 'errors'  => $validator->errors()
             ], 422);
         } else {
-            $id = $request->mid;
-            $data = $request->only(['machine', 'type']);
+            $id = $request->wid;
+            $data = $request->only(['warehouse', 'location']);
             $companyId = $request->user()->company_id;
 
-            if ($this->service->updateMachine($id, $data, $companyId)) {
+            if ($this->service->updateWarehouse($id, $data, $companyId)) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'The machine was successfully updated.'
+                    'message' => 'The warehouse was successfully updated.'
                 ], 201);
             } else {
                 return response()->json([
@@ -106,14 +106,14 @@ class Machines extends Controller
         }
     }
 
-    //---------------
+    //==================
     public function delete(Request $request, int $id)
     {
         $companyId = $request->user()->company_id;
-        if ($this->service->deleteMachine($id, $companyId)) {
+        if ($this->service->deleteWarehouse($id, $companyId)) {
             return response()->json([
                 'success' => true,
-                'message' => 'The machine was successfully deleted.'
+                'message' => 'The warehouse was successfully deleted.'
             ], 201);
         } else {
             return response()->json([

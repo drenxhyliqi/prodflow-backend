@@ -13,40 +13,53 @@ class MachinesService
         $this->repository = $repository;
     }
 
-    public function getAllMachines($limit)
+    //---------------
+    public function getAllMachines(int $companyId, int $limit, string $search = '')
     {
-        if (isset($_GET['search']) && !empty($_GET['search'])) {
-            return $this->repository->getSearchedMachines($_GET['search'], $limit);
-        } else {
-            return $this->repository->getAllMachines($limit);
+        $limit = (int) $limit ?: 10;
+
+        if (!empty($search)) {
+            return $this->repository->getSearchedMachines($companyId, $limit, $search);
         }
+
+        return $this->repository->getAllMachines($companyId, $limit);
     }
 
-    public function getMachineById(int $id)
+    //---------------
+    public function getMachineById(int $id, int $companyId)
     {
-        return $this->repository->findMachine($id);
+        return $this->repository->findMachine($id, $companyId);
     }
 
-    public function findOrFail(int $id)
+    //---------------
+    public function findOrFail(int $id, int $companyId)
     {
-        return $this->repository->checkMachineExist($id);
+        return $this->repository->checkMachineExist($id, $companyId);
     }
 
-    public function createMachine(array $data)
+    //---------------
+    public function createMachine(array $data, int $companyId)
     {
-        return $this->repository->create($data);
+        return $this->repository->create($data, $companyId);
     }
 
-    public function updateMachine(int $id, array $data): bool
+    //---------------
+    public function updateMachine(int $id, array $data, int $companyId): bool
     {
-        if (!$this->repository->checkMachineExist($id)) {
+        $machine = $this->repository->findMachine($id, $companyId);
+        if (!$machine) {
             return false;
         }
-        return $this->repository->update($id, $data);
+        return $this->repository->update($id, $data, $companyId);
     }
 
-    public function deleteMachine(int $id): bool
+    //---------------
+    public function deleteMachine(int $id, int $companyId): bool
     {
-        return $this->repository->delete($id);
+        $machine = $this->repository->findMachine($id, $companyId);
+        if (!$machine) {
+            return false;
+        }
+        return $this->repository->delete($id, $companyId);
     }
 }
