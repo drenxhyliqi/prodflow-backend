@@ -922,6 +922,151 @@
                 ]
             }
         },
+        "/api/admin/create_planification": {
+            "post": {
+                "tags": [
+                    "Planification"
+                ],
+                "summary": "Create planification",
+                "operationId": "7f46931756105870ab0342bb33aa936f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/planification": {
+            "get": {
+                "tags": [
+                    "Planification"
+                ],
+                "summary": "List planification",
+                "operationId": "99ec4d212046cb60edfe36d6ed366845",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/edit_planification/{id}": {
+            "get": {
+                "tags": [
+                    "Planification"
+                ],
+                "summary": "Get planification by id",
+                "operationId": "04ceb3f904d188d3d40aa6bae57c28d1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/update_planification": {
+            "post": {
+                "tags": [
+                    "Planification"
+                ],
+                "summary": "Update planification",
+                "operationId": "43e52aeaffc99cb9fb8d205b67b232ae",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delete_planification/{id}": {
+            "get": {
+                "tags": [
+                    "Planification"
+                ],
+                "summary": "Delete planification",
+                "operationId": "de56c9035e78b71d795b548bb5a84a44",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/admin/create_production": {
             "post": {
                 "tags": [
@@ -1714,6 +1859,10 @@
         {
             "name": "Materials",
             "description": "Materials management"
+        },
+        {
+            "name": "Planification",
+            "description": "Planification management"
         },
         {
             "name": "Production",

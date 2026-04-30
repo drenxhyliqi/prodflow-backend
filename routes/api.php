@@ -14,6 +14,7 @@ use App\Http\Controllers\Suppliers;
 use App\Http\Controllers\Users;
 use App\Http\Controllers\Machines;
 use App\Http\Controllers\Warehouses;
+use App\Http\Controllers\Planification;
 
 // Companies
 Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {
@@ -130,4 +131,13 @@ Route::middleware('auth:sanctum')->controller(Warehouses::class)->group(function
     Route::get('/admin/edit_warehouse/{id}', 'edit')->name('edit_warehouse');
     Route::post('/admin/update_warehouse', 'update')->name('update_warehouse');
     Route::get('/admin/delete_warehouse/{id}', 'delete')->name('delete_warehouse');
+});
+
+// Planification
+Route::middleware('auth:sanctum')->controller(Planification::class)->group(function () {
+    Route::post('/admin/create_planification', 'create')->name('create_planification');
+    Route::get('/admin/planification', 'read')->name('planificationManagement');
+    Route::get('/admin/edit_planification/{id}', 'edit')->name('edit_planification');
+    Route::post('/admin/update_planification', 'update')->name('update_planification');
+    Route::get('/admin/delete_planification/{id}', 'delete')->name('delete_planification');
 });
