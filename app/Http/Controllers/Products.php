@@ -52,7 +52,7 @@ class Products extends Controller
             ], 409);
         }
 
-        if ($this->service->createProducts($payload)) {
+        if ($this->service->createProducts($payload, $payload['company_id'])) {
             return response()->json([
                 'success' => true,
                 'message' => 'Product registered successfully.',
