@@ -12,6 +12,8 @@ use App\Http\Controllers\Sales;
 use App\Http\Controllers\Expenses;
 use App\Http\Controllers\Suppliers;
 use App\Http\Controllers\Users;
+use App\Http\Controllers\Machines;
+use App\Http\Controllers\Warehouse;
 
 // Companies
 Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {
@@ -112,4 +114,20 @@ Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
     Route::get('/admin/edit_sale/{id}', 'edit')->name('edit_sale');
     Route::post('/admin/update_sale', 'update')->name('update_sale');
     Route::get('/admin/delete_sale/{id}', 'delete')->name('delete_sale');
+});
+
+Route::middleware('auth:sanctum')->controller(Machines::class)->group(function () {
+    Route::post('/admin/create_machine', 'create')->name('create_machine');
+    Route::get('/admin/machines', 'read')->name('machinesManagement');
+    Route::get('/admin/edit_machine/{id}', 'edit')->name('edit_machine');
+    Route::post('/admin/update_machine', 'update')->name('update_machine');
+    Route::get('/admin/delete_machine/{id}', 'delete')->name('delete_machine');
+});
+
+Route::middleware('auth:sanctum')->controller(Warehouses::class)->group(function () {
+    Route::post('/admin/create_warehouse', 'create')->name('create_warehouse');
+    Route::get('/admin/warehouses', 'read')->name('warehousesManagement');
+    Route::get('/admin/edit_warehouse/{id}', 'edit')->name('edit_warehouse');
+    Route::post('/admin/update_warehouse', 'update')->name('update_warehouse');
+    Route::get('/admin/delete_warehouse/{id}', 'delete')->name('delete_warehouse');
 });
