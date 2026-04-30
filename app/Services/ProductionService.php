@@ -6,11 +6,13 @@ use App\Repositories\ProductionRepository;
 
 class ProductionService
 {
-    public function __construct(
-        protected ProductionRepository $repository
-    ) {}
-
-    public function getAllProduction(int $limit, ?int $companyId = null)
+    protected ProductionRepository $repository;
+    public function __construct(ProductionRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+    //---------------
+    public function getAllProduction(int $limit, int $companyId, string $search = '')
     {
         if (isset($_GET['search']) && ! empty($_GET['search'])) {
             return $this->repository->getSearchedProduction($_GET['search'], $limit, $companyId);
@@ -18,22 +20,22 @@ class ProductionService
             return $this->repository->getAllProduction($limit, $companyId);
         }
     }
-
-    public function getProductionById(int $id, ?int $companyId = null)
+    //---------------
+    public function getProductionById(int $id, int $companyId)
     {
         return $this->repository->findProductionById($id, $companyId);
     }
-
-    public function checkProductionExist(int $id, ?int $companyId = null): bool
+    //---------------
+    public function checkProductionExist(int $id, int $companyId): bool
     {
         return $this->repository->checkProductionExist($id, $companyId);
     }
-
-    public function createProduction(array $data): bool
+    //---------------
+    public function createProduction(array $data, int $companyId): bool
     {
-        return $this->repository->create($data);
+        return $this->repository->create($data, $companyId);
     }
-
+    //---------------
     public function hasDuplicateProduction(
         int $productId,
         int $machineId,
@@ -44,8 +46,8 @@ class ProductionService
     ): bool {
         return $this->repository->hasDuplicateProduction($productId, $machineId, $qty, $date, $companyId, $excludeId);
     }
-
-    public function updateProduction(int $id, array $data, ?int $companyId = null): bool
+    //---------------
+    public function updateProduction(int $id, array $data, int $companyId): bool
     {
         $production = $this->repository->findProductionById($id, $companyId);
 
@@ -55,8 +57,8 @@ class ProductionService
 
         return $this->repository->update($id, $data, $companyId);
     }
-
-    public function deleteProduction(int $id, ?int $companyId = null): bool
+    //---------------
+    public function deleteProduction(int $id, int $companyId): bool
     {
         $production = $this->repository->findProductionById($id, $companyId);
 
@@ -66,12 +68,12 @@ class ProductionService
 
         return $this->repository->delete($id, $companyId);
     }
-
+    //---------------
     public function checkProductBelongsToCompany(int $productId, int $companyId): bool
     {
         return $this->repository->checkProductBelongsToCompany($productId, $companyId);
     }
-
+    //---------------
     public function checkMachineBelongsToCompany(int $machineId, int $companyId): bool
     {
         return $this->repository->checkMachineBelongsToCompany($machineId, $companyId);

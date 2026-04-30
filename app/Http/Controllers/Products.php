@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Validator;
 
 class Products extends Controller
 {
-    public function __construct(
-        protected ProductsService $service
-    ) {}
-
+    protected ProductsService $service;
+    public function __construct(ProductsService $service)
+    {
+        $this->service = $service;
+    }
+    //---------------
     public function create(Request $request)
     {
         $user = $request->user();
@@ -62,7 +64,7 @@ class Products extends Controller
             'message' => 'An error occurred while saving the product data. Please try again.',
         ], 500);
     }
-
+    //---------------
     public function read(Request $request)
     {
         $user = $request->user();
@@ -77,7 +79,7 @@ class Products extends Controller
 
         return $this->service->getAllProducts(10, $companyId);
     }
-
+    //---------------
     public function edit(Request $request, int $id)
     {
         $user = $request->user();
@@ -99,7 +101,7 @@ class Products extends Controller
 
         return $this->service->getProductsById($id, $companyId);
     }
-
+    //---------------
     public function update(Request $request)
     {
         $user = $request->user();
@@ -156,7 +158,7 @@ class Products extends Controller
             'message' => $updated ? 'Product updated.' : 'Update failed.',
         ], $updated ? 200 : 500);
     }
-
+    //---------------
     public function delete(Request $request, int $id)
     {
         $user = $request->user();

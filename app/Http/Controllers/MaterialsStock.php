@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Validator;
 
 class MaterialsStock extends Controller
 {
-    public function __construct(
-        protected MaterialsStockService $service
-    ) {}
-
+    protected MaterialsStockService $service;
+    public function __construct(MaterialsStockService $service)
+    {
+        $this->service = $service;
+    }
+    //---------------
     public function create(Request $request)
     {
         $user = $request->user();
@@ -67,7 +69,7 @@ class MaterialsStock extends Controller
             'message' => $created ? 'Material stock transaction registered.' : 'Create failed.',
         ], $created ? 201 : 500);
     }
-
+    //---------------
     public function read(Request $request)
     {
         $user = $request->user();
@@ -80,7 +82,7 @@ class MaterialsStock extends Controller
 
         return $this->service->getAllMaterialsStock(10, (int) $user->company_id);
     }
-
+    //---------------
     public function edit(Request $request, int $id)
     {
         $user = $request->user();
@@ -102,7 +104,7 @@ class MaterialsStock extends Controller
 
         return $this->service->getMaterialsStockById($id, $companyId);
     }
-
+    //---------------
     public function update(Request $request)
     {
         $user = $request->user();
@@ -167,6 +169,7 @@ class MaterialsStock extends Controller
         ], $updated ? 200 : 500);
     }
 
+    //---------------
     public function delete(Request $request, int $id)
     {
         $user = $request->user();

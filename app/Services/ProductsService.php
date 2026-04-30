@@ -6,11 +6,13 @@ use App\Repositories\ProductsRepository;
 
 class ProductsService
 {
-    public function __construct(
-        protected ProductsRepository $repository
-    ) {}
-
-    public function getAllProducts(int $limit, ?int $companyId = null)
+    protected ProductsRepository $repository;
+    public function __construct(ProductsRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+    //---------------
+    public function getAllProducts(int $limit, int $companyId, string $search = '')
     {
         if (isset($_GET['search']) && ! empty($_GET['search'])) {
             return $this->repository->getSearchedProducts($_GET['search'], $limit, $companyId);
@@ -18,22 +20,22 @@ class ProductsService
             return $this->repository->getAllProducts($limit, $companyId);
         }
     }
-
-    public function getProductsById(int $id, ?int $companyId = null)
+    //---------------
+    public function getProductsById(int $id, int $companyId)
     {
         return $this->repository->findProductsById($id, $companyId);
     }
-
-    public function checkProductsExist(int $id, ?int $companyId = null): bool
+    //---------------
+    public function checkProductsExist(int $id, int $companyId): bool
     {
         return $this->repository->checkProductsExist($id, $companyId);
     }
-
-    public function createProducts(array $data): bool
+    //---------------
+    public function createProducts(array $data, int $companyId): bool
     {
-        return $this->repository->create($data);
+        return $this->repository->create($data, $companyId);
     }
-
+    //---------------
     public function hasDuplicateProduct(
         string $product,
         string $unit,
@@ -42,8 +44,8 @@ class ProductsService
     ): bool {
         return $this->repository->hasDuplicateProduct($product, $unit, $companyId, $excludeId);
     }
-
-    public function updateProducts(int $id, array $data, ?int $companyId = null): bool
+    //---------------
+    public function updateProducts(int $id, array $data, int $companyId): bool
     {
         $products = $this->repository->findProductsById($id, $companyId);
 
@@ -53,8 +55,8 @@ class ProductsService
 
         return $this->repository->update($id, $data, $companyId);
     }
-
-    public function deleteProducts(int $id, ?int $companyId = null): bool
+    //---------------
+    public function deleteProducts(int $id, int $companyId): bool
     {
         $products = $this->repository->findProductsById($id, $companyId);
 
