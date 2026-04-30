@@ -3,6 +3,9 @@
 use App\Http\Controllers\Companies;
 use App\Http\Controllers\Staff;
 use App\Http\Controllers\Products;
+use App\Http\Controllers\Materials;
+use App\Http\Controllers\MaterialsStock;
+use App\Http\Controllers\Production;
 use App\Http\Controllers\Clients;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sales;
@@ -51,7 +54,7 @@ Route::middleware('auth:sanctum')->controller(Suppliers::class)->group(function 
 });
 
 // Users
-Route::post('/login', [Users::class, 'login']);
+Route::post('/login', [Users::class, 'login'])->name('login');
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [Users::class, 'me']);
     Route::post('/logout', [Users::class, 'logout']);
@@ -75,6 +78,33 @@ Route::middleware('auth:sanctum')->controller(Products::class)->group(function (
     Route::get('/admin/delete_product/{id}', 'delete')->name('delete_product');
 });
 
+// Materials
+Route::middleware('auth:sanctum')->controller(Materials::class)->group(function () {
+    Route::post('/admin/create_material', 'create')->name('create_material');
+    Route::get('/admin/materials', 'read')->name('materialsManagement');
+    Route::get('/admin/edit_material/{id}', 'edit')->name('edit_material');
+    Route::post('/admin/update_material', 'update')->name('update_material');
+    Route::get('/admin/delete_material/{id}', 'delete')->name('delete_material');
+});
+
+// Production
+Route::middleware('auth:sanctum')->controller(Production::class)->group(function () {
+    Route::post('/admin/create_production', 'create')->name('create_production');
+    Route::get('/admin/production', 'read')->name('productionManagement');
+    Route::get('/admin/edit_production/{id}', 'edit')->name('edit_production');
+    Route::post('/admin/update_production', 'update')->name('update_production');
+    Route::get('/admin/delete_production/{id}', 'delete')->name('delete_production');
+});
+
+// Materials Stock
+
+Route::middleware('auth:sanctum')->controller(MaterialsStock::class)->group(function () {
+    Route::post('/admin/create_materials_stock', 'create')->name('create_materials_stock');
+    Route::get('/admin/materials_stock', 'read')->name('materials_stockManagement');
+    Route::get('/admin/edit_materials_stock/{id}', 'edit')->name('edit_materials_stock');
+    Route::post('/admin/update_materials_stock', 'update')->name('update_materials_stock');
+    Route::get('/admin/delete_materials_stock/{id}', 'delete')->name('delete_materials_stock');
+});
 // Sales
 Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
     Route::post('/admin/create_sale', 'create')->name('create_sale');

@@ -6,34 +6,36 @@ use App\Repositories\StaffRepository;
 
 class StaffService
 {
-    public function __construct(
-        protected StaffRepository $repository
-    ) {}
-
-    public function getAllStaff(int $limit, ?int $companyId = null)
+    protected StaffRepository $repository;
+    public function __construct(StaffRepository $repository)
     {
-        if (isset($_GET['search']) && ! empty($_GET['search'])) {
-            return $this->repository->getSearchedStaff($_GET['search'], $limit, $companyId);
+        $this->repository = $repository;
+    }
+    //---------------
+    public function getAllStaff(int $limit, int $companyId, string $search = '')
+    {
+        if (! empty($search)) {
+            return $this->repository->getSearchedStaff($search, $limit, $companyId);
         } else {
             return $this->repository->getAllStaff($limit, $companyId);
         }
     }
-
-    public function getStaffById(int $id, ?int $companyId = null)
+    //---------------
+    public function getStaffById(int $id, int $companyId)
     {
         return $this->repository->findStaffById($id, $companyId);
     }
-
-    public function checkStaffExist(int $id, ?int $companyId = null): bool
+    //---------------
+    public function checkStaffExist(int $id, int $companyId): bool
     {
         return $this->repository->checkStaffExist($id, $companyId);
     }
-
-    public function createStaff(array $data): bool
+    //---------------
+    public function createStaff(array $data, int $companyId): bool
     {
-        return $this->repository->create($data);
+        return $this->repository->create($data, $companyId);
     }
-
+    //---------------
     public function hasDuplicateStaff(
         string $name,
         string $surname,
@@ -43,8 +45,8 @@ class StaffService
     ): bool {
         return $this->repository->hasDuplicateStaff($name, $surname, $position, $companyId, $excludeId);
     }
-
-    public function updateStaff(int $id, array $data, ?int $companyId = null): bool
+    //---------------
+    public function updateStaff(int $id, array $data, int $companyId): bool
     {
         $staff = $this->repository->findStaffById($id, $companyId);
 
@@ -54,8 +56,8 @@ class StaffService
 
         return $this->repository->update($id, $data, $companyId);
     }
-
-    public function deleteStaff(int $id, ?int $companyId = null): bool
+    //---------------
+    public function deleteStaff(int $id, int $companyId): bool
     {
         $staff = $this->repository->findStaffById($id, $companyId);
 

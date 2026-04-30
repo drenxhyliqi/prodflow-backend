@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Validator;
 
 class Staff extends Controller
 {
-    public function __construct(
-        protected StaffService $service
-    ) {}
-
+    protected StaffService $service;
+    public function __construct(StaffService $service)
+    {
+        $this->service = $service;
+    }
+    //---------------
     public function create(Request $request)
     {
         $user = $request->user();
@@ -35,86 +37,62 @@ class Staff extends Controller
                 'message' => 'All fields must be completed',
                 'errors' => $validator->errors(),
             ], 422);
-        }
+        }else{
+            $companyId = $user->company_id;
+            $payload = $request->only(['name', 'surname', 'position', 'contact']);
+            if (($payload['contact'] ?? null) === '') {
+                $payload['contact'] = null;
+            }
 
-        $payload = $request->only(['name', 'surname', 'position', 'contact']);
-        $payload['company_id'] = $user->company_id;
-        if (($payload['contact'] ?? null) === '') {
-            $payload['contact'] = null;
-        }
+            if ($this->service->hasDuplicateStaff(
+                $payload['name'],
+                $payload['surname'],
+                $payload['position'],
+                $companyId
+            )) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This staff member already exists.',
+                ], 409);
+            }
 
-        if ($this->service->hasDuplicateStaff(
-            $payload['name'],
-            $payload['surname'],
-            $payload['position'],
-            $payload['company_id']
-        )) {
+            if ($this->service->createStaff($payload, $companyId)) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Staff registered successfully.',
+                ], 201);
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => 'This staff member already exists.',
-            ], 409);
+                'message' => 'An error occurred while saving the staff data. Please try again.',
+            ], 500);
         }
-
-        if ($this->service->createStaff($payload)) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Staff registered successfully.',
-            ], 201);
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'An error occurred while saving the staff data. Please try again.',
-        ], 500);
     }
-
+    //---------------
     public function read(Request $request)
     {
-        $user = $request->user();
-        if (! $user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized.',
-            ], 401);
-        }
-
-        $companyId = $user->company_id;
-
-        return $this->service->getAllStaff(10, $companyId);
+        $search = $request->query('search', '');
+        $companyId = $request->user()->company_id;
+        return $this->service->getAllStaff(10, $companyId, $search);
     }
-
+    //---------------
     public function edit(Request $request, int $id)
     {
-        $user = $request->user();
-        if (! $user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized.',
-            ], 401);
-        }
-
-        $companyId = $user->company_id;
+        $companyId = $request->user()->company_id;
 
         if (! $this->service->checkStaffExist($id, $companyId)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Staff not found.',
             ], 404);
+        }else{
+            return $this->service->getStaffById($id, $companyId);
         }
-
-        return $this->service->getStaffById($id, $companyId);
     }
-
+    //---------------
     public function update(Request $request)
     {
-        $user = $request->user();
-        if (! $user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized.',
-            ], 401);
-        }
-
         $validator = Validator::make($request->all(), [
             'sid' => 'required|integer|exists:staff,sid',
             'name' => 'required|string|min:1|max:255',
@@ -129,44 +107,43 @@ class Staff extends Controller
                 'message' => 'All fields must be completed according to the rules.',
                 'errors' => $validator->errors(),
             ], 422);
+        }else{
+
+            $companyId = $request->user()->company_id;
+            $sid = $request->input('sid');
+
+            if (! $this->service->checkStaffExist($sid, $companyId)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Staff not found for this company.',
+                ], 404);
+            }else{
+                $data = $request->only(['name', 'surname', 'position', 'contact']);
+                if (($data['contact'] ?? null) === '') {
+                    $data['contact'] = null;
+                }
+
+                if ($this->service->hasDuplicateStaff(
+                    $data['name'],
+                    $data['surname'],
+                    $data['position'],
+                    $companyId,
+                    $sid
+                )) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Another staff member with the same details already exists.',
+                    ], 409);
+                }
+                $updated = $this->service->updateStaff($sid, $data, $companyId);
+                return response()->json([
+                    'success' => $updated,
+                    'message' => $updated ? 'Staff updated.' : 'Update failed.',
+                ], $updated ? 200 : 500);
+            }
         }
-
-        $companyId = $user->company_id;
-        $sid = $request->input('sid');
-
-        if (! $this->service->checkStaffExist($sid, $companyId)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Staff not found for this company.',
-            ], 404);
-        }
-
-        $data = $request->only(['name', 'surname', 'position', 'contact']);
-        if (($data['contact'] ?? null) === '') {
-            $data['contact'] = null;
-        }
-
-        if ($this->service->hasDuplicateStaff(
-            $data['name'],
-            $data['surname'],
-            $data['position'],
-            $companyId,
-            $sid
-        )) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Another staff member with the same details already exists.',
-            ], 409);
-        }
-
-        $updated = $this->service->updateStaff($sid, $data, $companyId);
-
-        return response()->json([
-            'success' => $updated,
-            'message' => $updated ? 'Staff updated.' : 'Update failed.',
-        ], $updated ? 200 : 500);
     }
-
+    //---------------   
     public function delete(Request $request, int $id)
     {
         $user = $request->user();
@@ -190,7 +167,7 @@ class Staff extends Controller
             'success' => $this->service->deleteStaff($id, $companyId),
         ]);
     }
-
+    //---------------       
     private function resolveCompanyId(Request $request, object $user): int
     {
         $companyId = $request->input('company_id', $request->query('company_id'));

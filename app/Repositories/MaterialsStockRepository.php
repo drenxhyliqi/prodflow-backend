@@ -13,8 +13,8 @@ class MaterialsStockRepository
     {
         $this->table = $model->getTable();
     }
-
-    public function getAllMaterialsStock(int $limit, ?int $companyId = null)
+    //---------------
+    public function getAllMaterialsStock(int $limit, int $companyId)
     {
         $query = DB::table("{$this->table} as ms")
             ->leftJoin('materials as mat', 'ms.material_id', '=', 'mat.mid')
@@ -39,8 +39,8 @@ class MaterialsStockRepository
 
         return $query->paginate($limit);
     }
-
-    public function getSearchedMaterialsStock(string $search, int $limit, ?int $companyId = null)
+    //---------------
+    public function getSearchedMaterialsStock(string $search, int $limit, int $companyId)
     {
         $query = DB::table("{$this->table} as ms")
             ->leftJoin('materials as mat', 'ms.material_id', '=', 'mat.mid')
@@ -71,8 +71,8 @@ class MaterialsStockRepository
 
         return $query->paginate($limit);
     }
-
-    public function findMaterialsStockById(int $id, ?int $companyId = null)
+    //---------------
+    public function findMaterialsStockById(int $id, int $companyId)
     {
         $query = DB::table("{$this->table} as ms")
             ->leftJoin('materials as mat', 'ms.material_id', '=', 'mat.mid')
@@ -97,8 +97,8 @@ class MaterialsStockRepository
 
         return $query->first();
     }
-
-    public function checkMaterialsStockExist(int $id, ?int $companyId = null): bool
+    //---------------
+    public function checkMaterialsStockExist(int $id, int $companyId): bool
     {
         $query = DB::table($this->table)->where('msid', $id);
 
@@ -108,13 +108,13 @@ class MaterialsStockRepository
 
         return $query->exists();
     }
-
+    //---------------
     public function create(array $data): bool
     {
         return DB::table($this->table)->insert($data);
     }
-
-    public function update(int $id, array $data, ?int $companyId = null): bool
+    //---------------
+    public function update(int $id, array $data, int $companyId): bool
     {
         $query = DB::table($this->table)->where('msid', $id);
 
@@ -124,8 +124,8 @@ class MaterialsStockRepository
 
         return $query->update($data) > 0;
     }
-
-    public function delete(int $id, ?int $companyId = null): bool
+    //---------------
+    public function delete(int $id, int $companyId): bool
     {
         $query = DB::table($this->table)->where('msid', $id);
 
@@ -135,7 +135,7 @@ class MaterialsStockRepository
 
         return (bool) $query->delete();
     }
-
+    //---------------
     public function checkMaterialBelongsToCompany(int $materialId, int $companyId): bool
     {
         return DB::table('materials')
@@ -143,7 +143,7 @@ class MaterialsStockRepository
             ->where('company_id', $companyId)
             ->exists();
     }
-
+    //---------------
     public function checkWarehouseBelongsToCompany(int $warehouseId, int $companyId): bool
     {
         return DB::table('warehouses')
