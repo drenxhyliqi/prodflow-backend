@@ -46,9 +46,11 @@ class ProductsRepository
             ->exists();
     }
     //---------------
-    public function create(array $data): bool
+    public function create(array $data, int $companyId): bool
     {
-        return DB::table($this->table)->insert($data);
+        return DB::table($this->table)->insert(array_merge($data, [
+            'company_id' => $companyId,
+        ]));
     }
 
     public function hasDuplicateProduct(
@@ -61,7 +63,9 @@ class ProductsRepository
             ->where('company_id', $companyId)
             ->whereRaw('LOWER(product) = ?', [mb_strtolower(trim($product))])
             ->whereRaw('LOWER(unit) = ?', [mb_strtolower(trim($unit))])
-            ->where('pid', '!=', $excludeId)
+            ->when($excludeId !== null, function ($query) use ($excludeId) {
+                $query->where('pid', '!=', $excludeId);
+            })
             ->exists();
 
     }
