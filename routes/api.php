@@ -13,7 +13,7 @@ use App\Http\Controllers\Expenses;
 use App\Http\Controllers\Suppliers;
 use App\Http\Controllers\Users;
 use App\Http\Controllers\Machines;
-use App\Http\Controllers\Warehouse;
+use App\Http\Controllers\Warehouses;
 
 // Companies
 Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {
