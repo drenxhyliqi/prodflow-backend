@@ -13,35 +13,20 @@ class MaterialsRepository
     {
         $this->table = $model->getTable();
     }
-
-    public function getAllMaterials(int $limit, ?int $companyId = null)
+    //---------------
+    public function getAllMaterials(int $limit, int $companyId, string $search = '')
     {
-        $query = DB::table($this->table)->orderByDesc('mid');
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->paginate($limit);
-    }
-
-    public function getSearchedMaterials(string $search, int $limit, ?int $companyId = null)
-    {
-        $query = DB::table($this->table)
+        return DB::table($this->table)
             ->where(function ($q) use ($search) {
                 $q->where('material', 'like', "%{$search}%")
                     ->orWhere('unit', 'like', "%{$search}%");
             })
-            ->orderByDesc('mid');
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->paginate($limit);
-    }
-
-    public function findMaterialById(int $id, ?int $companyId = null)
+            ->orderByDesc('mid')
+            ->where('company_id', $companyId)
+            ->paginate($limit);
+    }       
+    //---------------
+    public function findMaterialById(int $id, int $companyId)
     {
         return DB::table($this->table)
             ->where('mid', $id)
@@ -49,8 +34,8 @@ class MaterialsRepository
             ->first();
 
     }
-
-    public function checkMaterialExist(int $id, ?int $companyId = null): bool
+    //---------------
+    public function checkMaterialExist(int $id, int $companyId): bool
     {
         return DB::table($this->table)
             ->where('mid', $id)
@@ -58,38 +43,37 @@ class MaterialsRepository
             ->exists();
 
     }
-
-    public function create(array $data): bool
+    //---------------
+    public function create(array $data, int $companyId): bool
     {
-        return DB::table($this->table)->insert($data);
+        return DB::table($this->table)
+        ->insert(array_merge($data, [
+            'company_id' => $companyId,
+        ]));
     }
-
+    //---------------
     public function hasDuplicateMaterial(
         string $material,
         string $unit,
         int $companyId,
         ?int $excludeId = null
     ): bool {
-        $query = DB::table($this->table)
+        return DB::table($this->table)
             ->where('company_id', $companyId)
             ->whereRaw('LOWER(material) = ?', [mb_strtolower(trim($material))])
-            ->whereRaw('LOWER(unit) = ?', [mb_strtolower(trim($unit))]);
-
-        if ($excludeId !== null) {
-            $query->where('mid', '!=', $excludeId);
-        }
-
-        return $query->exists();
+            ->whereRaw('LOWER(unit) = ?', [mb_strtolower(trim($unit))])
+            ->where('mid', '!=', $excludeId)
+            ->exists();
     }
-
-    public function update(int $id, array $data, ?int $companyId = null): bool
+    //---------------
+    public function update(int $id, array $data, int $companyId): bool
     {
         return DB::table($this->table)->where('mid', $id)
             ->where('company_id', $companyId)
             ->update($data) > 0;
     }
-
-    public function delete(int $id, ?int $companyId = null): bool
+    //---------------
+    public function delete(int $id, int $companyId): bool
     {
         return DB::table($this->table)
         ->where('mid', $id)

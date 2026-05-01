@@ -14,58 +14,48 @@ class StaffRepository
         $this->table = $model->getTable();
     }
 
-    public function getAllStaff(int $limit, ?int $companyId = null)
+    public function getAllStaff(int $limit, int $companyId)
     {
-        $query = DB::table($this->table)->orderByDesc('sid');
+        return DB::table($this->table)->orderByDesc('sid')
+            ->where('company_id', $companyId)
+            ->paginate($limit);
 
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->paginate($limit);
     }
-
-    public function getSearchedStaff(string $search, int $limit, ?int $companyId = null)
+    //---------------
+    public function getSearchedStaff(string $search, int $limit, int $companyId)
     {
-        $query = DB::table($this->table)
+        return DB::table($this->table)
             ->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('surname', 'like', "%{$search}%");
             })
-            ->orderByDesc('sid');
+            ->where('company_id', $companyId)
+            ->orderByDesc('sid')
+            ->paginate($limit);
 
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->paginate($limit);
     }
-
-    public function findStaffById(int $id, ?int $companyId = null)
+    //---------------
+    public function findStaffById(int $id, int $companyId)
     {
-        $query = DB::table($this->table)->where('sid', $id);
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->first();
+        return DB::table($this->table)->where('sid', $id)
+            ->where('company_id', $companyId)
+            ->first();
     }
-
-    public function checkStaffExist(int $id, ?int $companyId = null): bool
+    //---------------
+    public function checkStaffExist(int $id, int $companyId): bool
     {
-        $query = DB::table($this->table)->where('sid', $id);
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->exists();
+        return DB::table($this->table)
+            ->where('sid', $id)
+            ->where('company_id', $companyId)
+            ->exists();
     }
-
-    public function create(array $data): bool
+    //---------------
+    public function create(array $data, int $companyId): bool
     {
-        return DB::table($this->table)->insert($data);
+        return DB::table($this->table)
+            ->insert(array_merge($data, [
+                'company_id' => $companyId,
+            ]));
     }
 
     public function hasDuplicateStaff(
@@ -75,38 +65,28 @@ class StaffRepository
         int $companyId,
         ?int $excludeId = null
     ): bool {
-        $query = DB::table($this->table)
+        return DB::table($this->table)
             ->where('company_id', $companyId)
             ->whereRaw('LOWER(name) = ?', [mb_strtolower(trim($name))])
             ->whereRaw('LOWER(surname) = ?', [mb_strtolower(trim($surname))])
-            ->whereRaw('LOWER(position) = ?', [mb_strtolower(trim($position))]);
-
-        if ($excludeId !== null) {
-            $query->where('sid', '!=', $excludeId);
-        }
-
-        return $query->exists();
+            ->whereRaw('LOWER(position) = ?', [mb_strtolower(trim($position))])
+            ->where('sid', '!=', $excludeId)
+            ->exists();
     }
-
-    public function update(int $id, array $data, ?int $companyId = null): bool
+    //---------------
+    public function update(int $id, array $data, int $companyId): bool
     {
-        $query = DB::table($this->table)->where('sid', $id);
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->update($data) > 0;
+        return DB::table($this->table)
+            ->where('sid', $id)
+            ->where('company_id', $companyId)
+            ->update($data) > 0;
     }
-
-    public function delete(int $id, ?int $companyId = null): bool
+    //---------------
+    public function delete(int $id, int $companyId): bool
     {
-        $query = DB::table($this->table)->where('sid', $id);
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return (bool) $query->delete();
+        return DB::table($this->table)
+            ->where('sid', $id)
+            ->where('company_id', $companyId)
+            ->delete() > 0;
     }
 }

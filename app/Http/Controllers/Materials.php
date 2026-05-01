@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Validator;
 
 class Materials extends Controller
 {
-    public function __construct(
-        protected MaterialsService $service
-    ) {}
-
+    protected MaterialsService $service;
+    public function __construct(MaterialsService $service)
+    {
+        $this->service = $service;
+    }
+    //---------------
     public function create(Request $request)
     {
         $user = $request->user();
@@ -36,12 +38,12 @@ class Materials extends Controller
         }
 
         $payload = $request->only(['material', 'unit']);
-        $payload['company_id'] = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         if ($this->service->hasDuplicateMaterial(
             $payload['material'],
             $payload['unit'],
-            $payload['company_id']
+            $companyId
         )) {
             return response()->json([
                 'success' => false,
@@ -49,7 +51,7 @@ class Materials extends Controller
             ], 409);
         }
 
-        if ($this->service->createMaterial($payload)) {
+        if ($this->service->createMaterial($payload, $companyId)) {
             return response()->json([
                 'success' => true,
                 'message' => 'Material registered successfully.',
@@ -61,34 +63,17 @@ class Materials extends Controller
             'message' => 'An error occurred while saving the material data. Please try again.',
         ], 500);
     }
-
+    //---------------
     public function read(Request $request)
     {
-        $user = $request->user();
-        if (! $user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized.',
-            ], 401);
-        }
-
-        $companyId = (int) $user->company_id;
-
-        return $this->service->getAllMaterials(10, $companyId);
+        $search = $request->query('search', '');
+        $companyId = $request->user()->company_id;
+        return $this->service->getAllMaterials(10, $companyId, $search);
     }
-
+    //---------------
     public function edit(Request $request, int $id)
     {
-        $user = $request->user();
-        if (! $user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized.',
-            ], 401);
-        }
-
-        $companyId = $user->company_id;
-
+        $companyId = $request->user()->company_id;
         if (! $this->service->checkMaterialExist($id, $companyId)) {
             return response()->json([
                 'success' => false,
@@ -99,6 +84,7 @@ class Materials extends Controller
         return $this->service->getMaterialById($id, $companyId);
     }
 
+    //---------------
     public function update(Request $request)
     {
         $user = $request->user();
@@ -155,6 +141,7 @@ class Materials extends Controller
         ], $updated ? 200 : 500);
     }
 
+    //---------------
     public function delete(Request $request, int $id)
     {
         $user = $request->user();

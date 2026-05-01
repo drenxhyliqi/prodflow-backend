@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Validator;
 
 class Products extends Controller
 {
-    public function __construct(
-        protected ProductsService $service
-    ) {}
-
+    protected ProductsService $service;
+    public function __construct(ProductsService $service)
+    {
+        $this->service = $service;
+    }
+    //---------------
     public function create(Request $request)
     {
         $user = $request->user();
@@ -37,12 +39,12 @@ class Products extends Controller
         }
 
         $payload = $request->only(['product', 'unit', 'price']);
-        $payload['company_id'] = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         if ($this->service->hasDuplicateProduct(
             $payload['product'],
             $payload['unit'],
-            $payload['company_id']
+            $companyId
         )) {
             return response()->json([
                 'success' => false,
@@ -50,7 +52,7 @@ class Products extends Controller
             ], 409);
         }
 
-        if ($this->service->createProducts($payload)) {
+        if ($this->service->createProducts($payload, $companyId)) {
             return response()->json([
                 'success' => true,
                 'message' => 'Product registered successfully.',
@@ -62,7 +64,7 @@ class Products extends Controller
             'message' => 'An error occurred while saving the product data. Please try again.',
         ], 500);
     }
-
+    //---------------
     public function read(Request $request)
     {
         $user = $request->user();
@@ -73,11 +75,12 @@ class Products extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
+        $search = $request->query('search', '');
 
-        return $this->service->getAllProducts(10, $companyId);
+        return $this->service->getAllProducts(10, $companyId, $search);
     }
-
+    //---------------
     public function edit(Request $request, int $id)
     {
         $user = $request->user();
@@ -88,7 +91,7 @@ class Products extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         if (! $this->service->checkProductsExist($id, $companyId)) {
             return response()->json([
@@ -99,7 +102,7 @@ class Products extends Controller
 
         return $this->service->getProductsById($id, $companyId);
     }
-
+    //---------------
     public function update(Request $request)
     {
         $user = $request->user();
@@ -125,7 +128,7 @@ class Products extends Controller
             ], 422);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
         $pid = (int) $request->input('pid');
 
         if (! $this->service->checkProductsExist($pid, $companyId)) {
@@ -156,7 +159,7 @@ class Products extends Controller
             'message' => $updated ? 'Product updated.' : 'Update failed.',
         ], $updated ? 200 : 500);
     }
-
+    //---------------
     public function delete(Request $request, int $id)
     {
         $user = $request->user();
@@ -167,7 +170,7 @@ class Products extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         if (! $this->service->checkProductsExist($id, $companyId)) {
             return response()->json([

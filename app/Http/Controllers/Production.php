@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Validator;
 
 class Production extends Controller
 {
-    public function __construct(
-        protected ProductionService $service
-    ) {}
-
+    protected ProductionService $service;
+    public function __construct(ProductionService $service)
+    {
+        $this->service = $service;
+    }
+    //---------------
     public function create(Request $request)
     {
         $user = $request->user();
@@ -83,7 +85,7 @@ class Production extends Controller
             'message' => 'An error occurred while saving production data. Please try again.',
         ], 500);
     }
-
+    //---------------
     public function read(Request $request)
     {
         $user = $request->user();
@@ -98,7 +100,7 @@ class Production extends Controller
 
         return $this->service->getAllProduction(10, $companyId);
     }
-
+    //---------------
     public function edit(Request $request, int $id)
     {
         $user = $request->user();
@@ -120,7 +122,7 @@ class Production extends Controller
 
         return $this->service->getProductionById($id, $companyId);
     }
-
+    //---------------
     public function update(Request $request)
     {
         $user = $request->user();
@@ -197,7 +199,7 @@ class Production extends Controller
             'message' => $updated ? 'Production updated.' : 'Update failed.',
         ], $updated ? 200 : 500);
     }
-
+    //---------------
     public function delete(Request $request, int $id)
     {
         $user = $request->user();

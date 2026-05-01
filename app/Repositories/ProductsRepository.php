@@ -13,58 +13,44 @@ class ProductsRepository
     {
         $this->table = $model->getTable();
     }
-
-    public function getAllProducts(int $limit, ?int $companyId = null)
+    //---------------
+    public function getAllProducts(int $limit, int $companyId)
     {
-        $query = DB::table($this->table)->orderByDesc('pid');
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->paginate($limit);
+        return DB::table($this->table)
+            ->where('company_id', $companyId)
+            ->orderByDesc('pid')
+            ->paginate($limit);    }
+    //---------------
+    public function getSearchedProducts(string $search, int $limit, int $companyId)
+    {
+        return DB::table($this->table)
+            ->where('company_id', $companyId)
+            ->where('product', 'like', "%{$search}%")
+            ->orderByDesc('pid')
+            ->paginate($limit);
     }
-
-    public function getSearchedProducts(string $search, int $limit, ?int $companyId = null)
+    //---------------
+    public function findProductsById(int $id, int $companyId)
     {
-        $query = DB::table($this->table)
-            ->where(function ($q) use ($search) {
-                $q->where('product', 'like', "%{$search}%");
-            })
-            ->orderByDesc('pid');
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->paginate($limit);
+        return DB::table($this->table)
+            ->where('pid', $id)
+            ->where('company_id', $companyId)
+            ->first();
     }
-
-    public function findProductsById(int $id, ?int $companyId = null)
+    //---------------
+    public function checkProductsExist(int $id, int $companyId): bool
     {
-        $query = DB::table($this->table)->where('pid', $id);
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->first();
+        return DB::table($this->table)
+            ->where('pid', $id)
+            ->where('company_id', $companyId)
+            ->exists();
     }
-
-    public function checkProductsExist(int $id, ?int $companyId = null): bool
+    //---------------
+    public function create(array $data, int $companyId): bool
     {
-        $query = DB::table($this->table)->where('pid', $id);
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->exists();
-    }
-
-    public function create(array $data): bool
-    {
-        return DB::table($this->table)->insert($data);
+        return DB::table($this->table)->insert(array_merge($data, [
+            'company_id' => $companyId,
+        ]));
     }
 
     public function hasDuplicateProduct(
@@ -73,37 +59,28 @@ class ProductsRepository
         int $companyId,
         ?int $excludeId = null
     ): bool {
-        $query = DB::table($this->table)
+        return DB::table($this->table)
             ->where('company_id', $companyId)
             ->whereRaw('LOWER(product) = ?', [mb_strtolower(trim($product))])
-            ->whereRaw('LOWER(unit) = ?', [mb_strtolower(trim($unit))]);
+            ->whereRaw('LOWER(unit) = ?', [mb_strtolower(trim($unit))])
+            ->when($excludeId !== null, function ($query) use ($excludeId) {
+                $query->where('pid', '!=', $excludeId);
+            })
+            ->exists();
 
-        if ($excludeId !== null) {
-            $query->where('pid', '!=', $excludeId);
-        }
-
-        return $query->exists();
     }
-
-    public function update(int $id, array $data, ?int $companyId = null): bool
+    //---------------
+    public function update(int $id, array $data, int $companyId): bool
     {
-        $query = DB::table($this->table)->where('pid', $id);
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->update($data) > 0;
+        return DB::table($this->table)->where('pid', $id)
+            ->where('company_id', $companyId)
+            ->update($data) > 0;
     }
-
-    public function delete(int $id, ?int $companyId = null): bool
+    //---------------
+    public function delete(int $id, int $companyId): bool
     {
-        $query = DB::table($this->table)->where('pid', $id);
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return (bool) $query->delete();
+        return DB::table($this->table)->where('pid', $id)
+            ->where('company_id', $companyId)
+            ->delete() > 0;
     }
 }
