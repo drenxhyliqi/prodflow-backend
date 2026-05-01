@@ -56,11 +56,18 @@ Route::middleware('auth:sanctum')->controller(Suppliers::class)->group(function 
 });
 
 // Users
-Route::post('/login', [Users::class, 'login'])->name('login');
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/me', [Users::class, 'me']);
-    Route::post('/logout', [Users::class, 'logout']);
+Route::controller(Users::class)->group(function () {
+    Route::post('/login', 'login')->name('login');
 });
+Route::middleware('auth:sanctum')->controller(Users::class)->group(function () {
+    Route::post('/admin/create_user', 'create')->name('create_user');
+    Route::get('/admin/users', 'read')->name('usersManagement');
+    Route::get('/admin/edit_user/{id}', 'edit')->name('edit_user');
+    Route::post('/admin/update_user', 'update')->name('update_user');
+    Route::get('/admin/delete_user/{id}', 'delete')->name('delete_user');
+    Route::get('/me', 'me')->name('me');
+    Route::post('/admin/update_account', 'updateAccount')->name('update_account');
+    Route::post('/logout', 'logout')->name('logout');
 
 // Staff
 Route::middleware('auth:sanctum')->controller(Staff::class)->group(function () {
