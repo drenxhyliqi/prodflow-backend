@@ -68,6 +68,7 @@ Route::middleware('auth:sanctum')->controller(Users::class)->group(function () {
     Route::get('/me', 'me')->name('me');
     Route::post('/admin/update_account', 'updateAccount')->name('update_account');
     Route::post('/logout', 'logout')->name('logout');
+});
 
 // Staff
 Route::middleware('auth:sanctum')->controller(Staff::class)->group(function () {
