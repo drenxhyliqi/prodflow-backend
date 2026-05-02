@@ -50,7 +50,15 @@ class Clients extends Controller
         $search = $request->query('search', '');
         $companyId = $request->user()->company_id;
         return response()->json(
-            $this->service->getAllClients($companyId, 10, $search)
+            $this->service->getClients($companyId, 10, $search)
+        );
+    }
+    //---------------
+    public function readAll(Request $request)
+    {
+        $companyId = $request->user()->company_id;
+        return response()->json(
+            $this->service->getAllClients($companyId)
         );
     }
     //---------------

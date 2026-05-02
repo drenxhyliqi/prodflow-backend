@@ -12,11 +12,11 @@ class SalesModel extends Model
     protected $table = 'sales';
 
     protected $fillable = [
-        'client_id',
-        'product_id',
+        'sale_number',
+        'client',
+        'product',
         'qty',
         'price',
-        'date',
-        'company_id'
+        'total'
     ];
 }
