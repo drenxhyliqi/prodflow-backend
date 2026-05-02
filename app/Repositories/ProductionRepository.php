@@ -89,9 +89,12 @@ class ProductionRepository
 
     }
     //---------------
-    public function create(array $data): bool
+    public function create(array $data, int $companyId): bool
     {
-        return DB::table($this->table)->insert($data);
+        return DB::table($this->table)
+        ->insert(array_merge($data, [
+            'company_id' => $companyId,
+        ]));
     }
     //---------------
     public function hasDuplicateProduction(

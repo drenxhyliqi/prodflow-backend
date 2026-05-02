@@ -16,7 +16,7 @@ class MaterialsStockRepository
     //---------------
     public function getAllMaterialsStock(int $limit, int $companyId)
     {
-        $query = DB::table("{$this->table} as ms")
+        return DB::table("{$this->table} as ms")
             ->leftJoin('materials as mat', 'ms.material_id', '=', 'mat.mid')
             ->leftJoin('warehouses as wh', 'ms.warehouse_id', '=', 'wh.wid')
             ->select([
@@ -31,18 +31,14 @@ class MaterialsStockRepository
                 'wh.warehouse',
                 'ms.company_id',
             ])
-            ->orderByDesc('ms.msid');
-
-        if ($companyId !== null) {
-            $query->where('ms.company_id', $companyId);
-        }
-
-        return $query->paginate($limit);
+            ->orderByDesc('ms.msid')
+            ->where('ms.company_id', $companyId)
+            ->paginate($limit);
     }
     //---------------
     public function getSearchedMaterialsStock(string $search, int $limit, int $companyId)
     {
-        $query = DB::table("{$this->table} as ms")
+        return DB::table("{$this->table} as ms")
             ->leftJoin('materials as mat', 'ms.material_id', '=', 'mat.mid')
             ->leftJoin('warehouses as wh', 'ms.warehouse_id', '=', 'wh.wid')
             ->select([
@@ -63,18 +59,14 @@ class MaterialsStockRepository
                     ->orWhere('ms.qty', 'like', "%{$search}%")
                     ->orWhere('wh.warehouse', 'like', "%{$search}%");
             })
-            ->orderByDesc('ms.msid');
-
-        if ($companyId !== null) {
-            $query->where('ms.company_id', $companyId);
-        }
-
-        return $query->paginate($limit);
+            ->orderByDesc('ms.msid')
+            ->where('ms.company_id', $companyId)
+            ->paginate($limit);
     }
     //---------------
     public function findMaterialsStockById(int $id, int $companyId)
     {
-        $query = DB::table("{$this->table} as ms")
+        return DB::table("{$this->table} as ms")
             ->leftJoin('materials as mat', 'ms.material_id', '=', 'mat.mid')
             ->leftJoin('warehouses as wh', 'ms.warehouse_id', '=', 'wh.wid')
             ->select([
@@ -89,51 +81,41 @@ class MaterialsStockRepository
                 'wh.warehouse',
                 'ms.company_id',
             ])
-            ->where('ms.msid', $id);
-
-        if ($companyId !== null) {
-            $query->where('ms.company_id', $companyId);
-        }
-
-        return $query->first();
+            ->where('ms.msid', $id)
+            ->where('ms.company_id', $companyId)
+            ->first();
     }
     //---------------
     public function checkMaterialsStockExist(int $id, int $companyId): bool
     {
-        $query = DB::table($this->table)->where('msid', $id);
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->exists();
+        return DB::table($this->table)
+            ->where('msid', $id)
+            ->where('company_id', $companyId)
+            ->exists();
     }
     //---------------
-    public function create(array $data): bool
+    public function create(array $data, int $companyId): bool
     {
-        return DB::table($this->table)->insert($data);
+        return DB::table($this->table)
+            ->insert(array_merge($data, [
+                'company_id' => $companyId,
+            ]));
     }
     //---------------
     public function update(int $id, array $data, int $companyId): bool
     {
-        $query = DB::table($this->table)->where('msid', $id);
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->update($data) > 0;
+        return DB::table($this->table)
+            ->where('msid', $id)
+            ->where('company_id', $companyId)
+            ->update($data);
     }
     //---------------
     public function delete(int $id, int $companyId): bool
     {
-        $query = DB::table($this->table)->where('msid', $id);
-
-        if ($companyId !== null) {
-            $query->where('company_id', $companyId);
-        }
-
-        return (bool) $query->delete();
+        return DB::table($this->table)
+            ->where('msid', $id)
+            ->where('company_id', $companyId)
+            ->delete() > 0;
     }
     //---------------
     public function checkMaterialBelongsToCompany(int $materialId, int $companyId): bool

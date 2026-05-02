@@ -108,7 +108,6 @@ Route::middleware('auth:sanctum')->controller(Production::class)->group(function
 });
 
 // Materials Stock
-
 Route::middleware('auth:sanctum')->controller(MaterialsStock::class)->group(function () {
     Route::post('/admin/create_materials_stock', 'create')->name('create_materials_stock');
     Route::get('/admin/materials_stock', 'read')->name('materials_stockManagement');

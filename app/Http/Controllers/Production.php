@@ -40,10 +40,9 @@ class Production extends Controller
         }
 
         $payload = $request->only(['product_id', 'machine_id', 'qty', 'date']);
-        $companyId = (int) $user->company_id;
-        $payload['company_id'] = $companyId;
-        $productId = (int) $payload['product_id'];
-        $machineId = (int) $payload['machine_id'];
+        $companyId = $user->company_id; 
+        $productId = $payload['product_id'];
+        $machineId = $payload['machine_id'];
         $qty = (float) $payload['qty'];
 
         if (! $this->service->checkProductBelongsToCompany($productId, $companyId)) {
@@ -64,7 +63,7 @@ class Production extends Controller
             $productId,
             $machineId,
             $qty,
-            (string) $payload['date'],
+            $payload['date'],
             $companyId
         )) {
             return response()->json([
@@ -73,7 +72,7 @@ class Production extends Controller
             ], 409);
         }
 
-        if ($this->service->createProduction($payload)) {
+        if ($this->service->createProduction($payload, $companyId)) {
             return response()->json([
                 'success' => true,
                 'message' => 'Production registered successfully.',
@@ -96,7 +95,7 @@ class Production extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         return $this->service->getAllProduction(10, $companyId);
     }
@@ -111,7 +110,7 @@ class Production extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         if (! $this->service->checkProductionExist($id, $companyId)) {
             return response()->json([
@@ -149,10 +148,10 @@ class Production extends Controller
             ], 422);
         }
 
-        $companyId = (int) $user->company_id;
-        $pid = (int) $request->input('pid');
-        $productId = (int) $request->input('product_id');
-        $machineId = (int) $request->input('machine_id');
+        $companyId = $user->company_id;
+        $pid = $request->input('pid');
+        $productId = $request->input('product_id');
+        $machineId = $request->input('machine_id');
         $qty = (float) $request->input('qty');
 
         if (! $this->service->checkProductionExist($pid, $companyId)) {
@@ -210,7 +209,7 @@ class Production extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         if (! $this->service->checkProductionExist($id, $companyId)) {
             return response()->json([
