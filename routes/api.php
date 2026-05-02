@@ -116,6 +116,7 @@ Route::middleware('auth:sanctum')->controller(MaterialsStock::class)->group(func
     Route::post('/admin/update_materials_stock', 'update')->name('update_materials_stock');
     Route::get('/admin/delete_materials_stock/{id}', 'delete')->name('delete_materials_stock');
 });
+
 // Sales
 Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
     Route::post('/admin/create_sale', 'create')->name('create_sale');
@@ -125,6 +126,7 @@ Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
     Route::get('/admin/delete_sale/{id}', 'delete')->name('delete_sale');
 });
 
+// Machines
 Route::middleware('auth:sanctum')->controller(Machines::class)->group(function () {
     Route::post('/admin/create_machine', 'create')->name('create_machine');
     Route::get('/admin/machines', 'read')->name('machinesManagement');
@@ -133,6 +135,7 @@ Route::middleware('auth:sanctum')->controller(Machines::class)->group(function (
     Route::get('/admin/delete_machine/{id}', 'delete')->name('delete_machine');
 });
 
+// Warehouses
 Route::middleware('auth:sanctum')->controller(Warehouses::class)->group(function () {
     Route::post('/admin/create_warehouse', 'create')->name('create_warehouse');
     Route::get('/admin/warehouses', 'read')->name('warehousesManagement');
@@ -141,6 +144,7 @@ Route::middleware('auth:sanctum')->controller(Warehouses::class)->group(function
     Route::get('/admin/delete_warehouse/{id}', 'delete')->name('delete_warehouse');
 });
 
+// Maintenances
 Route::middleware('auth:sanctum')->controller(Maintenances::class)->group(function () {
     Route::post('/admin/create_maintenance', 'create')->name('create_maintenance');
     Route::get('/admin/maintenances', 'read')->name('maintenancesManagement');
