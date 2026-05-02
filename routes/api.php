@@ -14,6 +14,7 @@ use App\Http\Controllers\Suppliers;
 use App\Http\Controllers\Users;
 use App\Http\Controllers\Machines;
 use App\Http\Controllers\Warehouses;
+use App\Http\Controllers\Maintenances;
 
 // Companies
 Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {
@@ -138,4 +139,12 @@ Route::middleware('auth:sanctum')->controller(Warehouses::class)->group(function
     Route::get('/admin/edit_warehouse/{id}', 'edit')->name('edit_warehouse');
     Route::post('/admin/update_warehouse', 'update')->name('update_warehouse');
     Route::get('/admin/delete_warehouse/{id}', 'delete')->name('delete_warehouse');
+});
+
+Route::middleware('auth:sanctum')->controller(Maintenances::class)->group(function () {
+    Route::post('/admin/create_maintenance', 'create')->name('create_maintenance');
+    Route::get('/admin/maintenances', 'read')->name('maintenancesManagement');
+    Route::get('/admin/edit_maintenance/{id}', 'edit')->name('edit_maintenance');
+    Route::post('/admin/update_maintenance', 'update')->name('update_maintenance');
+    Route::get('/admin/delete_maintenance/{id}', 'delete')->name('delete_maintenance');
 });
