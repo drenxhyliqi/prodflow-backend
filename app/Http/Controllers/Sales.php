@@ -6,7 +6,6 @@ use App\Services\SalesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-
 class Sales extends Controller
 {
     protected SalesService $service;
@@ -18,12 +17,10 @@ class Sales extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'client_id' => 'required|numeric|exists:clients,cid',
-            'product_id' => 'required|numeric|exists:products,pid',
-            'qty' => 'required|numeric|min:0',
-            'price' => 'required|numeric|min:0',
-            'date' => 'required|date',
-            'company_id' => 'required|numeric|exists:companies,cid',
+            'client' => 'required|string|min:1|max:255',
+            'products' => 'required|array|min:1',
+            'products.*.product' => 'required|string|min:1|max:255',
+            'products.*.qty' => 'required|numeric|min:1',
         ]);
 
         if ($validator->fails()) {
@@ -33,34 +30,48 @@ class Sales extends Controller
                 'errors' => $validator->errors()
             ], 422);
         } else {
-            if ($this->service->createSale($request->only(['client_id', 'product_id', 'qty', 'price', 'date', 'company_id']))) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Sale created successfully.'
-                ], 201);
-            } else {
+            try {
+                $data = $validator->validated();
+                $companyId = $request->user()->company_id;
+                if ($this->service->createSale($data, $companyId)) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Sale registered successfully.'
+                    ], 201);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'An error occurred while saving the data. Please try again.'
+                    ], 500);
+                }
+            } catch (\Exception $e) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'An error occurred while saving the data. Please try again.'
-                ], 500);
+                    'message' => $e->getMessage()
+                ], 422);
             }
         }
     }
     //---------------
-    public function read()
+    public function read(Request $request)
     {
-        return $this->service->getAllSales(10);
+        $search = $request->query('search', '');
+        $companyId = $request->user()->company_id;
+        return response()->json(
+            $this->service->getAllSales($companyId, 10, $search)
+        );
     }
     //---------------
-    public function edit($id)
+    public function edit(Request $request, string $sale_number)
     {
-        if (!$this->service->findOrFail($id)) {
+        $companyId = $request->user()->company_id;
+        if (!$this->service->findOrFail($sale_number, $companyId)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sale not found.'
             ], 404);
         } else {
-            return $this->service->getSaleById($id);
+            return $this->service->getSaleById($sale_number, $companyId);
         }
     }
     //---------------
@@ -68,27 +79,50 @@ class Sales extends Controller
     {
         $validator = Validator::make($request->all(), [
             'sid' => 'required|numeric|min:1|exists:sales,sid',
-            'client_id' => 'required|numeric|exists:clients,cid',
-            'product_id' => 'required|numeric|exists:products,pid',
-            'qty' => 'required|numeric|min:0',
-            'price' => 'required|numeric|min:0',
-            'date' => 'required|date',
-            'company_id' => 'required|numeric|exists:companies,cid',
+            'client' => 'required|string|min:1|max:255',
+            'product' => 'required|string|min:1|max:255',
+            'qty' => 'required|numeric|min:1',
+            'price' => 'required|numeric|min:1',
+            'total' => 'required|numeric|min:1'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'All fields must be completed according to the rules.',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         } else {
-            return $this->service->updateSale($request->input('id'), $request->only(['client_id', 'product_id', 'qty', 'price', 'date', 'company_id']));
+            $id = $request->sid;
+            $data = $request->only(['sale_number', 'client', 'product', 'qty', 'price']);
+            $companyId = $request->user()->company_id;
+            if ($this->service->updateSale($id, $data, $companyId)) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'The sale was successfully updated.'
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No data was updated.'
+                ], 500);
+            }
         }
     }
     //---------------
-    public function delete($id)
+    public function delete(Request $request, string $sale_number)
     {
-        return $this->service->deleteSale($id);
+        $companyId = $request->user()->company_id;
+        if ($this->service->deleteSale($sale_number, $companyId)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'The sale was successfully deleted.'
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong, please try again!'
+            ], 500);
+        }
     }
 }

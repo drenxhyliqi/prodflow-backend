@@ -12,14 +12,19 @@ class ClientsService
         $this->repository = $repository;
     }
     //---------------
-    public function getAllClients(int $companyId, int $limit, string $search = '')
+    public function getClients(int $companyId, int $limit, string $search = '')
     {
         $limit = (int) $limit ?: 10;
         if (!empty($search)) {
             return $this->repository->getSearchedClients($companyId, $limit, $search);
         }
 
-        return $this->repository->getAllClients($companyId, $limit);
+        return $this->repository->getClients($companyId, $limit);
+    }
+    //---------------
+    public function getAllClients(int $companyId)
+    {
+        return $this->repository->getAllClients($companyId);
     }
     //---------------
     public function getClientById(int $id, int $companyId)

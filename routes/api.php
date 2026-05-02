@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->controller(Companies::class)->group(function 
 Route::middleware('auth:sanctum')->controller(Clients::class)->group(function () {
     Route::post('/admin/create_client', 'create')->name('create_client');
     Route::get('/admin/clients', 'read')->name('clientsManagement');
+    Route::get('/admin/allClients', 'readAll')->name('allClientsManagement');
     Route::get('/admin/edit_client/{id}', 'edit')->name('edit_client');
     Route::post('/admin/update_client', 'update')->name('update_client');
     Route::get('/admin/delete_client/{id}', 'delete')->name('delete_client');
@@ -44,7 +45,6 @@ Route::middleware('auth:sanctum')->controller(Expenses::class)->group(function (
     Route::post('/admin/update_expense', 'update')->name('update_expense');
     Route::get('/admin/delete_expense/{id}', 'delete')->name('delete_expense');
 });
-
 
 // Suppliers
 Route::middleware('auth:sanctum')->controller(Suppliers::class)->group(function () {
@@ -106,7 +106,6 @@ Route::middleware('auth:sanctum')->controller(Production::class)->group(function
 });
 
 // Materials Stock
-
 Route::middleware('auth:sanctum')->controller(MaterialsStock::class)->group(function () {
     Route::post('/admin/create_materials_stock', 'create')->name('create_materials_stock');
     Route::get('/admin/materials_stock', 'read')->name('materials_stockManagement');
@@ -118,9 +117,9 @@ Route::middleware('auth:sanctum')->controller(MaterialsStock::class)->group(func
 Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
     Route::post('/admin/create_sale', 'create')->name('create_sale');
     Route::get('/admin/sales', 'read')->name('salesManagement');
-    Route::get('/admin/edit_sale/{id}', 'edit')->name('edit_sale');
+    Route::get('/admin/edit_sale/{sale_number}', 'edit')->name('edit_sale');
     Route::post('/admin/update_sale', 'update')->name('update_sale');
-    Route::get('/admin/delete_sale/{id}', 'delete')->name('delete_sale');
+    Route::get('/admin/delete_sale/{sale_number}', 'delete')->name('delete_sale');
 });
 
 Route::middleware('auth:sanctum')->controller(Machines::class)->group(function () {

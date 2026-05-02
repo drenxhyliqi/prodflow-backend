@@ -38,6 +38,14 @@ class ProductsRepository
             ->first();
     }
     //---------------
+    public function findProductByName(string $product, int $companyId)
+    {
+        return DB::table($this->table)
+            ->where('product', $product)
+            ->where('company_id', $companyId)
+            ->first();
+    }
+    //---------------
     public function checkProductsExist(int $id, int $companyId): bool
     {
         return DB::table($this->table)
