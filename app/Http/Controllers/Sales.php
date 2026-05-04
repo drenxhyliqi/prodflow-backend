@@ -18,9 +18,9 @@ class Sales extends Controller
     {
         $validator = Validator::make($request->all(), [
             'client' => 'required|string|min:1|max:255',
-            'products' => 'required|array|min:1',
-            'products.*.product' => 'required|string|min:1|max:255',
-            'products.*.qty' => 'required|numeric|min:1',
+            'products_id' => 'required|array|min:1',
+            'products_id.*.products_id' => 'required|integer',
+            'products_id.*.qty' => 'required|integer|min:1',
         ]);
 
         if ($validator->fails()) {
@@ -80,7 +80,9 @@ class Sales extends Controller
         $validator = Validator::make($request->all(), [
             'sid' => 'required|numeric|min:1|exists:sales,sid',
             'client' => 'required|string|min:1|max:255',
-            'product' => 'required|string|min:1|max:255',
+            'products_id' => 'required|array|min:1',
+            'products_id.*.product_id' => 'required|numeric|min:1',
+            'products_id.*.qty' => 'required|numeric|min:1',
             'qty' => 'required|numeric|min:1',
             'price' => 'required|numeric|min:1',
             'total' => 'required|numeric|min:1'

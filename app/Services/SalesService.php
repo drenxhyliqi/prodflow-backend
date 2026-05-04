@@ -45,19 +45,18 @@ class SalesService
         return DB::transaction(function () use ($data, $companyId) {
             $saleNumber = strtoupper(Str::random(6));
             $saleProducts = [];
-            foreach ($data['products'] as $item) {
-                $product = $this->productsrepository->findProductByName(
-                    $item['product'],
+            foreach ($data['products_id'] as $item) {
+                $product = $this->productsrepository->findProductsById(
+                    $item['products_id'],
                     $companyId
                 );
                 if (!$product) {
-                    throw new \Exception('Product does not exist: ' . $item['product']);
+                    throw new \Exception('Product with ID :' . $item['products_id'] .' does not exist.');
                 }
                 $saleProducts[] = [
                     'sale_number' => $saleNumber,
                     'client' => $data['client'],
-                    'product' => $product->product,
-                    'unit' => $product->unit,
+                    'product_id' => $product->pid,
                     'qty' => $item['qty'],
                     'price' => $product->price,
                     'total' => $product->price * $item['qty'],
