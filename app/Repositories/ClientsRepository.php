@@ -14,12 +14,20 @@ class ClientsRepository
 
     }
     //---------------
-    public function getAllClients(int $companyId, int $limit)
+    public function getClients(int $companyId, int $limit)
     {
         return DB::table($this->table)
             ->where('company_id', $companyId)
             ->orderByDesc('cid')
             ->paginate($limit);
+    }
+    //---------------
+    public function getAllClients(int $companyId)
+    {
+        return DB::table($this->table)
+            ->where('company_id', $companyId)
+            ->orderByDesc('cid')
+            ->get();
     }
     //---------------
     public function getSearchedClients(int $companyId, int $limit, string $search)

@@ -39,12 +39,12 @@ class Products extends Controller
         }
 
         $payload = $request->only(['product', 'unit', 'price']);
-        $payload['company_id'] = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         if ($this->service->hasDuplicateProduct(
             $payload['product'],
             $payload['unit'],
-            $payload['company_id']
+            $companyId
         )) {
             return response()->json([
                 'success' => false,
@@ -52,7 +52,7 @@ class Products extends Controller
             ], 409);
         }
 
-        if ($this->service->createProducts($payload, $payload['company_id'])) {
+        if ($this->service->createProducts($payload, $companyId)) {
             return response()->json([
                 'success' => true,
                 'message' => 'Product registered successfully.',
@@ -75,9 +75,10 @@ class Products extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
+        $search = $request->query('search', '');
 
-        return $this->service->getAllProducts(10, $companyId);
+        return $this->service->getAllProducts(10, $companyId, $search);
     }
     //---------------
     public function edit(Request $request, int $id)
@@ -90,7 +91,7 @@ class Products extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         if (! $this->service->checkProductsExist($id, $companyId)) {
             return response()->json([
@@ -127,7 +128,7 @@ class Products extends Controller
             ], 422);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
         $pid = (int) $request->input('pid');
 
         if (! $this->service->checkProductsExist($pid, $companyId)) {
@@ -169,7 +170,7 @@ class Products extends Controller
             ], 401);
         }
 
-        $companyId = (int) $user->company_id;
+        $companyId = $user->company_id;
 
         if (! $this->service->checkProductsExist($id, $companyId)) {
             return response()->json([

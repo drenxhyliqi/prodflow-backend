@@ -2,24 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ClientsService;
+use App\Services\MaintenancesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class Clients extends Controller
+class Maintenances extends Controller
 {
-    protected ClientsService $service;
-    public function __construct(ClientsService $service)
+    protected MaintenancesService $service;
+
+    public function __construct(MaintenancesService $service)
     {
         $this->service = $service;
     }
+
     //---------------
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'client' => 'required|string|min:1|max:255',
-            'phone' => 'required|string|min:1|max:255',
-            'location' => 'required|string|min:1|max:255'
+            'machine_id' => 'required|numeric|min:1',
+            'date' => 'required|date',
+            'description' => 'required|string|min:1|max:500'
         ]);
 
         if ($validator->fails()) {
@@ -29,12 +31,13 @@ class Clients extends Controller
                 'errors' => $validator->errors()
             ], 422);
         } else {
-            $data = $request->only(['client', 'phone', 'location']);
+            $data = $request->only(['machine_id', 'date', 'description']);
             $companyId = $request->user()->company_id;
-            if ($this->service->createClient($data, $companyId)) {
+            
+            if ($this->service->createMaintenance($data, $companyId)) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Client registered successfully.'
+                    'message' => 'Maintenance registered successfully.'
                 ], 201);
             } else {
                 return response()->json([
@@ -44,44 +47,43 @@ class Clients extends Controller
             }
         }
     }
+
     //---------------
     public function read(Request $request)
     {
         $search = $request->query('search', '');
         $companyId = $request->user()->company_id;
+        
         return response()->json(
-            $this->service->getClients($companyId, 10, $search)
+            $this->service->getAllMaintenances($companyId, 10, $search)
         );
     }
-    //---------------
-    public function readAll(Request $request)
-    {
-        $companyId = $request->user()->company_id;
-        return response()->json(
-            $this->service->getAllClients($companyId)
-        );
-    }
+
     //---------------
     public function edit(Request $request, int $id)
     {
         $companyId = $request->user()->company_id;
+        
         if (!$this->service->findOrFail($id, $companyId)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Client not found.'
+                'message' => 'Maintenance record not found.'
             ], 404);
         } else {
-            return $this->service->getClientById($id, $companyId);
+            return response()->json(
+                $this->service->getById($id, $companyId)
+            );
         }
     }
+
     //---------------
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'cid' => 'required|numeric|min:1|exists:clients,cid',
-            'client' => 'required|string|min:1|max:255',
-            'phone' => 'required|string|min:1|max:255',
-            'location' => 'required|string|min:1|max:255',
+            'mid' => 'required|numeric|min:1',
+            'machine_id' => 'required|numeric|min:1',
+            'date' => 'required|date',
+            'description' => 'required|string|min:1|max:500',
         ]);
 
         if ($validator->fails()) {
@@ -91,13 +93,14 @@ class Clients extends Controller
                 'errors'  => $validator->errors()
             ], 422);
         } else {
-            $id = $request->cid;
-            $data = $request->only(['client', 'phone', 'location']);
+            $id = $request->mid;
+            $data = $request->only(['machine_id', 'date', 'description']);
             $companyId = $request->user()->company_id;
-            if ($this->service->updateClient($id, $data, $companyId)) {
+            
+            if ($this->service->updateMaintenance($id, $data, $companyId)) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'The client was successfully updated.'
+                    'message' => 'The maintenance was successfully updated.'
                 ], 201);
             } else {
                 return response()->json([
@@ -107,14 +110,16 @@ class Clients extends Controller
             }
         }
     }
+
     //---------------
     public function delete(Request $request, int $id)
     {
         $companyId = $request->user()->company_id;
-        if ($this->service->deleteClient($id, $companyId)) {
+        
+        if ($this->service->deleteMaintenance($id, $companyId)) {
             return response()->json([
                 'success' => true,
-                'message' => 'The client was successfully deleted.'
+                'message' => 'The maintenance was successfully deleted.'
             ], 201);
         } else {
             return response()->json([
