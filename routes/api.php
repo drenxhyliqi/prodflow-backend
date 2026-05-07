@@ -16,6 +16,8 @@ use App\Http\Controllers\Machines;
 use App\Http\Controllers\Warehouses;
 use App\Http\Controllers\Planification;
 use App\Http\Controllers\Maintenances;
+use App\Http\Controllers\Vacations;
+
 
 // Companies
 Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {
@@ -159,4 +161,12 @@ Route::middleware('auth:sanctum')->controller(Maintenances::class)->group(functi
     Route::get('/admin/edit_maintenance/{id}', 'edit')->name('edit_maintenance');
     Route::post('/admin/update_maintenance', 'update')->name('update_maintenance');
     Route::get('/admin/delete_maintenance/{id}', 'delete')->name('delete_maintenance');
+});
+// Vacations
+Route::middleware('auth:sanctum')->controller(Vacations::class)->group(function () {
+    Route::post('/admin/create_vacation', 'create')->name('create_vacation');
+    Route::get('/admin/vacations', 'read')->name('vacationsManagement');
+    Route::get('/admin/edit_vacation/{id}', 'edit')->name('edit_vacation');
+    Route::post('/admin/update_vacation', 'update')->name('update_vacation');
+    Route::get('/admin/delete_vacation/{id}', 'delete')->name('delete_vacation');
 });
