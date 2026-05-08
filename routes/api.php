@@ -16,6 +16,7 @@ use App\Http\Controllers\Machines;
 use App\Http\Controllers\Warehouses;
 use App\Http\Controllers\Planification;
 use App\Http\Controllers\Maintenances;
+use App\Http\Controllers\Contracts;
 
 // Companies
 Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {
@@ -152,6 +153,7 @@ Route::middleware('auth:sanctum')->controller(Planification::class)->group(funct
     Route::post('/admin/update_planification', 'update')->name('update_planification');
     Route::get('/admin/delete_planification/{id}', 'delete')->name('delete_planification');
 });
+
 // Maintenances
 Route::middleware('auth:sanctum')->controller(Maintenances::class)->group(function () {
     Route::post('/admin/create_maintenance', 'create')->name('create_maintenance');
@@ -161,6 +163,7 @@ Route::middleware('auth:sanctum')->controller(Maintenances::class)->group(functi
     Route::get('/admin/delete_maintenance/{id}', 'delete')->name('delete_maintenance');
 });
 
+// Contracts
 Route::middleware('auth:sanctum')->controller(Contracts::class)->group(function () {
     Route::post('/admin/create_contract', 'create')->name('create_contract');
     Route::get('/admin/contracts', 'read')->name('contractsManagement');
