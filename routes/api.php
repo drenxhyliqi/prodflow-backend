@@ -160,3 +160,12 @@ Route::middleware('auth:sanctum')->controller(Maintenances::class)->group(functi
     Route::post('/admin/update_maintenance', 'update')->name('update_maintenance');
     Route::get('/admin/delete_maintenance/{id}', 'delete')->name('delete_maintenance');
 });
+
+Route::middleware('auth:sanctum')->controller(Contracts::class)->group(function () {
+    Route::post('/admin/create_contract', 'create')->name('create_contract');
+    Route::get('/admin/contracts', 'read')->name('contractsManagement');
+    Route::get('/admin/edit_contract/{id}', 'edit')->name('edit_contract');
+    Route::post('/admin/update_contract', 'update')->name('update_contract');
+    Route::get('/admin/delete_contract/{id}', 'delete')->name('delete_contract');
+});
+
