@@ -20,4 +20,8 @@ class ContractsModel extends Model
         'company_id'
     ];
 
+    public function employee()
+    {
+        return $this->belongsTo(StaffModel::class, 'employee_id', 'sid');
+    }
 }

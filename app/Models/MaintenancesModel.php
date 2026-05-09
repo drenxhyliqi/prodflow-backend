@@ -18,4 +18,9 @@ class MaintenancesModel extends Model
         'description',
         'company_id'
     ];
+
+    public function machine()
+    {
+        return $this->belongsTo(MachinesModel::class, 'machine_id', 'mid');
+    }
 }

@@ -181,3 +181,8 @@ Route::middleware('auth:sanctum')->controller(Contracts::class)->group(function 
     Route::get('/admin/delete_contract/{id}', 'delete')->name('delete_contract');
 });
 
+// OPEN AI
+Route::post('/ai/chat', [App\Http\Controllers\AiController::class, 'chat']);
+Route::post('/ai/chat-data', [App\Http\Controllers\AiController::class, 'chatWithData']);
+Route::post('/ai/analyze-text', [App\Http\Controllers\AiController::class, 'analyzeText']);
+Route::post('/ai/alerts', [App\Http\Controllers\AiController::class, 'alerts']);
