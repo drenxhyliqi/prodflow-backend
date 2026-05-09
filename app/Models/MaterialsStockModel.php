@@ -25,4 +25,9 @@ class MaterialsStockModel extends Model
         'warehouse_id',
         'company_id',
     ];
+
+    public function material()
+    {
+        return $this->belongsTo(MaterialsModel::class, 'material_id', 'mid');
+    }
 }

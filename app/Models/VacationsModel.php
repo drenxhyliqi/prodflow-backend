@@ -17,4 +17,9 @@ class VacationsModel extends Model
         'status',
         'company_id',
     ];
+
+    public function staff()
+    {
+        return $this->belongsTo(StaffModel::class, 'staff_id', 'sid');
+    }
 }
