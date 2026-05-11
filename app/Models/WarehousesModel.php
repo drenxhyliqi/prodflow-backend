@@ -15,6 +15,7 @@ class WarehousesModel extends Model
     protected $fillable = [
         'warehouse',
         'location',
+        'capacity',
         'company_id'
     ];
 }

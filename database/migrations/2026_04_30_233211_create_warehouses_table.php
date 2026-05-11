@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('warehouses', function (Blueprint $table) {
-            $table->increments('wid'); 
+            $table->increments('wid');
             $table->string('warehouse')->nullable();
             $table->string('location')->nullable();
+            $table->decimal('capacity', 10, 2)->default(0);
             $table->unsignedInteger('company_id')->nullable();
         });
     }

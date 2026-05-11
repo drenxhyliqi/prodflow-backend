@@ -431,11 +431,11 @@ class AiController extends Controller
             ->get();
 
         foreach ($expiringContracts as $c) {
-            $daysLeft = $today->diffInDays($c->end_date);
+            $daysLeft = round($today->diffInDays($c->end_date));
             $alerts[] = [
                 'type' => 'warning',
                 'category' => 'contracts',
-                'message' => "Kontrata e {$c->employee->name} {$c->employee->surname} skadon pas {$daysLeft} ditësh ({$c->end_date})",
+                'message' => "Contract of {$c->employee->name} {$c->employee->surname} expires in {$daysLeft} days ({$c->end_date})",
             ];
         }
 
@@ -466,16 +466,15 @@ class AiController extends Controller
             $alerts[] = [
                 'type' => 'info',
                 'category' => 'maintenance',
-                'message' => "Planned Maintainance: {$m->machine->machine} më {$m->date} — {$m->description}",
+                'message' => "Planned Maintenance: {$m->machine->machine} on {$m->date} — {$m->description}",
             ];
         }
 
-        // Stoku negativ i materialeve
         $lowStock = \App\Models\MaterialsStockModel::where('materials_stock.company_id', $companyId)
             ->join('materials', 'materials_stock.material_id', '=', 'materials.mid')
-            ->selectRaw('materials.material, materials.unit,
+            ->selectRaw('materials.material,
                 SUM(CASE WHEN materials_stock.type = "in" THEN materials_stock.qty ELSE -materials_stock.qty END) as current_stock')
-            ->groupBy('materials_stock.material_id', 'materials.material', 'materials.unit')
+            ->groupBy('materials_stock.material_id', 'materials.material')
             ->havingRaw('current_stock <= 0')
             ->get();
 
@@ -483,7 +482,7 @@ class AiController extends Controller
             $alerts[] = [
                 'type' => 'danger',
                 'category' => 'stock',
-                'message' => "Stock \"{$s->material}\" is{$s->current_stock} {$s->unit} reorder immediately!",
+                'message' => "Stock \"{$s->material}\" is {$s->current_stock}, reorder immediately!",
             ];
         }
 
@@ -498,7 +497,7 @@ class AiController extends Controller
             $alerts[] = [
                 'type' => 'danger',
                 'category' => 'production',
-                'message' => "Plan prodhimi me vonesë: {$p->product} ({$p->planned_qty} njësi) — duhet mbyllur që {$p->end_date}",
+                'message' => "Delayed production plan: {$p->product} ({$p->planned_qty} units) — should have been completed by {$p->end_date}",
             ];
         }
 

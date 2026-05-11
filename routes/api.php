@@ -18,6 +18,10 @@ use App\Http\Controllers\Planification;
 use App\Http\Controllers\Maintenances;
 use App\Http\Controllers\Vacations;
 use App\Http\Controllers\Contracts;
+use App\Http\Controllers\Dashboard;
+
+// Dashboard
+Route::middleware('auth:sanctum')->get('/admin/dashboard', [Dashboard::class, 'index'])->name('dashboard');
 
 // Companies
 Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {

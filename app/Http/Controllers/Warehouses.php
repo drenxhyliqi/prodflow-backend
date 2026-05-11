@@ -20,7 +20,8 @@ class Warehouses extends Controller
     {
         $validator = Validator::make($request->all(), [
             'warehouse' => 'required|string|min:1|max:255',
-            'location' => 'required|string|min:1|max:255'
+            'location'  => 'required|string|min:1|max:255',
+            'capacity'  => 'nullable|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -30,7 +31,7 @@ class Warehouses extends Controller
                 'errors' => $validator->errors()
             ], 422);
         } else {
-            $data = $request->only(['warehouse', 'location']);
+            $data = $request->only(['warehouse', 'location', 'capacity']);
             $companyId = $request->user()->company_id;
 
             if ($this->service->createWarehouse($data, $companyId)) {
@@ -76,9 +77,10 @@ class Warehouses extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'wid' => 'required|numeric|min:1|exists:warehouses,wid',
+            'wid'       => 'required|numeric|min:1|exists:warehouses,wid',
             'warehouse' => 'required|string|min:1|max:255',
-            'location' => 'required|string|min:1|max:255',
+            'location'  => 'required|string|min:1|max:255',
+            'capacity'  => 'nullable|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -89,7 +91,7 @@ class Warehouses extends Controller
             ], 422);
         } else {
             $id = $request->wid;
-            $data = $request->only(['warehouse', 'location']);
+            $data = $request->only(['warehouse', 'location', 'capacity']);
             $companyId = $request->user()->company_id;
 
             if ($this->service->updateWarehouse($id, $data, $companyId)) {
