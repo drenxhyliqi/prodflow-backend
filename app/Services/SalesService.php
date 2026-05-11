@@ -85,4 +85,9 @@ class SalesService
         }
         return $this->repository->delete($sale_number, $companyId);
     }
+    //---------------
+    public function getInvoiceInformations(string $sale_number, int $companyId)
+    {
+        return $this->repository->findInvoiceInformations($sale_number, $companyId);
+    }
 }

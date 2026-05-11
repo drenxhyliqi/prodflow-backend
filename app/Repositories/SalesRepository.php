@@ -72,4 +72,14 @@ class SalesRepository
             ->where('company_id', $companyId)
             ->delete() > 0;
     }
+    //---------------
+    public function findInvoiceInformations(string $sale_number, int $companyId)
+    {
+        return DB::table($this->table)
+            ->join('products', 'sales.product_id', '=', 'products.pid')
+            ->select('sales.sale_number', 'sales.client', 'sales.qty', 'sales.price', 'sales.total', 'sales.date', 'products.product', 'products.unit')
+            ->where('sales.sale_number', $sale_number)
+            ->where('sales.company_id', $companyId)
+            ->get();
+    }
 }

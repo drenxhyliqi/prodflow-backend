@@ -127,4 +127,17 @@ class Sales extends Controller
             ], 500);
         }
     }
+    //---------------
+    public function invoice(Request $request, string $sale_number)
+    {
+        $companyId = $request->user()->company_id;
+        $sale = $this->service->getInvoiceInformations($sale_number, $companyId);
+        if (!$sale) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sale not found.'
+            ], 404);
+        }
+        return response()->json($sale);
+    }
 }
