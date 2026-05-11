@@ -60,7 +60,29 @@ class MaterialsStock extends Controller
 
         $payload = $request->only(['material_id', 'type', 'qty', 'date', 'warehouse_id']);
         $payload['type'] = strtoupper((string) $payload['type']);
-        $companyId = $user->company_id;
+
+        $qty = (float) $request->input('qty');
+
+        if ($payload['type'] === 'IN') {
+            $remaining = $this->service->getRemainingCapacity($companyId);
+            if ($remaining !== null && $qty > $remaining) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Warehouse capacity exceeded. Remaining capacity: {$remaining} units.",
+                ], 422);
+            }
+        }
+
+        if ($payload['type'] === 'OUT') {
+            $materialId   = (int) $request->input('material_id');
+            $currentStock = $this->service->getCurrentStock($companyId, $materialId);
+            if ($qty > $currentStock) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Insufficient stock. Available quantity for this material: {$currentStock} units.",
+                ], 422);
+            }
+        }
 
         $created = $this->service->createMaterialsStock($payload, $companyId);
 
@@ -161,6 +183,30 @@ class MaterialsStock extends Controller
 
         $data = $request->only(['material_id', 'type', 'qty', 'date', 'warehouse_id']);
         $data['type'] = strtoupper((string) $data['type']);
+
+        $qty = (float) $request->input('qty');
+
+        if ($data['type'] === 'IN') {
+            $remaining = $this->service->getRemainingCapacity($companyId, $msid);
+            if ($remaining !== null && $qty > $remaining) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Warehouse capacity exceeded. Remaining capacity: {$remaining} units.",
+                ], 422);
+            }
+        }
+
+        if ($data['type'] === 'OUT') {
+            $materialId   = (int) $request->input('material_id');
+            $currentStock = $this->service->getCurrentStock($companyId, $materialId, $msid);
+            if ($qty > $currentStock) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Insufficient stock. Available quantity for this material: {$currentStock} units.",
+                ], 422);
+            }
+        }
+
         $updated = $this->service->updateMaterialsStock($msid, $data, $companyId);
 
         return response()->json([

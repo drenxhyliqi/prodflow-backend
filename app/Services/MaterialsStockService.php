@@ -67,4 +67,42 @@ class MaterialsStockService
     {
         return $this->repository->checkWarehouseBelongsToCompany($warehouseId, $companyId);
     }
+    //---------------
+    // Returns current net stock for a specific material (IN - OUT)
+    public function getCurrentStock(int $companyId, int $materialId, ?int $excludeMsid = null): float
+    {
+        $query = \App\Models\MaterialsStockModel::where('company_id', $companyId)
+            ->where('material_id', $materialId);
+
+        if ($excludeMsid !== null) {
+            $query->where('msid', '!=', $excludeMsid);
+        }
+
+        return max(0, (float) $query
+            ->selectRaw('SUM(CASE WHEN type = "IN" THEN qty ELSE -qty END) as net')
+            ->value('net'));
+    }
+    //---------------
+    // Returns remaining capacity (null = no capacity configured, skip check)
+    public function getRemainingCapacity(int $companyId, ?int $excludeMsid = null): ?float
+    {
+        $totalCapacity = \App\Models\WarehousesModel::where('company_id', $companyId)
+            ->sum('capacity');
+
+        if (!$totalCapacity || (float) $totalCapacity <= 0) {
+            return null;
+        }
+
+        $query = \App\Models\MaterialsStockModel::where('company_id', $companyId);
+
+        if ($excludeMsid !== null) {
+            $query->where('msid', '!=', $excludeMsid);
+        }
+
+        $netStock = (float) $query
+            ->selectRaw('SUM(CASE WHEN type = "IN" THEN qty ELSE -qty END) as net')
+            ->value('net');
+
+        return max(0, (float) $totalCapacity - $netStock);
+    }
 }
