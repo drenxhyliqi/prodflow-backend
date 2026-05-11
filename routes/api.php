@@ -118,7 +118,7 @@ Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
     Route::post('/admin/create_sale', 'create')->name('create_sale');
     Route::get('/admin/sales', 'read')->name('salesManagement');
     Route::get('/admin/edit_sale/{sale_number}', 'edit')->name('edit_sale');
-    Route::post('/admin/update_sale', 'update')->name('update_sale');
+    Route::post('/admin/update_sale/{sale_number}', 'update')->name('update_sale');
     Route::get('/admin/delete_sale/{sale_number}', 'delete')->name('delete_sale');
 });
 
