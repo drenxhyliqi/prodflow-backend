@@ -19,6 +19,7 @@ use App\Http\Controllers\Maintenances;
 use App\Http\Controllers\Vacations;
 use App\Http\Controllers\Contracts;
 use App\Http\Controllers\Dashboard;
+use App\Http\Controllers\Salaries;
 
 // Dashboard
 Route::middleware('auth:sanctum')->get('/admin/dashboard', [Dashboard::class, 'index'])->name('dashboard');
@@ -184,6 +185,15 @@ Route::middleware('auth:sanctum')->controller(Contracts::class)->group(function 
     Route::get('/admin/edit_contract/{id}', 'edit')->name('edit_contract');
     Route::post('/admin/update_contract', 'update')->name('update_contract');
     Route::get('/admin/delete_contract/{id}', 'delete')->name('delete_contract');
+});
+
+//Salaries
+Route::middleware('auth:sanctum')->controller(Salaries::class)->group(function () {
+    Route::post('/admin/create_salary', 'create')->name('create_salary');
+    Route::get('/admin/salaries', 'read')->name('salariesManagement');
+    Route::get('/admin/edit_salary/{id}', 'edit')->name('edit_salary');
+    Route::post('/admin/update_salary', 'update')->name('update_salary');
+    Route::get('/admin/delete_salary/{id}', 'delete')->name('delete_salary');
 });
 
 // OPEN AI
