@@ -13,6 +13,7 @@ use App\Http\Controllers\Expenses;
 use App\Http\Controllers\Suppliers;
 use App\Http\Controllers\Users;
 use App\Http\Controllers\Machines;
+use App\Http\Controllers\Reports;
 use App\Http\Controllers\Warehouses;
 
 // Companies
@@ -68,6 +69,7 @@ Route::middleware('auth:sanctum')->controller(Users::class)->group(function () {
     Route::get('/me', 'me')->name('me');
     Route::post('/admin/update_account', 'updateAccount')->name('update_account');
     Route::post('/logout', 'logout')->name('logout');
+});
 
 // Staff
 Route::middleware('auth:sanctum')->controller(Staff::class)->group(function () {
@@ -113,6 +115,7 @@ Route::middleware('auth:sanctum')->controller(MaterialsStock::class)->group(func
     Route::post('/admin/update_materials_stock', 'update')->name('update_materials_stock');
     Route::get('/admin/delete_materials_stock/{id}', 'delete')->name('delete_materials_stock');
 });
+
 // Sales
 Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
     Route::post('/admin/create_sale', 'create')->name('create_sale');
@@ -122,6 +125,7 @@ Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
     Route::get('/admin/delete_sale/{sale_number}', 'delete')->name('delete_sale');
 });
 
+// Machines
 Route::middleware('auth:sanctum')->controller(Machines::class)->group(function () {
     Route::post('/admin/create_machine', 'create')->name('create_machine');
     Route::get('/admin/machines', 'read')->name('machinesManagement');
@@ -130,10 +134,16 @@ Route::middleware('auth:sanctum')->controller(Machines::class)->group(function (
     Route::get('/admin/delete_machine/{id}', 'delete')->name('delete_machine');
 });
 
+// Warehouses
 Route::middleware('auth:sanctum')->controller(Warehouses::class)->group(function () {
     Route::post('/admin/create_warehouse', 'create')->name('create_warehouse');
     Route::get('/admin/warehouses', 'read')->name('warehousesManagement');
     Route::get('/admin/edit_warehouse/{id}', 'edit')->name('edit_warehouse');
     Route::post('/admin/update_warehouse', 'update')->name('update_warehouse');
     Route::get('/admin/delete_warehouse/{id}', 'delete')->name('delete_warehouse');
+});
+
+// Reports
+Route::middleware('auth:sanctum')->controller(Reports::class)->group(function () {
+    Route::get('/admin/products_stock', 'productsStock')->name('productsStock');
 });
