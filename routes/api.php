@@ -53,6 +53,9 @@ Route::middleware('auth:sanctum')->controller(Expenses::class)->group(function (
     Route::get('/admin/edit_expense/{id}', 'edit')->name('edit_expense');
     Route::post('/admin/update_expense', 'update')->name('update_expense');
     Route::get('/admin/delete_expense/{id}', 'delete')->name('delete_expense');
+
+    Route::get('/admin/expenses_report', 'report')->name('expenses_report');
+
 });
 
 // Suppliers

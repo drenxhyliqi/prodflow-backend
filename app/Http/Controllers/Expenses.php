@@ -115,4 +115,37 @@ class Expenses extends Controller
             ], 500);
         }
     }
+    //---------------
+    public function report(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date' => 'required|date'
+        ]);
+
+        if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Please select valid dates.',
+            'errors' => $validator->errors()
+        ], 422);
+        }
+
+        $companyId = $request->user()->company_id;
+
+        $expenses = \DB::table('expenses')
+            ->where('company_id', $companyId)
+            ->whereDate('date', '>=', $request->start_date)
+            ->whereDate('date', '<=', $request->end_date)
+            ->orderBy('date', 'ASC')
+            ->get();
+
+        $total = $expenses->sum('price');
+
+        return response()->json([
+            'success' => true,
+            'total' => $total,
+            'data' => $expenses
+        ]);
+    }
 }
