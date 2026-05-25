@@ -17,6 +17,8 @@ class SalesModel extends Model
         'product_id',
         'qty',
         'price',
-        'total'
+        'total',
+        'date',
+        'company_id'
     ];
 }
