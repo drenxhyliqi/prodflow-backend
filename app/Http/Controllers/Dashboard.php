@@ -197,8 +197,7 @@ class Dashboard extends Controller
 
         // Recent sales joined with clients for client name
         $recentSales = \App\Models\SalesModel::where('sales.company_id', $companyId)
-            ->leftJoin('clients', 'sales.client_id', '=', 'clients.cid')
-            ->selectRaw('sales.sid, sales.qty, sales.price, sales.date, COALESCE(clients.client, "Unknown") as client_name')
+            ->selectRaw('sales.sid, sales.qty, sales.price, sales.date, COALESCE(sales.client, "Unknown") as client_name')
             ->orderByDesc('sales.sid')
             ->limit(4)
             ->get()
