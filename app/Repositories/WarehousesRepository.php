@@ -63,6 +63,14 @@ class WarehousesRepository
             ->exists();
     }
 
+    public function getUsedCapacity(int $warehouseId): float
+    {
+        return (float) DB::table('materials_stock')
+            ->where('warehouse_id', $warehouseId)
+            ->selectRaw("SUM(CASE WHEN type = 'in' THEN qty ELSE -qty END) as used")
+            ->value('used') ?? 0;
+    }
+
     public function create(array $data, int $companyId): bool
     {
         return DB::table($this->table)

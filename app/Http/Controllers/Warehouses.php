@@ -94,6 +94,17 @@ class Warehouses extends Controller
             $data = $request->only(['warehouse', 'location', 'capacity']);
             $companyId = $request->user()->company_id;
 
+            $newCapacity = $request->capacity;
+            if ($newCapacity !== null) {
+                $usedCapacity = $this->service->getUsedCapacity($id);
+                if ($newCapacity < $usedCapacity) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Cannot reduce capacity below current usage. Warehouse is using {$usedCapacity} units."
+                    ], 422);
+                }
+            }
+
             if ($this->service->updateWarehouse($id, $data, $companyId)) {
                 return response()->json([
                     'success' => true,
