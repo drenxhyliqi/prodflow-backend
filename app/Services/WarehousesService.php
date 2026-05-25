@@ -43,6 +43,11 @@ class WarehousesService
     }
 
     //---------------
+    public function getUsedCapacity(int $id): float
+    {
+        return $this->repository->getUsedCapacity($id);
+    }
+
     public function updateWarehouse(int $id, array $data, int $companyId): bool
     {
         $warehouse = $this->repository->findWarehouse($id, $companyId);
