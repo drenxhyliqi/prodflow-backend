@@ -65,27 +65,26 @@ class Sales extends Controller
     public function edit(Request $request, string $sale_number)
     {
         $companyId = $request->user()->company_id;
-        if (!$this->service->findOrFail($sale_number, $companyId)) {
+        if (!$this->service->getSaleByNumber($sale_number, $companyId)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sale not found.'
             ], 404);
         } else {
-            return $this->service->getSaleById($sale_number, $companyId);
+            return $this->service->getSaleByNumber($sale_number, $companyId);
         }
     }
     //---------------
-    public function update(Request $request)
+    public function update(Request $request, string $sale_number)
     {
         $validator = Validator::make($request->all(), [
-            'sid' => 'required|numeric|min:1|exists:sales,sid',
             'client' => 'required|string|min:1|max:255',
-            'products_id' => 'required|array|min:1',
-            'products_id.*.product_id' => 'required|numeric|min:1',
-            'products_id.*.qty' => 'required|numeric|min:1',
-            'qty' => 'required|numeric|min:1',
-            'price' => 'required|numeric|min:1',
-            'total' => 'required|numeric|min:1'
+            'total_price' => 'required|numeric|min:0',
+            'products' => 'required|array|min:1',
+            'products.*.product_id' => 'required|integer|min:1|exists:products,pid',
+            'products.*.qty' => 'required|numeric|min:1',
+            'products.*.price' => 'required|numeric|min:0',
+            'products.*.total_price' => 'required|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -94,22 +93,31 @@ class Sales extends Controller
                 'message' => 'All fields must be completed according to the rules.',
                 'errors'  => $validator->errors()
             ], 422);
-        } else {
-            $id = $request->sid;
-            $data = $request->only(['sale_number', 'client', 'product', 'qty', 'price']);
-            $companyId = $request->user()->company_id;
-            if ($this->service->updateSale($id, $data, $companyId)) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'The sale was successfully updated.'
-                ], 201);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No data was updated.'
-                ], 500);
-            }
         }
+        $companyId = $request->user()->company_id;
+        $data = [
+            'sale_number' => $sale_number,
+            'client' => $request->client,
+            'total_price' => $request->total_price,
+            'products' => collect($request->products)->map(function ($item) {
+                return [
+                    'product_id' => $item['product_id'],
+                    'qty' => $item['qty'],
+                    'price' => $item['price'],
+                    'total_price' => $item['total_price'],
+                ];
+            })->toArray()
+        ];
+        if ($this->service->updateSale($sale_number, $data, $companyId)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'The sale was successfully updated.'
+            ], 200);
+        }
+        return response()->json([
+            'success' => false,
+            'message' => 'No data was updated.'
+        ], 500);
     }
     //---------------
     public function delete(Request $request, string $sale_number)
