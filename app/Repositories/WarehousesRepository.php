@@ -14,21 +14,36 @@ class WarehousesRepository
         $this->table = $model->getTable();
     }
 
-    public function getAllWarehouses(int $companyId, int $limit)
+    private function withUsedCapacity(): \Illuminate\Database\Query\Builder
     {
         return DB::table($this->table)
-            ->where('company_id', $companyId)
-            ->orderByDesc('wid')
+            ->selectRaw("
+                warehouses.*,
+                COALESCE((
+                    SELECT SUM(CASE WHEN type = 'in' THEN qty ELSE -qty END)
+                    FROM materials_stock
+                    WHERE materials_stock.warehouse_id = warehouses.wid
+                ), 0) as used_capacity
+            ");
+    }
+
+    public function getAllWarehouses(int $companyId, int $limit)
+    {
+        return $this->withUsedCapacity()
+            ->where('warehouses.company_id', $companyId)
+            ->orderByDesc('warehouses.wid')
             ->paginate($limit);
     }
 
     public function getSearchedWarehouses(int $companyId, int $limit, string $search)
     {
-        return DB::table($this->table)
-            ->where('company_id', $companyId)
-            ->where('warehouse', 'like', "%{$search}%")
-            ->orWhere('location', 'like', "%{$search}%")
-            ->orderByDesc('wid')
+        return $this->withUsedCapacity()
+            ->where('warehouses.company_id', $companyId)
+            ->where(function ($q) use ($search) {
+                $q->where('warehouses.warehouse', 'like', "%{$search}%")
+                  ->orWhere('warehouses.location', 'like', "%{$search}%");
+            })
+            ->orderByDesc('warehouses.wid')
             ->paginate($limit);
     }
 
