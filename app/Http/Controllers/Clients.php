@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\ClientsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 class Clients extends Controller
@@ -32,6 +33,7 @@ class Clients extends Controller
             $data = $request->only(['client', 'phone', 'location']);
             $companyId = $request->user()->company_id;
             if ($this->service->createClient($data, $companyId)) {
+                Cache::tags(['clients'])->flush();
                 return response()->json([
                     'success' => true,
                     'message' => 'Client registered successfully.'
@@ -48,18 +50,31 @@ class Clients extends Controller
     public function read(Request $request)
     {
         $search = $request->query('search', '');
+        $page = $request->query('page', 1);
+        $perPage = 10;
+
+        $cacheKey = "clients_search_" . md5($search) . "_page_{$page}";
+
         $companyId = $request->user()->company_id;
-        return response()->json(
-            $this->service->getClients($companyId, 10, $search)
+        $companies = Cache::tags(['clients'])->remember(
+            $cacheKey,
+            now()->addHours(3),
+            function () use ($companyId, $search, $perPage) {
+                return $this->service->getClients($companyId, $perPage, $search);
+            }
         );
+
+        return response()->json($companies);
     }
     //---------------
     public function readAll(Request $request)
     {
         $companyId = $request->user()->company_id;
-        return response()->json(
-            $this->service->getAllClients($companyId)
-        );
+        $companies = Cache::tags(['clients'])->remember('clients_all', now()->addHours(3), function () use ($companyId) {
+            return $this->service->getAllClients($companyId);
+        });
+
+        return response()->json($companies);
     }
     //---------------
     public function edit(Request $request, int $id)
@@ -95,6 +110,7 @@ class Clients extends Controller
             $data = $request->only(['client', 'phone', 'location']);
             $companyId = $request->user()->company_id;
             if ($this->service->updateClient($id, $data, $companyId)) {
+                Cache::tags(['clients'])->flush();
                 return response()->json([
                     'success' => true,
                     'message' => 'The client was successfully updated.'
@@ -112,6 +128,7 @@ class Clients extends Controller
     {
         $companyId = $request->user()->company_id;
         if ($this->service->deleteClient($id, $companyId)) {
+            Cache::tags(['clients'])->flush();
             return response()->json([
                 'success' => true,
                 'message' => 'The client was successfully deleted.'
