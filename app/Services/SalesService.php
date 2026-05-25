@@ -30,9 +30,9 @@ class SalesService
         return $this->repository->getAllSales($companyId, $limit);
     }
     //---------------
-    public function getSaleById(int $id, int $companyId)
+    public function getSaleByNumber(string $sale_number, int $companyId)
     {
-        return $this->repository->findSale($id, $companyId);
+        return $this->repository->findSaleByNumber($sale_number, $companyId);
     }
     //---------------
     public function findOrFail(int $id, int $companyId)
@@ -68,18 +68,22 @@ class SalesService
         });
     }
     //---------------
-    public function updateSale(int $id, array $data, int $companyId): bool
-    {
-        $sale = $this->repository->findSale($id, $companyId);
-        if (!$sale) {
-            return false;
+    public function updateSale(string $sale_number, array $data, int $companyId): bool
+        {
+            $sale = $this->repository->findSaleByNumber($sale_number, $companyId);
+            if (!$sale) {
+                return false;
+            }
+            return $this->repository->update(
+                $sale_number,
+                $data,
+                $companyId
+            );
         }
-        return $this->repository->update($id, $data, $companyId);
-    }
     //---------------
     public function deleteSale(string $sale_number, int $companyId): bool
     {
-        $company = $this->repository->findSale($sale_number, $companyId);
+        $company = $this->repository->findSaleByNumber($sale_number, $companyId);
         if (!$company) {
             return false;
         }

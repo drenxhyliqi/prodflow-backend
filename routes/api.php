@@ -19,6 +19,7 @@ use App\Http\Controllers\Maintenances;
 use App\Http\Controllers\Vacations;
 use App\Http\Controllers\Contracts;
 use App\Http\Controllers\Dashboard;
+use App\Http\Controllers\Reports;
 use App\Http\Controllers\Salaries;
 
 // Dashboard
@@ -132,7 +133,7 @@ Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
     Route::post('/admin/create_sale', 'create')->name('create_sale');
     Route::get('/admin/sales', 'read')->name('salesManagement');
     Route::get('/admin/edit_sale/{sale_number}', 'edit')->name('edit_sale');
-    Route::post('/admin/update_sale', 'update')->name('update_sale');
+    Route::post('/admin/update_sale/{sale_number}', 'update')->name('update_sale');
     Route::get('/admin/delete_sale/{sale_number}', 'delete')->name('delete_sale');
     Route::get('/admin/invoice/{sale_number}', 'invoice')->name('invoice');
 });
@@ -190,13 +191,18 @@ Route::middleware('auth:sanctum')->controller(Contracts::class)->group(function 
     Route::get('/admin/delete_contract/{id}', 'delete')->name('delete_contract');
 });
 
-//Salaries
+// Salaries
 Route::middleware('auth:sanctum')->controller(Salaries::class)->group(function () {
     Route::post('/admin/create_salary', 'create')->name('create_salary');
     Route::get('/admin/salaries', 'read')->name('salariesManagement');
     Route::get('/admin/edit_salary/{id}', 'edit')->name('edit_salary');
     Route::post('/admin/update_salary', 'update')->name('update_salary');
     Route::get('/admin/delete_salary/{id}', 'delete')->name('delete_salary');
+});
+
+// Reports
+Route::middleware('auth:sanctum')->controller(Reports::class)->group(function () {
+    Route::get('/admin/products_stock', 'productsStock')->name('productsStock');
 });
 
 // OPEN AI
