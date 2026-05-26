@@ -21,6 +21,7 @@ use App\Http\Controllers\Contracts;
 use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Reports;
 use App\Http\Controllers\ProductionReport;
+use App\Http\Controllers\Orders;
 use App\Http\Controllers\Salaries;
 use App\Http\Controllers\SalesReport;
 
@@ -138,6 +139,16 @@ Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
     Route::post('/admin/update_sale/{sale_number}', 'update')->name('update_sale');
     Route::get('/admin/delete_sale/{sale_number}', 'delete')->name('delete_sale');
     Route::get('/admin/invoice/{sale_number}', 'invoice')->name('invoice');
+});
+
+// Orders
+Route::middleware('auth:sanctum')->controller(Orders::class)->group(function () {
+    Route::post('/admin/create_order', 'create')->name('create_order');
+    Route::get('/admin/orders', 'read')->name('ordersManagement');
+    Route::get('/admin/edit_order/{order_number}', 'edit')->name('edit_order');
+    Route::post('/admin/update_order', 'update')->name('update_order');
+    Route::get('/admin/delete_order/{order_number}', 'delete')->name('delete_order');
+    Route::post('/admin/convert_order_to_sale/{order_number}', 'convertToSale')->name('convert_order_to_sale');
 });
 
 // Machines
