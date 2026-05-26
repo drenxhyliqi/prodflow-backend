@@ -219,7 +219,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->controller(Reports::class)->g
 });
 
 // Production Report
-Route::middleware('auth:sanctum')->controller(ProductionReport::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin'])->controller(ProductionReport::class)->group(function () {
     Route::get('/admin/reports/production/summary',            'summary')->name('production_report_summary');
     Route::get('/admin/reports/production/trends',             'trends')->name('production_report_trends');
     Route::get('/admin/reports/production/machines',           'machines')->name('production_report_machines');
@@ -228,7 +228,7 @@ Route::middleware('auth:sanctum')->controller(ProductionReport::class)->group(fu
 });
 
 // Sales Report
-Route::middleware('auth:sanctum')->controller(SalesReport::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin'])->controller(SalesReport::class)->group(function () {
     Route::get('/admin/reports/sales/summary',        'summary')->name('sales_report_summary');
     Route::get('/admin/reports/sales/trends',         'trends')->name('sales_report_trends');
     Route::get('/admin/reports/sales/top-products',   'topProducts')->name('sales_report_top_products');
