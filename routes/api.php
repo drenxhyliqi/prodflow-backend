@@ -20,8 +20,10 @@ use App\Http\Controllers\Vacations;
 use App\Http\Controllers\Contracts;
 use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Reports;
+use App\Http\Controllers\ProductionReport;
 use App\Http\Controllers\Orders;
 use App\Http\Controllers\Salaries;
+use App\Http\Controllers\SalesReport;
 
 // Dashboard
 Route::middleware(['auth:sanctum', 'role:admin,manager'])->get('/admin/dashboard', [Dashboard::class, 'index'])->name('dashboard');
@@ -216,8 +218,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->controller(Reports::class)->g
     Route::get('/admin/products_stock', 'productsStock')->name('productsStock');
 });
 
-<<<<<<< Updated upstream
-=======
 // Production Report
 Route::middleware(['auth:sanctum', 'role:admin'])->controller(ProductionReport::class)->group(function () {
     Route::get('/admin/reports/production/summary',            'summary')->name('production_report_summary');
@@ -236,7 +236,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->controller(SalesReport::class
     Route::get('/admin/reports/sales/orders-overview','ordersOverview')->name('sales_report_orders_overview');
 });
 
->>>>>>> Stashed changes
 // OPEN AI
 Route::post('/ai/chat', [App\Http\Controllers\AiController::class, 'chat']);
 Route::post('/ai/chat-data', [App\Http\Controllers\AiController::class, 'chatWithData']);
