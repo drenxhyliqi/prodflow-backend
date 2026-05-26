@@ -24,22 +24,22 @@ use App\Http\Controllers\Orders;
 use App\Http\Controllers\Salaries;
 
 // Dashboard
-Route::middleware('auth:sanctum')->get('/admin/dashboard', [Dashboard::class, 'index'])->name('dashboard');
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->get('/admin/dashboard', [Dashboard::class, 'index'])->name('dashboard');
 
 // Companies
-Route::middleware('auth:sanctum')->controller(Companies::class)->group(function () {
-    Route::post('/admin/create_company', 'create')->name('create_company');
-    Route::get('/admin/companies', 'read')->name('companiesManagement');
-    Route::get('/admin/all_companies', 'readAll')->name('allCompaniesManagement');
-    Route::get('/admin/active_company', 'activeCompany')->name('activeCompany');
-    Route::post('/admin/set_active_company/{id}', 'setActive')->name('set_active_company');
-    Route::get('/admin/edit_company/{id}', 'edit')->name('edit_company');
-    Route::post('/admin/update_company', 'update')->name('update_company');
-    Route::get('/admin/delete_company/{id}', 'delete')->name('delete_company');
+Route::controller(Companies::class)->group(function () {
+    Route::post('/admin/create_company', 'create')->middleware(['auth:sanctum', 'role:admin'])->name('create_company');
+    Route::get('/admin/companies', 'read')->middleware(['auth:sanctum', 'role:admin,manager'])->name('companiesManagement');
+    Route::get('/admin/all_companies', 'readAll')->middleware(['auth:sanctum', 'role:admin,manager'])->name('allCompaniesManagement');
+    Route::get('/admin/active_company', 'activeCompany')->middleware(['auth:sanctum', 'role:admin,manager'])->name('activeCompany');
+    Route::post('/admin/set_active_company/{id}', 'setActive')->middleware(['auth:sanctum', 'role:admin'])->name('set_active_company');
+    Route::get('/admin/edit_company/{id}', 'edit')->middleware(['auth:sanctum', 'role:admin'])->name('edit_company');
+    Route::post('/admin/update_company', 'update')->middleware(['auth:sanctum', 'role:admin'])->name('update_company');
+    Route::get('/admin/delete_company/{id}', 'delete')->middleware(['auth:sanctum', 'role:admin'])->name('delete_company');
 });
 
 // Clients
-Route::middleware('auth:sanctum')->controller(Clients::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Clients::class)->group(function () {
     Route::post('/admin/create_client', 'create')->name('create_client');
     Route::get('/admin/clients', 'read')->name('clientsManagement');
     Route::get('/admin/allClients', 'readAll')->name('allClientsManagement');
@@ -49,19 +49,18 @@ Route::middleware('auth:sanctum')->controller(Clients::class)->group(function ()
 });
 
 // Expenses
-Route::middleware('auth:sanctum')->controller(Expenses::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin'])->controller(Expenses::class)->group(function () {
     Route::post('/admin/create_expense', 'create')->name('create_expense');
     Route::get('/admin/expenses', 'read')->name('expensesManagement');
     Route::get('/admin/edit_expense/{id}', 'edit')->name('edit_expense');
     Route::post('/admin/update_expense', 'update')->name('update_expense');
     Route::get('/admin/delete_expense/{id}', 'delete')->name('delete_expense');
-
     Route::get('/admin/expenses_report', 'report')->name('expenses_report');
 
 });
 
 // Suppliers
-Route::middleware('auth:sanctum')->controller(Suppliers::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Suppliers::class)->group(function () {
     Route::post('/admin/create_supplier', 'create')->name('create_supplier');
     Route::get('/admin/suppliers', 'read')->name('suppliersManagement');
     Route::get('/admin/edit_supplier/{id}', 'edit')->name('edit_supplier');
@@ -73,19 +72,19 @@ Route::middleware('auth:sanctum')->controller(Suppliers::class)->group(function 
 Route::controller(Users::class)->group(function () {
     Route::post('/login', 'login')->name('login');
 });
-Route::middleware('auth:sanctum')->controller(Users::class)->group(function () {
-    Route::post('/admin/create_user', 'create')->name('create_user');
-    Route::get('/admin/users', 'read')->name('usersManagement');
-    Route::get('/admin/edit_user/{id}', 'edit')->name('edit_user');
-    Route::post('/admin/update_user', 'update')->name('update_user');
-    Route::get('/admin/delete_user/{id}', 'delete')->name('delete_user');
-    Route::get('/me', 'me')->name('me');
-    Route::post('/admin/update_account', 'updateAccount')->name('update_account');
-    Route::post('/logout', 'logout')->name('logout');
+Route::controller(Users::class)->group(function () {
+    Route::post('/admin/create_user', 'create')->middleware(['auth:sanctum', 'role:admin'])->name('create_user');
+    Route::get('/admin/users', 'read')->middleware(['auth:sanctum', 'role:admin'])->name('usersManagement');
+    Route::get('/admin/edit_user/{id}', 'edit')->middleware(['auth:sanctum', 'role:admin'])->name('edit_user');
+    Route::post('/admin/update_user', 'update')->middleware(['auth:sanctum', 'role:admin'])->name('update_user');
+    Route::get('/admin/delete_user/{id}', 'delete')->middleware(['auth:sanctum', 'role:admin'])->name('delete_user');
+    Route::get('/me', 'me')->middleware(['auth:sanctum', 'role:admin,manager'])->name('me');
+    Route::post('/admin/update_account', 'updateAccount')->middleware(['auth:sanctum', 'role:admin,manager'])->name('update_account');
+    Route::post('/logout', 'logout')->middleware(['auth:sanctum', 'role:admin,manager'])->name('logout');
 });
 
 // Staff
-Route::middleware('auth:sanctum')->controller(Staff::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Staff::class)->group(function () {
     Route::post('/admin/create_staff', 'create')->name('create_staff');
     Route::get('/admin/staff', 'read')->name('staffManagement');
     Route::get('/admin/edit_staff/{id}', 'edit')->name('edit_staff');
@@ -94,7 +93,7 @@ Route::middleware('auth:sanctum')->controller(Staff::class)->group(function () {
 });
 
 // Products
-Route::middleware('auth:sanctum')->controller(Products::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Products::class)->group(function () {
     Route::post('/admin/create_product', 'create')->name('create_product');
     Route::get('/admin/products', 'read')->name('productsManagement');
     Route::get('/admin/edit_product/{id}', 'edit')->name('edit_product');
@@ -103,7 +102,7 @@ Route::middleware('auth:sanctum')->controller(Products::class)->group(function (
 });
 
 // Materials
-Route::middleware('auth:sanctum')->controller(Materials::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Materials::class)->group(function () {
     Route::post('/admin/create_material', 'create')->name('create_material');
     Route::get('/admin/materials', 'read')->name('materialsManagement');
     Route::get('/admin/edit_material/{id}', 'edit')->name('edit_material');
@@ -112,7 +111,7 @@ Route::middleware('auth:sanctum')->controller(Materials::class)->group(function 
 });
 
 // Production
-Route::middleware('auth:sanctum')->controller(Production::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Production::class)->group(function () {
     Route::post('/admin/create_production', 'create')->name('create_production');
     Route::get('/admin/production', 'read')->name('productionManagement');
     Route::get('/admin/edit_production/{id}', 'edit')->name('edit_production');
@@ -121,7 +120,7 @@ Route::middleware('auth:sanctum')->controller(Production::class)->group(function
 });
 
 // Materials Stock
-Route::middleware('auth:sanctum')->controller(MaterialsStock::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(MaterialsStock::class)->group(function () {
     Route::post('/admin/create_materials_stock', 'create')->name('create_materials_stock');
     Route::get('/admin/materials_stock', 'read')->name('materials_stockManagement');
     Route::get('/admin/edit_materials_stock/{id}', 'edit')->name('edit_materials_stock');
@@ -130,7 +129,7 @@ Route::middleware('auth:sanctum')->controller(MaterialsStock::class)->group(func
 });
 
 // Sales
-Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Sales::class)->group(function () {
     Route::post('/admin/create_sale', 'create')->name('create_sale');
     Route::get('/admin/sales', 'read')->name('salesManagement');
     Route::get('/admin/edit_sale/{sale_number}', 'edit')->name('edit_sale');
@@ -140,7 +139,7 @@ Route::middleware('auth:sanctum')->controller(Sales::class)->group(function () {
 });
 
 // Orders
-Route::middleware('auth:sanctum')->controller(Orders::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Orders::class)->group(function () {
     Route::post('/admin/create_order', 'create')->name('create_order');
     Route::get('/admin/orders', 'read')->name('ordersManagement');
     Route::get('/admin/edit_order/{order_number}', 'edit')->name('edit_order');
@@ -150,7 +149,7 @@ Route::middleware('auth:sanctum')->controller(Orders::class)->group(function () 
 });
 
 // Machines
-Route::middleware('auth:sanctum')->controller(Machines::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Machines::class)->group(function () {
     Route::post('/admin/create_machine', 'create')->name('create_machine');
     Route::get('/admin/machines', 'read')->name('machinesManagement');
     Route::get('/admin/edit_machine/{id}', 'edit')->name('edit_machine');
@@ -159,7 +158,7 @@ Route::middleware('auth:sanctum')->controller(Machines::class)->group(function (
 });
 
 // Warehouses
-Route::middleware('auth:sanctum')->controller(Warehouses::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Warehouses::class)->group(function () {
     Route::post('/admin/create_warehouse', 'create')->name('create_warehouse');
     Route::get('/admin/warehouses', 'read')->name('warehousesManagement');
     Route::get('/admin/edit_warehouse/{id}', 'edit')->name('edit_warehouse');
@@ -168,7 +167,7 @@ Route::middleware('auth:sanctum')->controller(Warehouses::class)->group(function
 });
 
 // Planification
-Route::middleware('auth:sanctum')->controller(Planification::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Planification::class)->group(function () {
     Route::post('/admin/create_planification', 'create')->name('create_planification');
     Route::get('/admin/planification', 'read')->name('planificationManagement');
     Route::get('/admin/edit_planification/{id}', 'edit')->name('edit_planification');
@@ -177,15 +176,16 @@ Route::middleware('auth:sanctum')->controller(Planification::class)->group(funct
 });
 
 // Maintenances
-Route::middleware('auth:sanctum')->controller(Maintenances::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Maintenances::class)->group(function () {
     Route::post('/admin/create_maintenance', 'create')->name('create_maintenance');
     Route::get('/admin/maintenances', 'read')->name('maintenancesManagement');
     Route::get('/admin/edit_maintenance/{id}', 'edit')->name('edit_maintenance');
     Route::post('/admin/update_maintenance', 'update')->name('update_maintenance');
     Route::get('/admin/delete_maintenance/{id}', 'delete')->name('delete_maintenance');
 });
+
 // Vacations
-Route::middleware('auth:sanctum')->controller(Vacations::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Vacations::class)->group(function () {
     Route::post('/admin/create_vacation', 'create')->name('create_vacation');
     Route::get('/admin/vacations', 'read')->name('vacationsManagement');
     Route::get('/admin/edit_vacation/{id}', 'edit')->name('edit_vacation');
@@ -194,7 +194,7 @@ Route::middleware('auth:sanctum')->controller(Vacations::class)->group(function 
 });
 
 // Contracts
-Route::middleware('auth:sanctum')->controller(Contracts::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Contracts::class)->group(function () {
     Route::post('/admin/create_contract', 'create')->name('create_contract');
     Route::get('/admin/contracts', 'read')->name('contractsManagement');
     Route::get('/admin/edit_contract/{id}', 'edit')->name('edit_contract');
@@ -203,7 +203,7 @@ Route::middleware('auth:sanctum')->controller(Contracts::class)->group(function 
 });
 
 // Salaries
-Route::middleware('auth:sanctum')->controller(Salaries::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Salaries::class)->group(function () {
     Route::post('/admin/create_salary', 'create')->name('create_salary');
     Route::get('/admin/salaries', 'read')->name('salariesManagement');
     Route::get('/admin/edit_salary/{id}', 'edit')->name('edit_salary');
@@ -212,7 +212,7 @@ Route::middleware('auth:sanctum')->controller(Salaries::class)->group(function (
 });
 
 // Reports
-Route::middleware('auth:sanctum')->controller(Reports::class)->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin'])->controller(Reports::class)->group(function () {
     Route::get('/admin/products_stock', 'productsStock')->name('productsStock');
 });
 
