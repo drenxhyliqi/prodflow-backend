@@ -216,6 +216,27 @@ Route::middleware(['auth:sanctum', 'role:admin'])->controller(Reports::class)->g
     Route::get('/admin/products_stock', 'productsStock')->name('productsStock');
 });
 
+<<<<<<< Updated upstream
+=======
+// Production Report
+Route::middleware(['auth:sanctum', 'role:admin'])->controller(ProductionReport::class)->group(function () {
+    Route::get('/admin/reports/production/summary',            'summary')->name('production_report_summary');
+    Route::get('/admin/reports/production/trends',             'trends')->name('production_report_trends');
+    Route::get('/admin/reports/production/machines',           'machines')->name('production_report_machines');
+    Route::get('/admin/reports/production/top-products',       'topProducts')->name('production_report_top_products');
+    Route::get('/admin/reports/production/status-distribution','statusDistribution')->name('production_report_status');
+});
+
+// Sales Report
+Route::middleware(['auth:sanctum', 'role:admin'])->controller(SalesReport::class)->group(function () {
+    Route::get('/admin/reports/sales/summary',        'summary')->name('sales_report_summary');
+    Route::get('/admin/reports/sales/trends',         'trends')->name('sales_report_trends');
+    Route::get('/admin/reports/sales/top-products',   'topProducts')->name('sales_report_top_products');
+    Route::get('/admin/reports/sales/top-clients',    'topClients')->name('sales_report_top_clients');
+    Route::get('/admin/reports/sales/orders-overview','ordersOverview')->name('sales_report_orders_overview');
+});
+
+>>>>>>> Stashed changes
 // OPEN AI
 Route::post('/ai/chat', [App\Http\Controllers\AiController::class, 'chat']);
 Route::post('/ai/chat-data', [App\Http\Controllers\AiController::class, 'chatWithData']);
