@@ -20,8 +20,10 @@ use App\Http\Controllers\Vacations;
 use App\Http\Controllers\Contracts;
 use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Reports;
+use App\Http\Controllers\ProductionReport;
 use App\Http\Controllers\Orders;
 use App\Http\Controllers\Salaries;
+use App\Http\Controllers\SalesReport;
 
 // Dashboard
 Route::middleware(['auth:sanctum', 'role:admin,manager'])->get('/admin/dashboard', [Dashboard::class, 'index'])->name('dashboard');
@@ -214,6 +216,24 @@ Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Salaries::
 // Reports
 Route::middleware(['auth:sanctum', 'role:admin'])->controller(Reports::class)->group(function () {
     Route::get('/admin/products_stock', 'productsStock')->name('productsStock');
+});
+
+// Production Report
+Route::middleware('auth:sanctum')->controller(ProductionReport::class)->group(function () {
+    Route::get('/admin/reports/production/summary',            'summary')->name('production_report_summary');
+    Route::get('/admin/reports/production/trends',             'trends')->name('production_report_trends');
+    Route::get('/admin/reports/production/machines',           'machines')->name('production_report_machines');
+    Route::get('/admin/reports/production/top-products',       'topProducts')->name('production_report_top_products');
+    Route::get('/admin/reports/production/status-distribution','statusDistribution')->name('production_report_status');
+});
+
+// Sales Report
+Route::middleware('auth:sanctum')->controller(SalesReport::class)->group(function () {
+    Route::get('/admin/reports/sales/summary',        'summary')->name('sales_report_summary');
+    Route::get('/admin/reports/sales/trends',         'trends')->name('sales_report_trends');
+    Route::get('/admin/reports/sales/top-products',   'topProducts')->name('sales_report_top_products');
+    Route::get('/admin/reports/sales/top-clients',    'topClients')->name('sales_report_top_clients');
+    Route::get('/admin/reports/sales/orders-overview','ordersOverview')->name('sales_report_orders_overview');
 });
 
 // OPEN AI
