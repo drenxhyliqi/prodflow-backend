@@ -24,7 +24,7 @@ use App\Http\Controllers\ProductionReport;
 use App\Http\Controllers\Orders;
 use App\Http\Controllers\Salaries;
 use App\Http\Controllers\SalesReport;
-
+use App\Http\Controllers\Trucks;
 
 // Dashboard
 Route::middleware(['auth:sanctum', 'role:admin,manager'])->get('/admin/dashboard', [Dashboard::class, 'index'])->name('dashboard');
@@ -69,6 +69,16 @@ Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Suppliers:
     Route::get('/admin/edit_supplier/{id}', 'edit')->name('edit_supplier');
     Route::post('/admin/update_supplier', 'update')->name('update_supplier');
     Route::get('/admin/delete_supplier/{id}', 'delete')->name('delete_supplier');
+});
+
+// Trucks
+Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Trucks::class)->group(function () {
+    Route::post('/admin/create_truck', 'create')->name('create_truck');
+    Route::get('/admin/trucks', 'read')->name('trucksManagement');
+    Route::get('/admin/edit_truck/{id}', 'edit')->name('edit_truck');
+    Route::post('/admin/update_truck', 'update')->name('update_truck');
+    Route::get('/admin/delete_truck/{id}', 'delete')->name('delete_truck');
+    Route::get('/admin/change_truck_status/{id}', 'changeStatus')->name('change_truck_status');
 });
 
 // Users
@@ -129,7 +139,6 @@ Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(MaterialsS
     Route::get('/admin/edit_materials_stock/{id}', 'edit')->name('edit_materials_stock');
     Route::post('/admin/update_materials_stock', 'update')->name('update_materials_stock');
     Route::get('/admin/delete_materials_stock/{id}', 'delete')->name('delete_materials_stock');
-
     Route::get('/admin/materials_stock_report', [MaterialsStock::class, 'getStockReport']);
 });
 
