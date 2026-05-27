@@ -53,8 +53,8 @@ class ClientsService
     //---------------
     public function deleteClient(int $id, int $companyId): bool
     {
-        $company = $this->repository->findClient($id, $companyId);
-        if (!$company) {
+        $client = $this->repository->findClient($id, $companyId);
+        if (!$client) {
             return false;
         }
         return $this->repository->delete($id, $companyId);

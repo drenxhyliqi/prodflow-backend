@@ -32,7 +32,6 @@ class ProductionRepository
             ->where('pr.company_id', $companyId)
             ->orderByDesc('pr.pid')
             ->paginate($limit);
-
     }
     //---------------
     public function getSearchedProduction(string $search, int $limit, int $companyId)

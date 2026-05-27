@@ -40,7 +40,7 @@ class Production extends Controller
         }
 
         $payload = $request->only(['product_id', 'machine_id', 'qty', 'date']);
-        $companyId = $user->company_id; 
+        $companyId = $user->company_id;
         $productId = $payload['product_id'];
         $machineId = $payload['machine_id'];
         $qty = (float) $payload['qty'];
@@ -96,8 +96,10 @@ class Production extends Controller
         }
 
         $companyId = $user->company_id;
+        $search = $request->query('search', '');
+        $page = $request->query('page', 1);
 
-        return $this->service->getAllProduction(10, $companyId);
+        return $this->service->getAllProduction(10, $companyId, $search, $page);
     }
     //---------------
     public function edit(Request $request, int $id)

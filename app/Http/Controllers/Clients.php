@@ -50,31 +50,18 @@ class Clients extends Controller
     public function read(Request $request)
     {
         $search = $request->query('search', '');
-        $page = $request->query('page', 1);
-        $perPage = 10;
-
-        $cacheKey = "clients_search_" . md5($search) . "_page_{$page}";
-
         $companyId = $request->user()->company_id;
-        $companies = Cache::tags(['clients'])->remember(
-            $cacheKey,
-            now()->addHours(3),
-            function () use ($companyId, $search, $perPage) {
-                return $this->service->getClients($companyId, $perPage, $search);
-            }
+        return response()->json(
+            $this->service->getClients($companyId, 10, $search)
         );
-
-        return response()->json($companies);
     }
     //---------------
     public function readAll(Request $request)
     {
         $companyId = $request->user()->company_id;
-        $companies = Cache::tags(['clients'])->remember('clients_all', now()->addHours(3), function () use ($companyId) {
-            return $this->service->getAllClients($companyId);
-        });
-
-        return response()->json($companies);
+        return response()->json(
+            $this->service->getAllClients($companyId)
+        );
     }
     //---------------
     public function edit(Request $request, int $id)

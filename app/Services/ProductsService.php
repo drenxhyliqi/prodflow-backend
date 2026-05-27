@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\ProductsRepository;
+use Illuminate\Support\Facades\Cache;
 
 class ProductsService
 {
@@ -12,13 +13,20 @@ class ProductsService
         $this->repository = $repository;
     }
     //---------------
-    public function getAllProducts(int $limit, int $companyId, string $search = '')
+    public function getAllProducts(int $limit, int $companyId, string $search, int $page)
     {
-        if (isset($_GET['search']) && ! empty($_GET['search'])) {
-            return $this->repository->getSearchedProducts($_GET['search'], $limit, $companyId);
-        } else {
-            return $this->repository->getAllProducts($limit, $companyId);
+        if (!empty($search)) {
+            return $this->repository->getSearchedProducts($search, $limit, $companyId);
         }
+
+        $cacheKey = "products_company_{$companyId}_page_{$page}";
+        return Cache::tags(['products'])->remember(
+            $cacheKey,
+            now()->addHours(3),
+            function () use ($limit, $companyId) {
+                return $this->repository->getAllProducts($limit, $companyId);
+            }
+        );
     }
     //---------------
     public function getProductsById(int $id, int $companyId)
