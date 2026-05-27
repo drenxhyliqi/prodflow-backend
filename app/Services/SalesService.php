@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\SalesRepository;
 use App\Repositories\ClientsRepository;
 use App\Repositories\ProductsRepository;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -20,14 +21,20 @@ class SalesService
         $this->productsrepository = $productsrepository;
     }
     //---------------
-    public function getAllSales(int $companyId, int $limit, string $search = '')
+    public function getAllSales(int $companyId, int $limit, string $search, int $page)
     {
-        $limit = (int) $limit ?: 10;
         if (!empty($search)) {
             return $this->repository->getSearchedSales($companyId, $limit, $search);
         }
 
-        return $this->repository->getAllSales($companyId, $limit);
+        $cacheKey = "sales_company_{$companyId}_page_{$page}";
+        return Cache::tags(['sales'])->remember(
+            $cacheKey,
+            now()->addHours(3),
+            function () use ($companyId, $limit) {
+                return $this->repository->getAllSales($companyId, $limit);
+            }
+        );
     }
     //---------------
     public function getSaleByNumber(string $sale_number, int $companyId)

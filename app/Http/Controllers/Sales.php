@@ -57,8 +57,9 @@ class Sales extends Controller
     {
         $search = $request->query('search', '');
         $companyId = $request->user()->company_id;
+        $page = $request->query('page', 1);
         return response()->json(
-            $this->service->getAllSales($companyId, 10, $search)
+            $this->service->getAllSales($companyId, 10, $search, $page)
         );
     }
     //---------------

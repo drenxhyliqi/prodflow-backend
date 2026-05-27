@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\CompanyService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 class Companies extends Controller
@@ -31,7 +30,6 @@ class Companies extends Controller
             ], 422);
         } else {
             if($this->service->createCompany($request->only(['name', 'sector', 'location']))){
-                Cache::tags(['companies'])->flush();
                 return response()->json([
                     'success' => true,
                     'message' => 'Company registered successfully.'
@@ -48,29 +46,16 @@ class Companies extends Controller
     public function read(Request $request)
     {
         $search = $request->query('search', '');
-        $page = $request->query('page', 1);
-        $perPage = 10;
-
-        $cacheKey = "companies_search_" . md5($search) . "_page_{$page}";
-
-        $companies = Cache::tags(['companies'])->remember(
-            $cacheKey,
-            now()->addHours(3),
-            function () use ($search, $perPage) {
-                return $this->service->getCompanies($perPage, $search);
-            }
+        return response()->json(
+            $this->service->getCompanies(10, $search)
         );
-
-        return response()->json($companies);
     }
     //---------------
     public function readAll()
     {
-        $companies = Cache::tags(['companies'])->remember('companies_all', now()->addHours(3), function () {
-            return $this->service->getAllCompanies();
-        });
-
-        return response()->json($companies);
+        return response()->json(
+            $this->service->getAllCompanies()
+        );
     }
     //---------------
     public function activeCompany(Request $request)
@@ -125,7 +110,6 @@ class Companies extends Controller
             ], 422);
         } else {
             if ($this->service->updateCompany($request->input('cid'), $request->only(['name', 'sector', 'location']))) {
-                Cache::tags(['companies'])->flush();
                 return response()->json([
                     'success' => true,
                     'message' => 'The company was successfully updated.'
@@ -142,7 +126,6 @@ class Companies extends Controller
     public function delete(int $id)
     {
         if ($this->service->deleteCompany($id)) {
-            Cache::tags(['companies'])->flush();
             return response()->json([
                 'success' => true,
                 'message' => 'The company was successfully deleted.'

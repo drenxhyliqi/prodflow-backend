@@ -77,8 +77,9 @@ class Products extends Controller
 
         $companyId = $user->company_id;
         $search = $request->query('search', '');
+        $page = $request->query('page', 1);
 
-        return $this->service->getAllProducts(10, $companyId, $search);
+        return $this->service->getAllProducts(10, $companyId, $search, $page);
     }
     //---------------
     public function edit(Request $request, int $id)

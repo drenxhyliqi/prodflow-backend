@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\ProductionRepository;
+use Illuminate\Support\Facades\Cache;
 
 class ProductionService
 {
@@ -12,13 +13,20 @@ class ProductionService
         $this->repository = $repository;
     }
     //---------------
-    public function getAllProduction(int $limit, int $companyId, string $search = '')
+    public function getAllProduction(int $limit, int $companyId, string $search, int $page)
     {
-        if (isset($_GET['search']) && ! empty($_GET['search'])) {
-            return $this->repository->getSearchedProduction($_GET['search'], $limit, $companyId);
-        } else {
-            return $this->repository->getAllProduction($limit, $companyId);
+        if (!empty($search)) {
+            return $this->repository->getSearchedProduction($search, $limit, $companyId);
         }
+
+        $cacheKey = "production_company_{$companyId}_page_{$page}";
+        return Cache::tags(['production'])->remember(
+            $cacheKey,
+            now()->addHours(3),
+            function () use ($limit, $companyId) {
+                return $this->repository->getAllProduction($limit, $companyId);
+            }
+        );
     }
     //---------------
     public function getProductionById(int $id, int $companyId)
