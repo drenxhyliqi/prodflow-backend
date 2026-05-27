@@ -105,4 +105,23 @@ class MaterialsStockService
 
         return max(0, (float) $totalCapacity - $netStock);
     }
+    //---------------
+    public function getStockReportData(int $companyId, string $startDate, string $endDate)
+    {
+        return \App\Models\MaterialsStockModel::with(['material'])
+            ->where('company_id', $companyId)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date', 'asc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'msid' => $item->msid,
+                    'date' => $item->date,
+                    'material_name' => $item->material ? $item->material->material : 'Unknown Material',
+                    'type' => $item->type,
+                    'qty' => (float) $item->qty,
+                    'warehouse_id' => $item->warehouse_id,
+                ];
+            });
+    }
 }

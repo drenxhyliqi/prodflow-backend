@@ -25,6 +25,7 @@ use App\Http\Controllers\Orders;
 use App\Http\Controllers\Salaries;
 use App\Http\Controllers\SalesReport;
 
+
 // Dashboard
 Route::middleware(['auth:sanctum', 'role:admin,manager'])->get('/admin/dashboard', [Dashboard::class, 'index'])->name('dashboard');
 
@@ -128,6 +129,8 @@ Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(MaterialsS
     Route::get('/admin/edit_materials_stock/{id}', 'edit')->name('edit_materials_stock');
     Route::post('/admin/update_materials_stock', 'update')->name('update_materials_stock');
     Route::get('/admin/delete_materials_stock/{id}', 'delete')->name('delete_materials_stock');
+
+    Route::get('/admin/materials_stock_report', [MaterialsStock::class, 'getStockReport']);
 });
 
 // Sales

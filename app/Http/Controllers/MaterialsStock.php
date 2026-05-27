@@ -242,4 +242,39 @@ class MaterialsStock extends Controller
             'message' => $deleted ? 'Material stock transaction deleted.' : 'Delete failed.',
         ], $deleted ? 200 : 500);
     }
+    //---------------
+    public function getStockReport(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized.',
+            ], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validimi dështoi.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $companyId = $user->company_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $reportData = $this->service->getStockReportData($companyId, $startDate, $endDate);
+
+        return response()->json([
+            'success' => true,
+            'data' => $reportData
+        ], 200);    
+    }
 }
