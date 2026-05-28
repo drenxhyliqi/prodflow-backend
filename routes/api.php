@@ -87,6 +87,8 @@ Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Trucks::cl
 // Users
 Route::controller(Users::class)->group(function () {
     Route::post('/login', 'login')->name('login');
+    Route::get('/invitations/{token}', 'validateInvitationToken')->name('validate_invitation_token');
+    Route::post('/invitations/accept', 'acceptInvitation')->name('accept_invitation');
 });
 Route::controller(Users::class)->group(function () {
     Route::post('/admin/create_user', 'create')->middleware(['auth:sanctum', 'role:admin'])->name('create_user');
@@ -94,6 +96,9 @@ Route::controller(Users::class)->group(function () {
     Route::get('/admin/edit_user/{id}', 'edit')->middleware(['auth:sanctum', 'role:admin'])->name('edit_user');
     Route::post('/admin/update_user', 'update')->middleware(['auth:sanctum', 'role:admin'])->name('update_user');
     Route::get('/admin/delete_user/{id}', 'delete')->middleware(['auth:sanctum', 'role:admin'])->name('delete_user');
+    Route::get('/admin/invitations', 'invitations')->middleware(['auth:sanctum', 'role:admin'])->name('invitations');
+    Route::post('/admin/invitations', 'createInvitation')->middleware(['auth:sanctum', 'role:admin'])->name('create_invitation');
+    Route::post('/admin/invitations/revoke/{id}', 'revokeInvitation')->middleware(['auth:sanctum', 'role:admin'])->name('revoke_invitation');
     Route::get('/me', 'me')->middleware(['auth:sanctum', 'role:admin,manager'])->name('me');
     Route::post('/admin/update_account', 'updateAccount')->middleware(['auth:sanctum', 'role:admin,manager'])->name('update_account');
     Route::post('/logout', 'logout')->middleware(['auth:sanctum', 'role:admin,manager'])->name('logout');

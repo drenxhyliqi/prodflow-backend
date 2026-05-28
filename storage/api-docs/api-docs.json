@@ -149,6 +149,60 @@
                 }
             }
         },
+        "/api/invitations/{token}": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Validate invitation token",
+                "operationId": "f20f087ebc351025abf4e3b1d3cfd20d",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Valid invitation"
+                    },
+                    "404": {
+                        "description": "Invalid or expired invitation"
+                    }
+                }
+            }
+        },
+        "/api/invitations/accept": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Accept invitation and set password",
+                "operationId": "ebe3f5a5cee60fb19b57764de56d8c5a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Invitation accepted"
+                    },
+                    "422": {
+                        "description": "Validation or invitation error"
+                    }
+                }
+            }
+        },
         "/api/me": {
             "get": {
                 "tags": [
@@ -3381,6 +3435,105 @@
                 "responses": {
                     "200": {
                         "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/invitations": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "List invitations",
+                "operationId": "d837fef1e74f72beb78ea2e17d034d6a",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create invitation",
+                "operationId": "c912214963c15ddf51d798875b1c13ab",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/invitations/revoke/{id}": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Revoke invitation",
+                "operationId": "cf0f9e74d807ede7f150eadeb2968841",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Revoked"
+                    },
+                    "404": {
+                        "description": "Not found"
                     }
                 },
                 "security": [

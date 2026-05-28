@@ -155,6 +155,100 @@ class Users extends Controller
         }
     }
     //---------------
+    public function invitations(Request $request)
+    {
+        $search = $request->query('search', '');
+        $invitations = $this->service->getInvitations(10, $search);
+        $frontendBaseUrl = rtrim((string) env('FRONTEND_URL', config('app.url')), '/');
+
+        $invitations->getCollection()->transform(function ($item) use ($frontendBaseUrl) {
+            $item->invite_link = $frontendBaseUrl . '/accept-invite?token=' . $item->token;
+            return $item;
+        });
+
+        return response()->json($invitations);
+    }
+    //---------------
+    public function createInvitation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user' => 'required|string|min:1|max:255',
+            'username' => 'required|string|min:3|max:255',
+            'company_id' => 'required|numeric|min:1|exists:companies,cid',
+            'role' => 'required|string|in:staff,manager,admin',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $result = $this->service->createInvitation($request->only(['user', 'username', 'company_id', 'role']));
+        if (!$result['success']) {
+            return response()->json($result, 422);
+        }
+
+        return response()->json($result, 201);
+    }
+    //---------------
+    public function validateInvitationToken(string $token)
+    {
+        $invitation = $this->service->getValidInvitationByToken($token);
+        if (!$invitation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invitation is invalid or expired.',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'invitation' => [
+                'user' => $invitation->user,
+                'username' => $invitation->username,
+                'role' => $invitation->role,
+                'expires_at' => $invitation->expires_at,
+            ],
+        ], 200);
+    }
+    //---------------
+    public function acceptInvitation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string|min:10',
+            'password' => 'required|string|min:8|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $result = $this->service->acceptInvitation($request->input('token'), $request->input('password'));
+        return response()->json($result, $result['success'] ? 200 : 422);
+    }
+    //---------------
+    public function revokeInvitation(int $id)
+    {
+        if ($this->service->revokeInvitation($id)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Invitation revoked successfully.',
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Invitation not found.',
+        ], 404);
+    }
+    //---------------
     public function updateAccount(Request $request)
     {
         $validator = Validator::make($request->all(), [
