@@ -15,10 +15,10 @@ use OpenApi\Attributes as OA;
 )]
 #[OA\SecurityScheme(
     securityScheme: 'sanctum',
-    type: 'apiKey',
-    in: 'header',
-    name: 'Authorization',
-    description: 'Enter token as: Bearer {token}'
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'JWT',
+    description: 'Paste only your access token'
 )]
 class OpenApiSpec
 {

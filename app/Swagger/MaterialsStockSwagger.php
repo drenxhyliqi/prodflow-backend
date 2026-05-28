@@ -17,4 +17,6 @@ class MaterialsStockSwagger
     public function updateMaterialsStock(): void {}
     #[OA\Get(path: '/api/admin/delete_materials_stock/{id}', tags: ['MaterialsStock'], summary: 'Delete materials stock', security: [['sanctum' => []]], parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'Deleted')])]
     public function deleteMaterialsStock(): void {}
+    #[OA\Get(path: '/api/admin/materials_stock_report', tags: ['MaterialsStock'], summary: 'Get materials stock report', security: [['sanctum' => []]], responses: [new OA\Response(response: 200, description: 'Success')])]
+    public function materialsStockReport(): void {}
 }

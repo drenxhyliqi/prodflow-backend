@@ -11,6 +11,8 @@ class ClientsSwagger
     public function createClient(): void {}
     #[OA\Get(path: '/api/admin/clients', tags: ['Clients'], summary: 'List clients', security: [['sanctum' => []]], parameters: [new OA\Parameter(name: 'search', in: 'query', required: false, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'Success')])]
     public function clients(): void {}
+    #[OA\Get(path: '/api/admin/allClients', tags: ['Clients'], summary: 'List all clients', security: [['sanctum' => []]], responses: [new OA\Response(response: 200, description: 'Success')])]
+    public function allClients(): void {}
     #[OA\Get(path: '/api/admin/edit_client/{id}', tags: ['Clients'], summary: 'Get client by id', security: [['sanctum' => []]], parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'Success')])]
     public function editClient(): void {}
     #[OA\Post(path: '/api/admin/update_client', tags: ['Clients'], summary: 'Update client', security: [['sanctum' => []]], requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(type: 'object')), responses: [new OA\Response(response: 200, description: 'Updated')])]

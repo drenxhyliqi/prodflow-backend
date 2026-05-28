@@ -12,6 +12,102 @@
         }
     ],
     "paths": {
+        "/api/ai/chat": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "AI chat",
+                "operationId": "963fedcda2cca07c60d59ac29298c6ee",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/api/ai/chat-data": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "AI chat with data",
+                "operationId": "abcbcb714f7db33134535c4999db12b5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/api/ai/analyze-text": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Analyze text with AI",
+                "operationId": "fde81e2f22841aec3f2c80531732b465",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/api/ai/alerts": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Generate AI alerts",
+                "operationId": "901d7a9175119a2231219fb6cbcdb52e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
         "/api/login": {
             "post": {
                 "tags": [
@@ -22,8 +118,22 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "description": "The username of the user",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "The password of the user",
+                                        "type": "string"
+                                    }
+                                },
                                 "type": "object"
                             }
                         }
@@ -137,6 +247,25 @@
                         }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/allClients": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "List all clients",
+                "operationId": "127d3923f16a1db2fd56f168806fd1d1",
                 "responses": {
                     "200": {
                         "description": "Success"
@@ -463,6 +592,178 @@
                 ]
             }
         },
+        "/api/admin/create_contract": {
+            "post": {
+                "tags": [
+                    "Contracts"
+                ],
+                "summary": "Create contract",
+                "operationId": "adf27ef2c10aca3760cd686969aa2f07",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/contracts": {
+            "get": {
+                "tags": [
+                    "Contracts"
+                ],
+                "summary": "List contracts",
+                "operationId": "e9b8c1e6b9324ec538159d188b326f03",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/edit_contract/{id}": {
+            "get": {
+                "tags": [
+                    "Contracts"
+                ],
+                "summary": "Get contract by id",
+                "operationId": "4dce21708a1c2a579349218eb8e29b4e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/update_contract": {
+            "post": {
+                "tags": [
+                    "Contracts"
+                ],
+                "summary": "Update contract",
+                "operationId": "b4d8ed5433b37097c886f2560073f553",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delete_contract/{id}": {
+            "get": {
+                "tags": [
+                    "Contracts"
+                ],
+                "summary": "Delete contract",
+                "operationId": "ea859e60a45561e90b946ac9cb494b98",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/dashboard": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get dashboard metrics",
+                "operationId": "b352cb7e48fbf430b0b22512612aa347",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/admin/create_expense": {
             "post": {
                 "tags": [
@@ -594,6 +895,331 @@
                 ],
                 "summary": "Delete expense",
                 "operationId": "3c3d40b3f798feab822c87baf6ebbc29",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/expenses_report": {
+            "get": {
+                "tags": [
+                    "Expenses"
+                ],
+                "summary": "Get expenses report",
+                "operationId": "7b37e9dca609ae27dec4584558c4b43f",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/create_machine": {
+            "post": {
+                "tags": [
+                    "Machines"
+                ],
+                "summary": "Create machine",
+                "operationId": "8c0b1e93dba1e4bff33e787a08688c4e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/machines": {
+            "get": {
+                "tags": [
+                    "Machines"
+                ],
+                "summary": "List machines",
+                "operationId": "0cf22761bc78e4323aee8879f3fa7d62",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/edit_machine/{id}": {
+            "get": {
+                "tags": [
+                    "Machines"
+                ],
+                "summary": "Get machine by id",
+                "operationId": "5c4a02b103c5f7cbf52eccfe56042ff7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/update_machine": {
+            "post": {
+                "tags": [
+                    "Machines"
+                ],
+                "summary": "Update machine",
+                "operationId": "8ed973fdfb3d81686d8657b8b8f05b62",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delete_machine/{id}": {
+            "get": {
+                "tags": [
+                    "Machines"
+                ],
+                "summary": "Delete machine",
+                "operationId": "efb8e592ed996355e42216f3c9b55e6c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/create_maintenance": {
+            "post": {
+                "tags": [
+                    "Maintenances"
+                ],
+                "summary": "Create maintenance",
+                "operationId": "730c879b668f7180af528c69fcd5deff",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/maintenances": {
+            "get": {
+                "tags": [
+                    "Maintenances"
+                ],
+                "summary": "List maintenances",
+                "operationId": "da5e86253b68b6b522104ab2a93b6914",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/edit_maintenance/{id}": {
+            "get": {
+                "tags": [
+                    "Maintenances"
+                ],
+                "summary": "Get maintenance by id",
+                "operationId": "20634269578061e6d22a97a9e3a5376e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/update_maintenance": {
+            "post": {
+                "tags": [
+                    "Maintenances"
+                ],
+                "summary": "Update maintenance",
+                "operationId": "e06128bc07ad614fe9ff465d17f5efb2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delete_maintenance/{id}": {
+            "get": {
+                "tags": [
+                    "Maintenances"
+                ],
+                "summary": "Delete maintenance",
+                "operationId": "c0b89be62972df30bcb0cfc315a64b48",
                 "parameters": [
                     {
                         "name": "id",
@@ -769,6 +1395,25 @@
                 ]
             }
         },
+        "/api/admin/materials_stock_report": {
+            "get": {
+                "tags": [
+                    "MaterialsStock"
+                ],
+                "summary": "Get materials stock report",
+                "operationId": "58b1ab6d0eb593a8ba76a85d253b6509",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/admin/create_material": {
             "post": {
                 "tags": [
@@ -913,6 +1558,191 @@
                 "responses": {
                     "200": {
                         "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/create_order": {
+            "post": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Create order",
+                "operationId": "11048fc18458a2a4461df70264e4bac7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/orders": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "List orders",
+                "operationId": "22e6ec79a4cc70c4bf5ba06dc16a448a",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/edit_order/{order_number}": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get order by number",
+                "operationId": "614add26170ca4b61efb297581c64586",
+                "parameters": [
+                    {
+                        "name": "order_number",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/update_order": {
+            "post": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Update order",
+                "operationId": "fc0a8b3ed79e51b5277b6f15d068db22",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delete_order/{order_number}": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Delete order",
+                "operationId": "8a8f1fd0281657b2607095716147fcac",
+                "parameters": [
+                    {
+                        "name": "order_number",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/convert_order_to_sale/{order_number}": {
+            "post": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Convert order to sale",
+                "operationId": "b09d63383f48131c9c955994149e7422",
+                "parameters": [
+                    {
+                        "name": "order_number",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Converted"
                     }
                 },
                 "security": [
@@ -1365,6 +2195,368 @@
                 ]
             }
         },
+        "/api/admin/products_stock": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Products stock report",
+                "operationId": "f14dbf820a9e7934124f7cfe41d9b55a",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/production/summary": {
+            "get": {
+                "tags": [
+                    "ProductionReports"
+                ],
+                "summary": "Production summary report",
+                "operationId": "8be04e2dfc904763d1e962bfdbab4c98",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/production/trends": {
+            "get": {
+                "tags": [
+                    "ProductionReports"
+                ],
+                "summary": "Production trends report",
+                "operationId": "9db88e583a15106096d4cd55c6da18fe",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/production/machines": {
+            "get": {
+                "tags": [
+                    "ProductionReports"
+                ],
+                "summary": "Production by machines report",
+                "operationId": "83e17bd6420bdab4ae2b6beb12e3ba2b",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/production/top-products": {
+            "get": {
+                "tags": [
+                    "ProductionReports"
+                ],
+                "summary": "Top produced products report",
+                "operationId": "07de8f476c941c6be5db1d63b639c998",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/production/status-distribution": {
+            "get": {
+                "tags": [
+                    "ProductionReports"
+                ],
+                "summary": "Production status distribution",
+                "operationId": "85110262211a1117a4b9cf3970a9dbb4",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/sales/summary": {
+            "get": {
+                "tags": [
+                    "SalesReports"
+                ],
+                "summary": "Sales summary report",
+                "operationId": "e9c754b756917f8e07e9bd4393ee9a43",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/sales/trends": {
+            "get": {
+                "tags": [
+                    "SalesReports"
+                ],
+                "summary": "Sales trends report",
+                "operationId": "3b5290185fc7d1276ad2894d1d87aeb6",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/sales/top-products": {
+            "get": {
+                "tags": [
+                    "SalesReports"
+                ],
+                "summary": "Top sold products report",
+                "operationId": "a735099b31d481719036539bba567abb",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/sales/top-clients": {
+            "get": {
+                "tags": [
+                    "SalesReports"
+                ],
+                "summary": "Top clients report",
+                "operationId": "1cd67b30dd579b569bcac73d699c5da9",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/sales/orders-overview": {
+            "get": {
+                "tags": [
+                    "SalesReports"
+                ],
+                "summary": "Orders overview report",
+                "operationId": "854324a9357f7b3ba08b2496191cbdc0",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/create_salary": {
+            "post": {
+                "tags": [
+                    "Salaries"
+                ],
+                "summary": "Create salary",
+                "operationId": "b3a3bc9e3d5b0befe1c83301f493b31a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/salaries": {
+            "get": {
+                "tags": [
+                    "Salaries"
+                ],
+                "summary": "List salaries",
+                "operationId": "37958bb37dea5b23ec321d8673cc1b47",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/edit_salary/{id}": {
+            "get": {
+                "tags": [
+                    "Salaries"
+                ],
+                "summary": "Get salary by id",
+                "operationId": "988d5a4865bceb4623da0d92d8b99e11",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/update_salary": {
+            "post": {
+                "tags": [
+                    "Salaries"
+                ],
+                "summary": "Update salary",
+                "operationId": "ac5730bc5bf571fa3fe191b589b3c971",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delete_salary/{id}": {
+            "get": {
+                "tags": [
+                    "Salaries"
+                ],
+                "summary": "Delete salary",
+                "operationId": "802191bade30b786f9a5e3598e7c18cc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/admin/create_sale": {
             "post": {
                 "tags": [
@@ -1431,20 +2623,20 @@
                 ]
             }
         },
-        "/api/admin/edit_sale/{id}": {
+        "/api/admin/edit_sale/{sale_number}": {
             "get": {
                 "tags": [
                     "Sales"
                 ],
-                "summary": "Get sale by id",
-                "operationId": "69048699578ef81d1fb44720e5b15188",
+                "summary": "Get sale by sale number",
+                "operationId": "27455d5c3e37b65def050de54a23da8c",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "sale_number",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -1460,13 +2652,23 @@
                 ]
             }
         },
-        "/api/admin/update_sale": {
+        "/api/admin/update_sale/{sale_number}": {
             "post": {
                 "tags": [
                     "Sales"
                 ],
                 "summary": "Update sale",
-                "operationId": "3e0a0681082f59167190058a2953e5f0",
+                "operationId": "85c3bde4ca0269c33fecb17e77bbc8a8",
+                "parameters": [
+                    {
+                        "name": "sale_number",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1489,26 +2691,55 @@
                 ]
             }
         },
-        "/api/admin/delete_sale/{id}": {
+        "/api/admin/delete_sale/{sale_number}": {
             "get": {
                 "tags": [
                     "Sales"
                 ],
                 "summary": "Delete sale",
-                "operationId": "4d167f37fc7e3864772ab8de1a1c61e7",
+                "operationId": "40e1d9bdba91d4cdf63a6fb6bfdcfe15",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "sale_number",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/invoice/{sale_number}": {
+            "get": {
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "Get sale invoice",
+                "operationId": "4399d8ade4d15f40df3c8ca54b588823",
+                "parameters": [
+                    {
+                        "name": "sale_number",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
                     }
                 },
                 "security": [
@@ -1823,6 +3054,676 @@
                     }
                 ]
             }
+        },
+        "/api/admin/create_truck": {
+            "post": {
+                "tags": [
+                    "Trucks"
+                ],
+                "summary": "Create truck",
+                "operationId": "3f8b0904325bf56203b6e0afbb98c861",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/trucks": {
+            "get": {
+                "tags": [
+                    "Trucks"
+                ],
+                "summary": "List trucks",
+                "operationId": "c86f515717c602afdbc529c578aa30c9",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/edit_truck/{id}": {
+            "get": {
+                "tags": [
+                    "Trucks"
+                ],
+                "summary": "Get truck by id",
+                "operationId": "90d115da2084ac8aec349496a3c76714",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/update_truck": {
+            "post": {
+                "tags": [
+                    "Trucks"
+                ],
+                "summary": "Update truck",
+                "operationId": "aca741b20341e379f733b4396b3d2e36",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delete_truck/{id}": {
+            "get": {
+                "tags": [
+                    "Trucks"
+                ],
+                "summary": "Delete truck",
+                "operationId": "a271412c19462b521f4ee81bb0777afb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/change_truck_status/{id}": {
+            "get": {
+                "tags": [
+                    "Trucks"
+                ],
+                "summary": "Change truck status",
+                "operationId": "edf07c0355015f966bd499081b80f0a8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/create_user": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create user",
+                "operationId": "0d35f60dbc34e93ca0f7fc6a3a19fbdd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "List users",
+                "operationId": "67796ac4796882831cbf7c257235cca0",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/edit_user/{id}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get user by id",
+                "operationId": "b1be1d7abfc8888e6130f29b000fdbc9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/update_user": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update user",
+                "operationId": "ae173231e88297dcb7c75d38d0df7207",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delete_user/{id}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Delete user",
+                "operationId": "b0439b73177717da04015faa7881c83a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/update_account": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update current account",
+                "operationId": "6e9989df8374007500f91335620f8c7a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/create_vacation": {
+            "post": {
+                "tags": [
+                    "Vacations"
+                ],
+                "summary": "Create vacation",
+                "operationId": "cfd1acc0d52175a99cfed58184695756",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/vacations": {
+            "get": {
+                "tags": [
+                    "Vacations"
+                ],
+                "summary": "List vacations",
+                "operationId": "e4a2c7bc0ddc128e3fd476dbe88da300",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/edit_vacation/{id}": {
+            "get": {
+                "tags": [
+                    "Vacations"
+                ],
+                "summary": "Get vacation by id",
+                "operationId": "7a7d333755e7d6549cd4b4073f922242",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/update_vacation": {
+            "post": {
+                "tags": [
+                    "Vacations"
+                ],
+                "summary": "Update vacation",
+                "operationId": "9e026dd70c0a318567759cab197de661",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delete_vacation/{id}": {
+            "get": {
+                "tags": [
+                    "Vacations"
+                ],
+                "summary": "Delete vacation",
+                "operationId": "8cb1b74cd055f59328bfbeac00843e2a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/create_warehouse": {
+            "post": {
+                "tags": [
+                    "Warehouses"
+                ],
+                "summary": "Create warehouse",
+                "operationId": "b1def18a56e369f99a1e1fc4be3ac37d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/warehouses": {
+            "get": {
+                "tags": [
+                    "Warehouses"
+                ],
+                "summary": "List warehouses",
+                "operationId": "4b1dd98a0b17b11a7a74a41e1b7376ae",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/edit_warehouse/{id}": {
+            "get": {
+                "tags": [
+                    "Warehouses"
+                ],
+                "summary": "Get warehouse by id",
+                "operationId": "5d9002de6d91c5f9580d3fa16a19eff0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/update_warehouse": {
+            "post": {
+                "tags": [
+                    "Warehouses"
+                ],
+                "summary": "Update warehouse",
+                "operationId": "e06136a425ba0fa3a9e0f62484ede7ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delete_warehouse/{id}": {
+            "get": {
+                "tags": [
+                    "Warehouses"
+                ],
+                "summary": "Delete warehouse",
+                "operationId": "7ef770f3b8408f3c69ffd7f55bc69a72",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -1837,6 +3738,10 @@
     },
     "tags": [
         {
+            "name": "AI",
+            "description": "AI endpoints"
+        },
+        {
             "name": "Auth",
             "description": "Authentication endpoints"
         },
@@ -1849,8 +3754,24 @@
             "description": "Companies management"
         },
         {
+            "name": "Contracts",
+            "description": "Contracts management"
+        },
+        {
+            "name": "Dashboard",
+            "description": "Dashboard analytics"
+        },
+        {
             "name": "Expenses",
             "description": "Expenses management"
+        },
+        {
+            "name": "Machines",
+            "description": "Machines management"
+        },
+        {
+            "name": "Maintenances",
+            "description": "Maintenances management"
         },
         {
             "name": "MaterialsStock",
@@ -1859,6 +3780,10 @@
         {
             "name": "Materials",
             "description": "Materials management"
+        },
+        {
+            "name": "Orders",
+            "description": "Orders management"
         },
         {
             "name": "Planification",
@@ -1873,6 +3798,22 @@
             "description": "Products management"
         },
         {
+            "name": "Reports",
+            "description": "Reports endpoints"
+        },
+        {
+            "name": "ProductionReports",
+            "description": "Production report endpoints"
+        },
+        {
+            "name": "SalesReports",
+            "description": "Sales report endpoints"
+        },
+        {
+            "name": "Salaries",
+            "description": "Salaries management"
+        },
+        {
             "name": "Sales",
             "description": "Sales management"
         },
@@ -1883,6 +3824,22 @@
         {
             "name": "Suppliers",
             "description": "Suppliers management"
+        },
+        {
+            "name": "Trucks",
+            "description": "Trucks management"
+        },
+        {
+            "name": "Users",
+            "description": "Users management"
+        },
+        {
+            "name": "Vacations",
+            "description": "Vacations management"
+        },
+        {
+            "name": "Warehouses",
+            "description": "Warehouses management"
         }
     ]
 }

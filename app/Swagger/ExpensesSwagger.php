@@ -17,4 +17,6 @@ class ExpensesSwagger
     public function updateExpense(): void {}
     #[OA\Get(path: '/api/admin/delete_expense/{id}', tags: ['Expenses'], summary: 'Delete expense', security: [['sanctum' => []]], parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'Deleted')])]
     public function deleteExpense(): void {}
+    #[OA\Get(path: '/api/admin/expenses_report', tags: ['Expenses'], summary: 'Get expenses report', security: [['sanctum' => []]], responses: [new OA\Response(response: 200, description: 'Success')])]
+    public function expensesReport(): void {}
 }
