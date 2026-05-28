@@ -27,7 +27,10 @@ use App\Http\Controllers\SalesReport;
 use App\Http\Controllers\Trucks;
 
 // Dashboard
-Route::middleware(['auth:sanctum', 'role:admin,manager'])->get('/admin/dashboard', [Dashboard::class, 'index'])->name('dashboard');
+Route::middleware('auth:sanctum')->controller(Dashboard::class)->group(function () {
+    Route::get('/admin/dashboard', 'index')->name('dashboard');
+    Route::post('/admin/dashboard/clear-activity', 'clearActivity')->name('clear_activity');
+});
 
 // Companies
 Route::controller(Companies::class)->group(function () {

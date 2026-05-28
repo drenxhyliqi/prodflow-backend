@@ -83,11 +83,33 @@ class MaterialsStockService
             ->value('net'));
     }
     //---------------
-    // Returns remaining capacity (null = no capacity configured, skip check)
-    public function getRemainingCapacity(int $companyId, ?int $excludeMsid = null): ?float
+    // Returns remaining capacity for a specific warehouse (null = no capacity configured, skip check)
+    public function getRemainingCapacity(int $companyId, ?int $excludeMsid = null, ?int $warehouseId = null): ?float
     {
-        $totalCapacity = \App\Models\WarehousesModel::where('company_id', $companyId)
-            ->sum('capacity');
+        if ($warehouseId !== null) {
+            $capacity = (float) \App\Models\WarehousesModel::where('wid', $warehouseId)
+                ->where('company_id', $companyId)
+                ->value('capacity');
+
+            if ($capacity <= 0) {
+                return null;
+            }
+
+            $query = \App\Models\MaterialsStockModel::where('warehouse_id', $warehouseId);
+
+            if ($excludeMsid !== null) {
+                $query->where('msid', '!=', $excludeMsid);
+            }
+
+            $netStock = (float) $query
+                ->selectRaw('SUM(CASE WHEN type = "IN" THEN qty ELSE -qty END) as net')
+                ->value('net');
+
+            return max(0, $capacity - $netStock);
+        }
+
+        // Fallback: global check (legacy)
+        $totalCapacity = \App\Models\WarehousesModel::where('company_id', $companyId)->sum('capacity');
 
         if (!$totalCapacity || (float) $totalCapacity <= 0) {
             return null;
