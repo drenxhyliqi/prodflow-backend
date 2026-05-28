@@ -163,28 +163,34 @@ class Products extends Controller
     //---------------
     public function delete(Request $request, int $id)
     {
-        $user = $request->user();
-        if (! $user) {
+        try {
+            $user = $request->user();
+            if (! $user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized.',
+                ], 401);
+            }
+
+            $companyId = $user->company_id;
+            if (! $this->service->checkProductsExist($id, $companyId)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found.',
+                ], 404);
+            }
+
+            $deleted = $this->service->deleteProducts($id, $companyId);
+            return response()->json([
+                'success' => $deleted,
+                'message' => 'Product deleted.',
+            ], 200);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized.',
-            ], 401);
+                'message' => $e->getMessage(),
+            ], 400);
         }
-
-        $companyId = $user->company_id;
-
-        if (! $this->service->checkProductsExist($id, $companyId)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Product not found.',
-            ], 404);
-        }
-
-        $deleted = $this->service->deleteProducts($id, $companyId);
-
-        return response()->json([
-            'success' => $deleted,
-            'message' => $deleted ? 'Product deleted.' : 'Delete failed.',
-        ], $deleted ? 200 : 500);
     }
 }

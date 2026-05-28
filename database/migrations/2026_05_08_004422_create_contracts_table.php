@@ -10,16 +10,16 @@ return new class extends Migration
     {
         Schema::create('contracts', function (Blueprint $table) {
             $table->increments('cid');
-            
+
             // Lidhja me tabelen staff (employee_id)
             $table->unsignedInteger('employee_id')->nullable();
             $table->foreign('employee_id')->references('sid')->on('staff')->onDelete('cascade');
-            
+
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->string('status', 50)->default('Active');
-            
-            $table->unsignedInteger('company_id')->nullable();           
+
+            $table->unsignedInteger('company_id')->nullable();
 
         });
     }

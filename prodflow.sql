@@ -26,8 +26,10 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `phone` varchar(255) DEFAULT NULL,
   `location` varchar(255) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`cid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`cid`),
+  KEY `FK_clients_companies` (`company_id`),
+  CONSTRAINT `FK_clients_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -39,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `companies` (
   `location` varchar(255) DEFAULT NULL,
   `status` varchar(50) DEFAULT 'Active',
   PRIMARY KEY (`cid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -51,8 +53,12 @@ CREATE TABLE IF NOT EXISTS `contracts` (
   `end_date` date DEFAULT NULL,
   `status` varchar(50) DEFAULT 'Active',
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`cid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`cid`),
+  KEY `FK_contracts_staff` (`employee_id`),
+  KEY `FK_contracts_companies` (`company_id`),
+  CONSTRAINT `FK_contracts_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_contracts_staff` FOREIGN KEY (`employee_id`) REFERENCES `staff` (`sid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -63,8 +69,10 @@ CREATE TABLE IF NOT EXISTS `expenses` (
   `price` decimal(10,2) DEFAULT NULL,
   `date` date DEFAULT current_timestamp(),
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`eid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`eid`),
+  KEY `FK_expenses_companies` (`company_id`),
+  CONSTRAINT `FK_expenses_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -74,8 +82,10 @@ CREATE TABLE IF NOT EXISTS `machines` (
   `machine` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`mid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`mid`),
+  KEY `FK_machines_companies` (`company_id`),
+  CONSTRAINT `FK_machines_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -86,7 +96,9 @@ CREATE TABLE IF NOT EXISTS `maintenances` (
   `date` date DEFAULT NULL,
   `description` longtext DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`mid`)
+  PRIMARY KEY (`mid`),
+  KEY `FK_maintenances_companies` (`company_id`),
+  CONSTRAINT `FK_maintenances_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
@@ -97,8 +109,10 @@ CREATE TABLE IF NOT EXISTS `materials` (
   `material` varchar(255) DEFAULT NULL,
   `unit` varchar(255) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`mid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`mid`),
+  KEY `FK_materials_companies` (`company_id`),
+  CONSTRAINT `FK_materials_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -111,8 +125,60 @@ CREATE TABLE IF NOT EXISTS `materials_stock` (
   `date` date DEFAULT current_timestamp(),
   `warehouse_id` int(11) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`msid`)
+  PRIMARY KEY (`msid`),
+  KEY `FK_materials_stock_companies` (`company_id`),
+  CONSTRAINT `FK_materials_stock_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table prodflow.migrations
+CREATE TABLE IF NOT EXISTS `migrations` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(255) NOT NULL,
+  `batch` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table prodflow.orders
+CREATE TABLE IF NOT EXISTS `orders` (
+  `oid` int(11) NOT NULL AUTO_INCREMENT,
+  `order_number` varchar(50) DEFAULT NULL,
+  `client` varchar(255) DEFAULT NULL,
+  `product_id` int(11) DEFAULT NULL,
+  `qty` decimal(10,2) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `total` decimal(10,2) DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'pending',
+  `sale_number` varchar(50) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  PRIMARY KEY (`oid`),
+  KEY `FK_orders_companies` (`company_id`),
+  CONSTRAINT `FK_orders_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table prodflow.personal_access_tokens
+CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `tokenable_type` varchar(255) NOT NULL,
+  `tokenable_id` bigint(20) unsigned NOT NULL,
+  `name` text NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `abilities` text DEFAULT NULL,
+  `last_used_at` timestamp NULL DEFAULT NULL,
+  `expires_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
+  KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`),
+  KEY `personal_access_tokens_expires_at_index` (`expires_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -125,7 +191,9 @@ CREATE TABLE IF NOT EXISTS `planification` (
   `end_date` date DEFAULT NULL,
   `status` varchar(50) DEFAULT 'Unrealized',
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`pid`)
+  PRIMARY KEY (`pid`),
+  KEY `FK_planification_companies` (`company_id`),
+  CONSTRAINT `FK_planification_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
@@ -138,8 +206,10 @@ CREATE TABLE IF NOT EXISTS `production` (
   `qty` decimal(10,2) DEFAULT NULL,
   `date` date DEFAULT current_timestamp(),
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`pid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`pid`),
+  KEY `FK_production_companies` (`company_id`),
+  CONSTRAINT `FK_production_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -150,8 +220,10 @@ CREATE TABLE IF NOT EXISTS `products` (
   `unit` varchar(255) DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`pid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`pid`),
+  KEY `FK_products_companies` (`company_id`),
+  CONSTRAINT `FK_products_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -162,7 +234,11 @@ CREATE TABLE IF NOT EXISTS `salaries` (
   `salary` decimal(10,2) DEFAULT NULL,
   `comment` varchar(255) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`sid`)
+  PRIMARY KEY (`sid`),
+  KEY `FK_salaries_staff` (`employee_id`),
+  KEY `FK_salaries_companies` (`company_id`),
+  CONSTRAINT `FK_salaries_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_salaries_staff` FOREIGN KEY (`employee_id`) REFERENCES `staff` (`sid`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
@@ -170,14 +246,18 @@ CREATE TABLE IF NOT EXISTS `salaries` (
 -- Dumping structure for table prodflow.sales
 CREATE TABLE IF NOT EXISTS `sales` (
   `sid` int(11) NOT NULL AUTO_INCREMENT,
-  `client_id` int(11) DEFAULT NULL,
+  `sale_number` varchar(50) DEFAULT NULL,
+  `client` varchar(255) DEFAULT NULL,
   `product_id` int(11) DEFAULT NULL,
   `qty` decimal(10,2) DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
-  `date` date DEFAULT current_timestamp(),
+  `total` decimal(10,2) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`sid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  `date` date DEFAULT current_timestamp(),
+  PRIMARY KEY (`sid`),
+  KEY `FK_sales_companies` (`company_id`),
+  CONSTRAINT `FK_sales_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -189,8 +269,10 @@ CREATE TABLE IF NOT EXISTS `staff` (
   `position` varchar(255) DEFAULT NULL,
   `contact` varchar(255) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`sid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`sid`),
+  KEY `FK_staff_companies` (`company_id`),
+  CONSTRAINT `FK_staff_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -201,8 +283,25 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
   `phone` varchar(255) DEFAULT NULL,
   `location` varchar(255) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`sid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`sid`),
+  KEY `FK_suppliers_companies` (`company_id`),
+  CONSTRAINT `FK_suppliers_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table prodflow.trucks
+CREATE TABLE IF NOT EXISTS `trucks` (
+  `tid` int(11) NOT NULL AUTO_INCREMENT,
+  `truck` varchar(255) DEFAULT NULL,
+  `license_plate` varchar(255) DEFAULT NULL,
+  `capacity` decimal(10,2) DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'Free',
+  `company_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`tid`),
+  KEY `FK_trucks_companies` (`company_id`),
+  CONSTRAINT `FK_trucks_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -214,21 +313,28 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(255) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
   `role` varchar(50) DEFAULT 'staff',
-  PRIMARY KEY (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`uid`),
+  KEY `FK_users_companies` (`company_id`),
+  CONSTRAINT `FK_users_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
--- Dumping structure for table prodflow.vocations
-CREATE TABLE IF NOT EXISTS `vocations` (
+-- Dumping structure for table prodflow.vacations
+CREATE TABLE IF NOT EXISTS `vacations` (
   `vid` int(11) NOT NULL AUTO_INCREMENT,
-  `employee_id` int(11) DEFAULT NULL,
+  `staff_id` int(11) DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
-  `comment` varchar(255) DEFAULT NULL,
+  `reason` varchar(255) DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`vid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`vid`),
+  KEY `FK_vacations_staff` (`staff_id`),
+  KEY `FK_vacations_companies` (`company_id`),
+  CONSTRAINT `FK_vacations_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_vacations_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`sid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -237,9 +343,12 @@ CREATE TABLE IF NOT EXISTS `warehouses` (
   `wid` int(11) NOT NULL AUTO_INCREMENT,
   `warehouse` varchar(255) DEFAULT NULL,
   `location` varchar(255) DEFAULT NULL,
+  `capacity` varchar(255) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`wid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  PRIMARY KEY (`wid`),
+  KEY `FK_warehouses_companies` (`company_id`),
+  CONSTRAINT `FK_warehouses_companies` FOREIGN KEY (`company_id`) REFERENCES `companies` (`cid`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Data exporting was unselected.
 

@@ -3,14 +3,21 @@
 namespace App\Services;
 
 use App\Repositories\ProductsRepository;
+use App\Repositories\ProductionRepository;
+use App\Repositories\SalesRepository;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 
 class ProductsService
 {
     protected ProductsRepository $repository;
-    public function __construct(ProductsRepository $repository)
+    protected ProductionRepository $productionRepository;
+    protected SalesRepository $salesRepository;
+    public function __construct(ProductsRepository $repository, ProductionRepository $productionRepository, SalesRepository $salesRepository)
     {
         $this->repository = $repository;
+        $this->productionRepository = $productionRepository;
+        $this->salesRepository = $salesRepository;
     }
     //---------------
     public function getAllProducts(int $limit, int $companyId, string $search, int $page)
@@ -68,9 +75,16 @@ class ProductsService
     public function deleteProducts(int $id, int $companyId): bool
     {
         $products = $this->repository->findProductsById($id, $companyId);
-
         if (! $products) {
-            return false;
+            throw new Exception('Product not found.');
+        }
+        $sales = $this->salesRepository->findSalesByProductId($id, $companyId);
+        if ($sales) {
+            throw new Exception('You cannot delete this product because it has related sales data.');
+        }
+        $production = $this->productionRepository->findProductionByProductId($id, $companyId);
+        if ($production) {
+            throw new Exception('You cannot delete this product because it has related production data.');
         }
         Cache::tags(['products'])->flush();
         return $this->repository->delete($id, $companyId);
