@@ -41,11 +41,8 @@ class ProductsService
     //---------------
     public function createProducts(array $data, int $companyId): bool
     {
-        $result = $this->repository->create($data, $companyId);
-        if ($result) {
-            Cache::tags(['products'])->flush();
-        }
-        return $result;
+        Cache::tags(['products'])->flush();
+        return $this->repository->create($data, $companyId);
     }
     //---------------
     public function hasDuplicateProduct(
@@ -64,12 +61,8 @@ class ProductsService
         if (! $products) {
             return false;
         }
-
-        $result = $this->repository->update($id, $data, $companyId);
-        if ($result) {
-            Cache::tags(['products'])->flush();
-        }
-        return $result;
+        Cache::tags(['products'])->flush();
+        return $this->repository->update($id, $data, $companyId);
     }
     //---------------
     public function deleteProducts(int $id, int $companyId): bool
@@ -79,11 +72,7 @@ class ProductsService
         if (! $products) {
             return false;
         }
-
-        $result = $this->repository->delete($id, $companyId);
-        if ($result) {
-            Cache::tags(['products'])->flush();
-        }
-        return $result;
+        Cache::tags(['products'])->flush();
+        return $this->repository->delete($id, $companyId);
     }
 }

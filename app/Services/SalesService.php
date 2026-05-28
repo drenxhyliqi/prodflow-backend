@@ -71,6 +71,7 @@ class SalesService
                     'date' => now()
                 ];
             }
+            Cache::tags(['sales'])->flush();
             return $this->repository->create($saleProducts);
         });
     }
@@ -81,6 +82,7 @@ class SalesService
             if (!$sale) {
                 return false;
             }
+            Cache::tags(['sales'])->flush();
             return $this->repository->update(
                 $sale_number,
                 $data,
@@ -94,6 +96,7 @@ class SalesService
         if (!$company) {
             return false;
         }
+        Cache::tags(['sales'])->flush();
         return $this->repository->delete($sale_number, $companyId);
     }
     //---------------

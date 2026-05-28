@@ -41,6 +41,7 @@ class ProductionService
     //---------------
     public function createProduction(array $data, int $companyId): bool
     {
+        Cache::tags(['production'])->flush();
         return $this->repository->create($data, $companyId);
     }
     //---------------
@@ -62,7 +63,7 @@ class ProductionService
         if (! $production) {
             return false;
         }
-
+        Cache::tags(['production'])->flush();
         return $this->repository->update($id, $data, $companyId);
     }
     //---------------
@@ -73,7 +74,7 @@ class ProductionService
         if (! $production) {
             return false;
         }
-
+        Cache::tags(['production'])->flush();
         return $this->repository->delete($id, $companyId);
     }
     //---------------
