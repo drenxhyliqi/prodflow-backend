@@ -41,6 +41,7 @@ class ProductsService
     //---------------
     public function createProducts(array $data, int $companyId): bool
     {
+        Cache::tags(['products'])->flush();
         return $this->repository->create($data, $companyId);
     }
     //---------------
@@ -60,7 +61,7 @@ class ProductsService
         if (! $products) {
             return false;
         }
-
+        Cache::tags(['products'])->flush();
         return $this->repository->update($id, $data, $companyId);
     }
     //---------------
@@ -71,7 +72,7 @@ class ProductsService
         if (! $products) {
             return false;
         }
-
+        Cache::tags(['products'])->flush();
         return $this->repository->delete($id, $companyId);
     }
 }
