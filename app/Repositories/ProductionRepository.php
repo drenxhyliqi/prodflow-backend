@@ -88,6 +88,14 @@ class ProductionRepository
 
     }
     //---------------
+    public function findProductionByProductId(int $id, int $companyId): bool
+    {
+        return DB::table($this->table)
+            ->where('product_id', $id)
+            ->where('company_id', $companyId)
+            ->exists();
+    }
+    //---------------
     public function create(array $data, int $companyId): bool
     {
         return DB::table($this->table)
