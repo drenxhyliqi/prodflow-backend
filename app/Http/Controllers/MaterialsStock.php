@@ -64,7 +64,7 @@ class MaterialsStock extends Controller
         $qty = (float) $request->input('qty');
 
         if ($payload['type'] === 'IN') {
-            $remaining = $this->service->getRemainingCapacity($companyId);
+            $remaining = $this->service->getRemainingCapacity($companyId, null, (int) $warehouseId);
             if ($remaining !== null && $qty > $remaining) {
                 return response()->json([
                     'success' => false,
@@ -187,7 +187,7 @@ class MaterialsStock extends Controller
         $qty = (float) $request->input('qty');
 
         if ($data['type'] === 'IN') {
-            $remaining = $this->service->getRemainingCapacity($companyId, $msid);
+            $remaining = $this->service->getRemainingCapacity($companyId, $msid, (int) $warehouseId);
             if ($remaining !== null && $qty > $remaining) {
                 return response()->json([
                     'success' => false,

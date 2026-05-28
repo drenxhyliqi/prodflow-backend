@@ -196,68 +196,80 @@ class Dashboard extends Controller
         // ── RECENT ACTIVITY ──────────────────────────────────────────
 
         // Recent sales joined with clients for client name
+        $todayStr = $today->toDateString();
+
+        // Load clear-activity thresholds from cache (set by clearActivity endpoint)
+        $clearThresholds = \Illuminate\Support\Facades\Cache::get("activity_clear_{$companyId}", [
+            'sid' => 0, 'pid' => 0, 'vid' => 0, 'mid' => 0,
+        ]);
+
         $recentSales = \App\Models\SalesModel::where('sales.company_id', $companyId)
+            ->where('sales.sid', '>', $clearThresholds['sid'])
             ->selectRaw('sales.sid, sales.qty, sales.price, sales.date, COALESCE(sales.client, "Unknown") as client_name')
             ->orderByDesc('sales.sid')
             ->limit(4)
             ->get()
             ->map(fn($s) => [
-                'type'    => 'sale',
-                'icon'    => 'cart',
-                'title'   => "New sale — {$s->client_name}",
-                'detail'  => '$' . number_format($s->qty * $s->price, 2),
-                'date'    => $s->date,
-                'sort_id' => $s->sid,
+                'type'     => 'sale',
+                'icon'     => 'cart',
+                'title'    => "New sale — {$s->client_name}",
+                'detail'   => '$' . number_format($s->qty * $s->price, 2),
+                'date'     => $s->date,
+                'sort_key' => $s->date . str_pad((string) $s->sid, 12, '0', STR_PAD_LEFT),
             ]);
 
         $recentProduction = \App\Models\ProductionModel::where('production.company_id', $companyId)
+            ->where('production.pid', '>', $clearThresholds['pid'])
             ->join('products', 'production.product_id', '=', 'products.pid')
             ->selectRaw('production.pid as id, production.date, production.qty, products.product')
             ->orderByDesc('production.pid')
             ->limit(3)
             ->get()
             ->map(fn($p) => [
-                'type'    => 'production',
-                'icon'    => 'factory',
-                'title'   => "Production batch — {$p->product}",
-                'detail'  => number_format($p->qty, 0) . ' units',
-                'date'    => $p->date,
-                'sort_id' => $p->id,
+                'type'     => 'production',
+                'icon'     => 'factory',
+                'title'    => "Production batch — {$p->product}",
+                'detail'   => number_format($p->qty, 0) . ' units',
+                'date'     => $p->date,
+                'sort_key' => $p->date . str_pad((string) $p->id, 12, '0', STR_PAD_LEFT),
             ]);
 
         $recentVacations = \App\Models\VacationsModel::where('vacations.company_id', $companyId)
+            ->where('vid', '>', $clearThresholds['vid'])
             ->with('staff')
             ->orderByDesc('vid')
             ->limit(3)
             ->get()
             ->map(fn($v) => [
-                'type'    => 'vacation',
-                'icon'    => 'calendar',
-                'title'   => "{$v->staff->name} {$v->staff->surname} requested leave",
-                'detail'  => "{$v->start_date} — {$v->end_date}",
-                'date'    => $v->start_date,
-                'sort_id' => $v->vid,
+                'type'     => 'vacation',
+                'icon'     => 'calendar',
+                'title'    => "{$v->staff->name} {$v->staff->surname} requested leave",
+                'detail'   => "{$v->start_date} — {$v->end_date}",
+                'date'     => $v->start_date,
+                // Cap vacation sort date at today — start_date is a future date and would float incorrectly to the top
+                'sort_key' => min($v->start_date, $todayStr) . str_pad((string) $v->vid, 12, '0', STR_PAD_LEFT),
             ]);
 
         $recentMaintenances = \App\Models\MaintenancesModel::where('maintenances.company_id', $companyId)
+            ->where('mid', '>', $clearThresholds['mid'])
             ->with('machine')
             ->orderByDesc('mid')
             ->limit(3)
             ->get()
             ->map(fn($m) => [
-                'type'    => 'maintenance',
-                'icon'    => 'wrench',
-                'title'   => "Maintenance — {$m->machine->machine}",
-                'detail'  => $m->description,
-                'date'    => $m->date,
-                'sort_id' => $m->mid,
+                'type'     => 'maintenance',
+                'icon'     => 'wrench',
+                'title'    => "Maintenance — {$m->machine->machine}",
+                'detail'   => $m->description,
+                'date'     => $m->date,
+                'sort_key' => $m->date . str_pad((string) $m->mid, 12, '0', STR_PAD_LEFT),
             ]);
 
         $recentActivity = $recentSales
             ->concat($recentProduction)
             ->concat($recentVacations)
             ->concat($recentMaintenances)
-            ->sortByDesc('sort_id')
+            ->sortByDesc('sort_key')
             ->take(10)
             ->values();
 
@@ -301,6 +313,12 @@ class Dashboard extends Controller
             ->count();
 
         // ── RESPONSE ─────────────────────────────────────────────────
+
+        // Remove sort_key from final output
+        $recentActivity->transform(function ($item) {
+            unset($item['sort_key']);
+            return $item;
+        });
 
         return response()->json([
             'stats' => [
@@ -347,6 +365,25 @@ class Dashboard extends Controller
                 'stock_alerts'       => $stockAlerts,
                 'expiring_contracts' => $expiringContracts,
             ],
+        ]);
+    }
+    //---------------
+    public function clearActivity(Request $request)
+    {
+        $companyId = $request->user()->company_id;
+
+        $thresholds = [
+            'sid' => (int) \App\Models\SalesModel::where('company_id', $companyId)->max('sid'),
+            'pid' => (int) \App\Models\ProductionModel::where('company_id', $companyId)->max('pid'),
+            'vid' => (int) \App\Models\VacationsModel::where('company_id', $companyId)->max('vid'),
+            'mid' => (int) \App\Models\MaintenancesModel::where('company_id', $companyId)->max('mid'),
+        ];
+
+        \Illuminate\Support\Facades\Cache::put("activity_clear_{$companyId}", $thresholds, now()->addDays(7));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Recent activity cleared.',
         ]);
     }
 }
