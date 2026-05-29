@@ -87,6 +87,8 @@ Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Trucks::cl
 // Users
 Route::controller(Users::class)->group(function () {
     Route::post('/login', 'login')->name('login');
+    Route::get('/signup-available', 'signupAvailable')->name('signup_available');
+    Route::post('/signup', 'signup')->name('signup');
     Route::get('/invitations/{token}', 'validateInvitationToken')->name('validate_invitation_token');
     Route::post('/invitations/accept', 'acceptInvitation')->name('accept_invitation');
 });

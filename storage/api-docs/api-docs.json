@@ -149,6 +149,79 @@
                 }
             }
         },
+        "/api/signup-available": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Check if first-user signup is available",
+                "operationId": "7b260fbeb27870d86a899e0fb3a8a6c8",
+                "responses": {
+                    "200": {
+                        "description": "Returns { available: true|false }"
+                    }
+                }
+            }
+        },
+        "/api/signup": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register the first admin user and company",
+                "operationId": "7a08a5fc30fc491020eee9a93b5603cd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user",
+                                    "username",
+                                    "password",
+                                    "name",
+                                    "sector",
+                                    "location"
+                                ],
+                                "properties": {
+                                    "user": {
+                                        "type": "string"
+                                    },
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "description": "Company name",
+                                        "type": "string"
+                                    },
+                                    "sector": {
+                                        "type": "string"
+                                    },
+                                    "location": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created and logged in"
+                    },
+                    "403": {
+                        "description": "Signup not available"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
         "/api/invitations/{token}": {
             "get": {
                 "tags": [

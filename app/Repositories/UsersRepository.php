@@ -73,6 +73,11 @@ class UsersRepository
             ->delete() > 0;
     }
     //---------------
+    public function countAll(): int
+    {
+        return DB::table($this->table)->count();
+    }
+    //---------------
     public function findByUsername(string $username)
     {
         return UsersModel::where('username', $username)->first();
