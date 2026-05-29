@@ -69,6 +69,61 @@ class UsersService
         return $this->repository->delete($id);
     }
     //---------------
+    public function isSignupAvailable(): bool
+    {
+        return $this->repository->countAll() === 0;
+    }
+    //---------------
+    public function registerFirstUser(array $data)
+    {
+        if (!$this->isSignupAvailable()) {
+            return false;
+        }
+
+        return DB::transaction(function () use ($data) {
+            if ($this->repository->countAll() > 0) {
+                return false;
+            }
+
+            $companyId = DB::table('companies')->insertGetId([
+                'name' => $data['name'],
+                'sector' => $data['sector'],
+                'location' => $data['location'],
+                'status' => 'Active',
+            ]);
+
+            $created = $this->repository->create([
+                'user' => $data['user'],
+                'username' => $data['username'],
+                'password' => Hash::make($data['password']),
+                'company_id' => $companyId,
+                'role' => 'admin',
+            ]);
+
+            if (!$created) {
+                return false;
+            }
+
+            $user = $this->repository->findByUsername($data['username']);
+            if (!$user) {
+                return false;
+            }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return [
+                'token' => $token,
+                'user' => [
+                    'uid' => $user->uid,
+                    'user' => $user->user,
+                    'username' => $user->username,
+                    'company_id' => $user->company_id,
+                    'role' => $user->role,
+                ],
+            ];
+        });
+    }
+    //---------------
     public function checkUser(array $data)
     {
         $user = $this->repository->findByUsername($data['username']);

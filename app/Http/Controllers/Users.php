@@ -155,6 +155,58 @@ class Users extends Controller
         }
     }
     //---------------
+    public function signupAvailable()
+    {
+        return response()->json([
+            'available' => $this->service->isSignupAvailable(),
+        ]);
+    }
+    //---------------
+    public function signup(Request $request)
+    {
+        if (!$this->service->isSignupAvailable()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Signup is not available. The system already has users.',
+            ], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'user' => 'required|string|min:1|max:255',
+            'username' => 'required|string|min:3|max:255',
+            'password' => 'required|string|min:8|max:255',
+            'name' => 'required|string|min:1|max:255',
+            'sector' => 'required|string|min:1|max:255',
+            'location' => 'required|string|min:1|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'All fields must be completed according to the rules.',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        $result = $this->service->registerFirstUser($request->only([
+            'user',
+            'username',
+            'password',
+            'name',
+            'sector',
+            'location',
+        ]));
+
+        if ($result) {
+            return response()->json($result, 201);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while saving the data. Please try again.',
+        ], 500);
+    }
+    //---------------
     public function invitations(Request $request)
     {
         $search = $request->query('search', '');
