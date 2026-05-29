@@ -42,7 +42,8 @@ class ProductionService
     public function createProduction(array $data, int $companyId): bool
     {
         Cache::tags(['production'])->flush();
-        return $this->repository->create($data, $companyId);
+        $created = $this->repository->create($data, $companyId);
+        return $created;
     }
     //---------------
     public function hasDuplicateProduction(
@@ -64,7 +65,8 @@ class ProductionService
             return false;
         }
         Cache::tags(['production'])->flush();
-        return $this->repository->update($id, $data, $companyId);
+        $updated = $this->repository->update($id, $data, $companyId);
+        return $updated;
     }
     //---------------
     public function deleteProduction(int $id, int $companyId): bool
@@ -75,7 +77,8 @@ class ProductionService
             return false;
         }
         Cache::tags(['production'])->flush();
-        return $this->repository->delete($id, $companyId);
+        $deleted = $this->repository->delete($id, $companyId);
+        return $deleted;
     }
     //---------------
     public function checkProductBelongsToCompany(int $productId, int $companyId): bool

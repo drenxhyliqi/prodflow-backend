@@ -72,7 +72,8 @@ class SalesService
                 ];
             }
             Cache::tags(['sales'])->flush();
-            return $this->repository->create($saleProducts);
+            $created = $this->repository->create($saleProducts);
+            return $created;
         });
     }
     //---------------
@@ -83,11 +84,12 @@ class SalesService
                 return false;
             }
             Cache::tags(['sales'])->flush();
-            return $this->repository->update(
+            $updated = $this->repository->update(
                 $sale_number,
                 $data,
                 $companyId
             );
+            return $updated;
         }
     //---------------
     public function deleteSale(string $sale_number, int $companyId): bool
@@ -97,7 +99,8 @@ class SalesService
             return false;
         }
         Cache::tags(['sales'])->flush();
-        return $this->repository->delete($sale_number, $companyId);
+        $deleted = $this->repository->delete($sale_number, $companyId);
+        return $deleted;
     }
     //---------------
     public function getInvoiceInformations(string $sale_number, int $companyId)

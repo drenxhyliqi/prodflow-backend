@@ -2341,6 +2341,63 @@
                 ]
             }
         },
+        "/api/admin/reports/batch": {
+            "post": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Start report batch",
+                "operationId": "28df220d5ffa670bea2aa83626635465",
+                "responses": {
+                    "201": {
+                        "description": "Batch started"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/batch/{id}": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Batch status",
+                "operationId": "f3bfcf767f700f650449adb38c8a6629",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/runs/{id}/access": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Report run access check",
+                "operationId": "64c62f0f5ac51f6224577eafd4f33aaf",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/admin/reports/production/summary": {
             "get": {
                 "tags": [

@@ -31,7 +31,8 @@ class PlanificationService
     //---------------
     public function createPlanification(array $data, int $companyId): bool
     {
-        return $this->repository->create($data, $companyId);
+        $created = $this->repository->create($data, $companyId);
+        return $created;
     }
     //---------------
     public function updatePlanification(int $id, array $data, int $companyId): bool
@@ -40,7 +41,8 @@ class PlanificationService
         if (!$plan) {
             return false;
         }
-        return $this->repository->update($id, $data, $companyId);
+        $updated = $this->repository->update($id, $data, $companyId);
+        return $updated;
     }
     //---------------
     public function deletePlanification(int $id, int $companyId): bool
@@ -49,6 +51,7 @@ class PlanificationService
         if (!$plan) {
             return false;
         }
-        return $this->repository->delete($id, $companyId);
+        $deleted = $this->repository->delete($id, $companyId);
+        return $deleted;
     }
 }

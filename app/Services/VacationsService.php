@@ -31,7 +31,8 @@ class VacationsService
     //---------------
     public function create(array $data, int $companyId): bool
     {
-        return $this->repository->create($data, $companyId);
+        $created = $this->repository->create($data, $companyId);
+        return $created;
     }
 
     //---------------
@@ -40,7 +41,8 @@ class VacationsService
         if (!$this->repository->checkVacationExist($id, $companyId)) {
             return false;
         }
-        return $this->repository->update($id, $data, $companyId);
+        $updated = $this->repository->update($id, $data, $companyId);
+        return $updated;
     }
 
     //---------------
@@ -49,6 +51,7 @@ class VacationsService
         if (!$this->repository->checkVacationExist($id, $companyId)) {
             return false;
         }
-        return $this->repository->delete($id, $companyId);
+        $deleted = $this->repository->delete($id, $companyId);
+        return $deleted;
     }
 }

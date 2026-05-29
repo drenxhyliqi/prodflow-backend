@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\SalesReportRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class SalesReportService
 {
@@ -13,15 +14,59 @@ class SalesReportService
     {
         $this->repository = $repository;
     }
-    //---------------
+
     public function getSummary(int $companyId, string $startDate, string $endDate): array
+    {
+        $key = AnalyticsCacheService::salesReportKey($companyId, 'summary', $startDate, $endDate);
+
+        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
+            return $this->buildSummary($companyId, $startDate, $endDate);
+        });
+    }
+
+    public function getTrends(int $companyId, string $startDate, string $endDate): array
+    {
+        $key = AnalyticsCacheService::salesReportKey($companyId, 'trends', $startDate, $endDate);
+
+        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
+            return $this->buildTrends($companyId, $startDate, $endDate);
+        });
+    }
+
+    public function getTopProducts(int $companyId, string $startDate, string $endDate): array
+    {
+        $key = AnalyticsCacheService::salesReportKey($companyId, 'top_products', $startDate, $endDate);
+
+        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
+            return $this->buildTopProducts($companyId, $startDate, $endDate);
+        });
+    }
+
+    public function getTopClients(int $companyId, string $startDate, string $endDate): array
+    {
+        $key = AnalyticsCacheService::salesReportKey($companyId, 'top_clients', $startDate, $endDate);
+
+        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
+            return $this->buildTopClients($companyId, $startDate, $endDate);
+        });
+    }
+
+    public function getOrdersOverview(int $companyId, string $startDate, string $endDate): array
+    {
+        $key = AnalyticsCacheService::salesReportKey($companyId, 'orders_overview', $startDate, $endDate);
+
+        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
+            return $this->buildOrdersOverview($companyId, $startDate, $endDate);
+        });
+    }
+
+    private function buildSummary(int $companyId, string $startDate, string $endDate): array
     {
         $totalRevenue  = $this->repository->getTotalRevenue($companyId, $startDate, $endDate);
         $totalOrders   = $this->repository->getTotalOrders($companyId, $startDate, $endDate);
         $totalExpenses = $this->repository->getTotalExpenses($companyId, $startDate, $endDate);
         $bestSeller    = $this->repository->getBestSeller($companyId, $startDate, $endDate);
 
-        // Previous period of same length
         $start   = Carbon::parse($startDate);
         $end     = Carbon::parse($endDate);
         $days    = $start->diffInDays($end) + 1;
@@ -52,10 +97,9 @@ class SalesReportService
             ] : null,
         ];
     }
-    //---------------
-    public function getTrends(int $companyId, string $startDate, string $endDate): array
+
+    private function buildTrends(int $companyId, string $startDate, string $endDate): array
     {
-        // Weekly — merge revenue + expenses by week_start key
         $weeklyRevenue  = collect($this->repository->getWeeklyRevenue($companyId, $startDate, $endDate))->keyBy('week_start');
         $weeklyExpenses = collect($this->repository->getWeeklyExpenses($companyId, $startDate, $endDate))->keyBy('week_start');
         $allWeeks       = $weeklyRevenue->keys()->merge($weeklyExpenses->keys())->unique()->sort()->values();
@@ -71,7 +115,6 @@ class SalesReportService
             ];
         })->values()->toArray();
 
-        // Monthly — merge revenue + expenses, then add MoM growth
         $monthlyRevenue  = collect($this->repository->getMonthlyRevenue($companyId, $startDate, $endDate))->keyBy('month');
         $monthlyExpenses = collect($this->repository->getMonthlyExpenses($companyId, $startDate, $endDate))->keyBy('month');
         $allMonths       = $monthlyRevenue->keys()->merge($monthlyExpenses->keys())->unique()->sort()->values();
@@ -99,13 +142,13 @@ class SalesReportService
             'monthly' => $monthly,
         ];
     }
-    //---------------
-    public function getTopProducts(int $companyId, string $startDate, string $endDate): array
+
+    private function buildTopProducts(int $companyId, string $startDate, string $endDate): array
     {
         $products     = $this->repository->getTopProducts($companyId, $startDate, $endDate);
         $totalRevenue = collect($products)->sum('revenue') ?: 1;
 
-        return collect($products)->map(fn($p) => [
+        return collect($products)->map(fn ($p) => [
             'product_name' => $p->product_name,
             'unit'         => $p->unit,
             'units_sold'   => (float) $p->units_sold,
@@ -113,21 +156,21 @@ class SalesReportService
             'percentage'   => round(($p->revenue / $totalRevenue) * 100, 1),
         ])->toArray();
     }
-    //---------------
-    public function getTopClients(int $companyId, string $startDate, string $endDate): array
+
+    private function buildTopClients(int $companyId, string $startDate, string $endDate): array
     {
         $clients      = $this->repository->getTopClients($companyId, $startDate, $endDate);
         $totalRevenue = collect($clients)->sum('revenue') ?: 1;
 
-        return collect($clients)->map(fn($c) => [
+        return collect($clients)->map(fn ($c) => [
             'client'     => $c->client,
             'revenue'    => (float) $c->revenue,
             'orders'     => (int) $c->orders,
             'percentage' => round(($c->revenue / $totalRevenue) * 100, 1),
         ])->toArray();
     }
-    //---------------
-    public function getOrdersOverview(int $companyId, string $startDate, string $endDate): array
+
+    private function buildOrdersOverview(int $companyId, string $startDate, string $endDate): array
     {
         $rows = $this->repository->getMonthlyOrdersGrowth($companyId, $startDate, $endDate);
 
