@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\AnalyticsCacheService;
+use App\Services\AlertsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -416,15 +416,13 @@ class AiController extends Controller
         return $base;
     }
 
-    public function alerts(Request $request, AnalyticsCacheService $cacheService)
+    public function alerts(Request $request, AlertsService $alertsService)
     {
         $request->validate(['company_id' => 'required|integer']);
-        $companyId = (int) $request->company_id;
 
-        return response()->json(array_merge(
-            $cacheService->getAlerts($companyId),
-            ['background_refresh' => $cacheService->getRefreshStatus($companyId)]
-        ));
+        return response()->json(
+            $alertsService->build((int) $request->company_id)
+        );
     }
 
     private function mentions(string $message, array $keywords): bool

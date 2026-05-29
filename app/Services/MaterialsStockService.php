@@ -34,9 +34,6 @@ class MaterialsStockService
     public function createMaterialsStock(array $data, int $companyId): bool
     {
         $created = $this->repository->create($data, $companyId);
-        if ($created) {
-            AnalyticsCacheService::dispatchRefresh($companyId);
-        }
         return $created;
     }
     //---------------
@@ -49,9 +46,6 @@ class MaterialsStockService
         }
 
         $updated = $this->repository->update($id, $data, $companyId);
-        if ($updated) {
-            AnalyticsCacheService::dispatchRefresh($companyId);
-        }
 
         return $updated;
     }
@@ -65,9 +59,6 @@ class MaterialsStockService
         }
 
         $deleted = $this->repository->delete($id, $companyId);
-        if ($deleted) {
-            AnalyticsCacheService::dispatchRefresh($companyId);
-        }
 
         return $deleted;
     }

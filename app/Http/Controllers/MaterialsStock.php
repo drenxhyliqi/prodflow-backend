@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Services\MaterialsStockService;
+use App\Services\ReportBatchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class MaterialsStock extends Controller
 {
     protected MaterialsStockService $service;
-    public function __construct(MaterialsStockService $service)
+    protected ReportBatchService $batchService;
+
+    public function __construct(MaterialsStockService $service, ReportBatchService $batchService)
     {
         $this->service = $service;
+        $this->batchService = $batchService;
     }
     //---------------
     public function create(Request $request)
@@ -251,6 +255,10 @@ class MaterialsStock extends Controller
                 'success' => false,
                 'message' => 'Unauthorized.',
             ], 401);
+        }
+
+        if ($cached = $this->batchService->payloadFromRun($request, 'materials_stock')) {
+            return response()->json($cached);
         }
 
         $validator = Validator::make($request->all(), [

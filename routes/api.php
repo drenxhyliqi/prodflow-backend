@@ -29,7 +29,6 @@ use App\Http\Controllers\Trucks;
 // Dashboard
 Route::middleware('auth:sanctum')->controller(Dashboard::class)->group(function () {
     Route::get('/admin/dashboard', 'index')->name('dashboard');
-    Route::get('/admin/analytics/refresh-status', 'refreshStatus')->name('analytics_refresh_status');
     Route::post('/admin/dashboard/clear-activity', 'clearActivity')->name('clear_activity');
 });
 
@@ -234,9 +233,12 @@ Route::middleware(['auth:sanctum', 'role:admin,manager'])->controller(Salaries::
     Route::get('/admin/delete_salary/{id}', 'delete')->name('delete_salary');
 });
 
-// Reports
+// Reports + batch
 Route::middleware(['auth:sanctum', 'role:admin'])->controller(Reports::class)->group(function () {
     Route::get('/admin/products_stock', 'productsStock')->name('productsStock');
+    Route::post('/admin/reports/batch', 'startBatch')->name('report_batch_store');
+    Route::get('/admin/reports/batch/{id}', 'batchStatus')->name('report_batch_show');
+    Route::get('/admin/reports/runs/{id}/access', 'runAccess')->name('report_runs_access');
 });
 
 // Production Report

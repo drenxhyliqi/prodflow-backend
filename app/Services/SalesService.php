@@ -73,7 +73,6 @@ class SalesService
             }
             Cache::tags(['sales'])->flush();
             $created = $this->repository->create($saleProducts);
-            AnalyticsCacheService::dispatchRefresh($companyId);
             return $created;
         });
     }
@@ -90,9 +89,6 @@ class SalesService
                 $data,
                 $companyId
             );
-            if ($updated) {
-                AnalyticsCacheService::dispatchRefresh($companyId);
-            }
             return $updated;
         }
     //---------------
@@ -104,9 +100,6 @@ class SalesService
         }
         Cache::tags(['sales'])->flush();
         $deleted = $this->repository->delete($sale_number, $companyId);
-        if ($deleted) {
-            AnalyticsCacheService::dispatchRefresh($companyId);
-        }
         return $deleted;
     }
     //---------------

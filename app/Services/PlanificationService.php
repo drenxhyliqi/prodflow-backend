@@ -32,9 +32,6 @@ class PlanificationService
     public function createPlanification(array $data, int $companyId): bool
     {
         $created = $this->repository->create($data, $companyId);
-        if ($created) {
-            AnalyticsCacheService::dispatchRefresh($companyId);
-        }
         return $created;
     }
     //---------------
@@ -45,9 +42,6 @@ class PlanificationService
             return false;
         }
         $updated = $this->repository->update($id, $data, $companyId);
-        if ($updated) {
-            AnalyticsCacheService::dispatchRefresh($companyId);
-        }
         return $updated;
     }
     //---------------
@@ -58,9 +52,6 @@ class PlanificationService
             return false;
         }
         $deleted = $this->repository->delete($id, $companyId);
-        if ($deleted) {
-            AnalyticsCacheService::dispatchRefresh($companyId);
-        }
         return $deleted;
     }
 }

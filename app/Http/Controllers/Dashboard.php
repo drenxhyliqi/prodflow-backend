@@ -2,32 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\AnalyticsCacheService;
+use App\Services\DashboardService;
 use Illuminate\Http\Request;
 
 class Dashboard extends Controller
 {
-    protected AnalyticsCacheService $cacheService;
-
-    public function __construct(AnalyticsCacheService $cacheService)
-    {
-        $this->cacheService = $cacheService;
-    }
+    public function __construct(protected DashboardService $dashboardService) {}
 
     public function index(Request $request)
     {
-        $companyId = $request->user()->company_id;
-
-        return response()->json(array_merge(
-            $this->cacheService->getDashboard($companyId),
-            ['background_refresh' => $this->cacheService->getRefreshStatus($companyId)]
-        ));
-    }
-
-    public function refreshStatus(Request $request)
-    {
         return response()->json(
-            $this->cacheService->getRefreshStatus($request->user()->company_id)
+            $this->dashboardService->build($request->user()->company_id)
         );
     }
 
@@ -44,11 +29,9 @@ class Dashboard extends Controller
 
         \Illuminate\Support\Facades\Cache::put("activity_clear_{$companyId}", $thresholds, now()->addDays(7));
 
-        return response()->json(
-            AnalyticsCacheService::withBackgroundRefresh([
-                'success' => true,
-                'message' => 'Recent activity cleared.',
-            ], $companyId)
-        );
+        return response()->json([
+            'success' => true,
+            'message' => 'Recent activity cleared.',
+        ]);
     }
 }

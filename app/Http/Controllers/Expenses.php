@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Services\ExpensesService;
+use App\Services\ReportBatchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class Expenses extends Controller
 {
     protected ExpensesService $service;
-    public function __construct(ExpensesService $service)
+    protected ReportBatchService $batchService;
+
+    public function __construct(ExpensesService $service, ReportBatchService $batchService)
     {
         $this->service = $service;
+        $this->batchService = $batchService;
     }
     //---------------
     public function create(Request $request)
@@ -118,6 +122,10 @@ class Expenses extends Controller
     //---------------
     public function report(Request $request)
     {
+        if ($cached = $this->batchService->payloadFromRun($request, 'expenses')) {
+            return response()->json($cached);
+        }
+
         $validator = Validator::make($request->all(), [
             'start_date' => 'required|date',
             'end_date' => 'required|date'

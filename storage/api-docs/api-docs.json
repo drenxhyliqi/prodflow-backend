@@ -808,26 +808,7 @@
                 "operationId": "b352cb7e48fbf430b0b22512612aa347",
                 "responses": {
                     "200": {
-                        "description": "Success — includes background_refresh status"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/admin/analytics/refresh-status": {
-            "get": {
-                "tags": [
-                    "Dashboard"
-                ],
-                "summary": "Background analytics refresh status",
-                "operationId": "afc7342d9accba2f5eb123bed546b016",
-                "responses": {
-                    "200": {
-                        "description": "Returns refreshing, status, message, current_step"
+                        "description": "Success"
                     }
                 },
                 "security": [
@@ -2275,6 +2256,63 @@
                 ],
                 "summary": "Products stock report",
                 "operationId": "f14dbf820a9e7934124f7cfe41d9b55a",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/batch": {
+            "post": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Start report batch",
+                "operationId": "28df220d5ffa670bea2aa83626635465",
+                "responses": {
+                    "201": {
+                        "description": "Batch started"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/batch/{id}": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Batch status",
+                "operationId": "f3bfcf767f700f650449adb38c8a6629",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/reports/runs/{id}/access": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Report run access check",
+                "operationId": "64c62f0f5ac51f6224577eafd4f33aaf",
                 "responses": {
                     "200": {
                         "description": "Success"

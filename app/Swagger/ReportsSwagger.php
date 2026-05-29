@@ -11,6 +11,12 @@ class ReportsSwagger
 {
     #[OA\Get(path: '/api/admin/products_stock', tags: ['Reports'], summary: 'Products stock report', security: [['sanctum' => []]], responses: [new OA\Response(response: 200, description: 'Success')])]
     public function productsStock(): void {}
+    #[OA\Post(path: '/api/admin/reports/batch', tags: ['Reports'], summary: 'Start report batch', security: [['sanctum' => []]], responses: [new OA\Response(response: 201, description: 'Batch started')])]
+    public function startBatch(): void {}
+    #[OA\Get(path: '/api/admin/reports/batch/{id}', tags: ['Reports'], summary: 'Batch status', security: [['sanctum' => []]], responses: [new OA\Response(response: 200, description: 'Success')])]
+    public function batchStatus(): void {}
+    #[OA\Get(path: '/api/admin/reports/runs/{id}/access', tags: ['Reports'], summary: 'Report run access check', security: [['sanctum' => []]], responses: [new OA\Response(response: 200, description: 'Success')])]
+    public function runAccess(): void {}
     #[OA\Get(path: '/api/admin/reports/production/summary', tags: ['ProductionReports'], summary: 'Production summary report', security: [['sanctum' => []]], responses: [new OA\Response(response: 200, description: 'Success')])]
     public function productionSummary(): void {}
     #[OA\Get(path: '/api/admin/reports/production/trends', tags: ['ProductionReports'], summary: 'Production trends report', security: [['sanctum' => []]], responses: [new OA\Response(response: 200, description: 'Success')])]
