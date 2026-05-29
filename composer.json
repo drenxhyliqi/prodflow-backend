@@ -47,7 +47,7 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#fb7185,#fdba74,#34d399\" \"php artisan serve\" \"php artisan pail --timeout=0\" \"npm run dev\" \"composer swagger:watch\" --names=server,logs,vite,swagger --kill-others"
+            "npx concurrently -c \"#93c5fd,#fb7185,#fdba74,#34d399,#a78bfa\" \"php artisan serve\" \"php artisan pail --timeout=0\" \"npm run dev\" \"composer swagger:watch\" \"php artisan queue:work --tries=3\" --names=server,logs,vite,swagger,queue --kill-others"
         ],
         "swagger:generate": [
             "@php artisan l5-swagger:generate"
@@ -55,6 +55,10 @@
         "swagger:watch": [
             "Composer\\Config::disableProcessTimeout",
             "npx chokidar-cli \"app/**/*.php\" \"routes/**/*.php\" \"app/Swagger/**/*.php\" \"config/l5-swagger.php\" -c \"php artisan l5-swagger:generate\" --initial"
+        ],
+        "queue:work": [
+            "Composer\\Config::disableProcessTimeout",
+            "php artisan queue:work --tries=3"
         ],
         "test": [
             "@php artisan config:clear --ansi",

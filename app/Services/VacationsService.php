@@ -31,7 +31,11 @@ class VacationsService
     //---------------
     public function create(array $data, int $companyId): bool
     {
-        return $this->repository->create($data, $companyId);
+        $created = $this->repository->create($data, $companyId);
+        if ($created) {
+            AnalyticsCacheService::dispatchRefresh($companyId);
+        }
+        return $created;
     }
 
     //---------------
@@ -40,7 +44,11 @@ class VacationsService
         if (!$this->repository->checkVacationExist($id, $companyId)) {
             return false;
         }
-        return $this->repository->update($id, $data, $companyId);
+        $updated = $this->repository->update($id, $data, $companyId);
+        if ($updated) {
+            AnalyticsCacheService::dispatchRefresh($companyId);
+        }
+        return $updated;
     }
 
     //---------------
@@ -49,6 +57,10 @@ class VacationsService
         if (!$this->repository->checkVacationExist($id, $companyId)) {
             return false;
         }
-        return $this->repository->delete($id, $companyId);
+        $deleted = $this->repository->delete($id, $companyId);
+        if ($deleted) {
+            AnalyticsCacheService::dispatchRefresh($companyId);
+        }
+        return $deleted;
     }
 }

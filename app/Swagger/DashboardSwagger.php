@@ -7,6 +7,9 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'Dashboard', description: 'Dashboard analytics')]
 class DashboardSwagger
 {
-    #[OA\Get(path: '/api/admin/dashboard', tags: ['Dashboard'], summary: 'Get dashboard metrics', security: [['sanctum' => []]], responses: [new OA\Response(response: 200, description: 'Success')])]
+    #[OA\Get(path: '/api/admin/dashboard', tags: ['Dashboard'], summary: 'Get dashboard metrics', security: [['sanctum' => []]], responses: [new OA\Response(response: 200, description: 'Success — includes background_refresh status')])]
     public function dashboard(): void {}
+
+    #[OA\Get(path: '/api/admin/analytics/refresh-status', tags: ['Dashboard'], summary: 'Background analytics refresh status', security: [['sanctum' => []]], responses: [new OA\Response(response: 200, description: 'Returns refreshing, status, message, current_step')])]
+    public function refreshStatus(): void {}
 }

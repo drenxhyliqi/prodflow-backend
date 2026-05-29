@@ -808,7 +808,26 @@
                 "operationId": "b352cb7e48fbf430b0b22512612aa347",
                 "responses": {
                     "200": {
-                        "description": "Success"
+                        "description": "Success — includes background_refresh status"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/analytics/refresh-status": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Background analytics refresh status",
+                "operationId": "afc7342d9accba2f5eb123bed546b016",
+                "responses": {
+                    "200": {
+                        "description": "Returns refreshing, status, message, current_step"
                     }
                 },
                 "security": [

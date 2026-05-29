@@ -29,6 +29,7 @@ use App\Http\Controllers\Trucks;
 // Dashboard
 Route::middleware('auth:sanctum')->controller(Dashboard::class)->group(function () {
     Route::get('/admin/dashboard', 'index')->name('dashboard');
+    Route::get('/admin/analytics/refresh-status', 'refreshStatus')->name('analytics_refresh_status');
     Route::post('/admin/dashboard/clear-activity', 'clearActivity')->name('clear_activity');
 });
 

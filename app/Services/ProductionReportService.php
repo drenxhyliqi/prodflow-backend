@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\ProductionReportRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class ProductionReportService
 {
@@ -13,8 +14,53 @@ class ProductionReportService
     {
         $this->repository = $repository;
     }
-    //---------------
+
     public function getSummary(int $companyId, string $startDate, string $endDate): array
+    {
+        $key = AnalyticsCacheService::productionReportKey($companyId, 'summary', $startDate, $endDate);
+
+        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
+            return $this->buildSummary($companyId, $startDate, $endDate);
+        });
+    }
+
+    public function getTrends(int $companyId, string $startDate, string $endDate): array
+    {
+        $key = AnalyticsCacheService::productionReportKey($companyId, 'trends', $startDate, $endDate);
+
+        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
+            return $this->buildTrends($companyId, $startDate, $endDate);
+        });
+    }
+
+    public function getMachinePerformance(int $companyId, string $startDate, string $endDate): array
+    {
+        $key = AnalyticsCacheService::productionReportKey($companyId, 'machines', $startDate, $endDate);
+
+        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
+            return $this->buildMachinePerformance($companyId, $startDate, $endDate);
+        });
+    }
+
+    public function getTopProducts(int $companyId, string $startDate, string $endDate): array
+    {
+        $key = AnalyticsCacheService::productionReportKey($companyId, 'top_products', $startDate, $endDate);
+
+        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
+            return $this->buildTopProducts($companyId, $startDate, $endDate);
+        });
+    }
+
+    public function getStatusDistribution(int $companyId, string $startDate, string $endDate): array
+    {
+        $key = AnalyticsCacheService::productionReportKey($companyId, 'status_distribution', $startDate, $endDate);
+
+        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
+            return $this->buildStatusDistribution($companyId, $startDate, $endDate);
+        });
+    }
+
+    private function buildSummary(int $companyId, string $startDate, string $endDate): array
     {
         $totalProduced  = $this->repository->getTotalProduced($companyId, $startDate, $endDate);
         $totalPlanned   = $this->repository->getTotalPlanned($companyId, $startDate, $endDate);
@@ -22,22 +68,22 @@ class ProductionReportService
         $maintenances   = $this->repository->getMaintenanceCount($companyId, $startDate, $endDate);
         $productionDays = $this->repository->getProductionDaysCount($companyId, $startDate, $endDate);
 
-        $totalDays         = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
-        $efficiency        = $totalPlanned > 0 ? round(($totalProduced / $totalPlanned) * 100, 1) : 0;
-        $avgDailyOutput    = $productionDays > 0 ? round($totalProduced / $productionDays, 1) : 0;
+        $totalDays      = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
+        $efficiency     = $totalPlanned > 0 ? round(($totalProduced / $totalPlanned) * 100, 1) : 0;
+        $avgDailyOutput = $productionDays > 0 ? round($totalProduced / $productionDays, 1) : 0;
 
         return [
-            'total_units_produced'  => $totalProduced,
-            'production_efficiency' => $efficiency,
+            'total_units_produced'    => $totalProduced,
+            'production_efficiency'   => $efficiency,
             'active_production_plans' => $activePlans,
-            'downtime_incidents'    => $maintenances,
-            'avg_daily_output'      => $avgDailyOutput,
-            'production_days'       => $productionDays,
-            'total_days_in_range'   => $totalDays,
+            'downtime_incidents'      => $maintenances,
+            'avg_daily_output'        => $avgDailyOutput,
+            'production_days'         => $productionDays,
+            'total_days_in_range'     => $totalDays,
         ];
     }
-    //---------------
-    public function getTrends(int $companyId, string $startDate, string $endDate): array
+
+    private function buildTrends(int $companyId, string $startDate, string $endDate): array
     {
         return [
             'daily'   => $this->repository->getDailyTrend($companyId, $startDate, $endDate),
@@ -45,44 +91,43 @@ class ProductionReportService
             'monthly' => $this->repository->getMonthlyTrend($companyId, $startDate, $endDate),
         ];
     }
-    //---------------
-    public function getMachinePerformance(int $companyId, string $startDate, string $endDate): array
-    {
-        $machines   = $this->repository->getMachinePerformance($companyId, $startDate, $endDate);
-        $totalDays  = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
-        $maxOutput  = collect($machines)->max('total_output') ?: 1;
 
-        return collect($machines)->map(function ($m) use ($totalDays, $maxOutput) {
-            $productionDays    = (int) $m->production_days;
-            $maintenanceCount  = (int) $m->maintenance_count;
-            $availableDays     = max(1, $totalDays - $maintenanceCount);
-            $efficiency        = round(min(100, ($productionDays / $availableDays) * 100), 1);
+    private function buildMachinePerformance(int $companyId, string $startDate, string $endDate): array
+    {
+        $machines  = $this->repository->getMachinePerformance($companyId, $startDate, $endDate);
+        $totalDays = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
+
+        return collect($machines)->map(function ($m) use ($totalDays) {
+            $productionDays   = (int) $m->production_days;
+            $maintenanceCount = (int) $m->maintenance_count;
+            $availableDays    = max(1, $totalDays - $maintenanceCount);
+            $efficiency       = round(min(100, ($productionDays / $availableDays) * 100), 1);
 
             return [
-                'machine'          => $m->machine,
-                'type'             => $m->type,
-                'total_output'     => (float) $m->total_output,
-                'production_days'  => $productionDays,
+                'machine'           => $m->machine,
+                'type'              => $m->type,
+                'total_output'      => (float) $m->total_output,
+                'production_days'   => $productionDays,
                 'maintenance_count' => $maintenanceCount,
-                'efficiency'       => $efficiency,
+                'efficiency'        => $efficiency,
             ];
         })->toArray();
     }
-    //---------------
-    public function getTopProducts(int $companyId, string $startDate, string $endDate): array
+
+    private function buildTopProducts(int $companyId, string $startDate, string $endDate): array
     {
         $products   = $this->repository->getTopProducts($companyId, $startDate, $endDate);
         $totalUnits = collect($products)->sum('units') ?: 1;
 
-        return collect($products)->map(fn($p) => [
+        return collect($products)->map(fn ($p) => [
             'product_name' => $p->product_name,
             'unit'         => $p->unit,
             'units'        => (float) $p->units,
             'percentage'   => round(($p->units / $totalUnits) * 100, 1),
         ])->toArray();
     }
-    //---------------
-    public function getStatusDistribution(int $companyId, string $startDate, string $endDate): array
+
+    private function buildStatusDistribution(int $companyId, string $startDate, string $endDate): array
     {
         $distribution = $this->repository->getStatusDistribution($companyId, $startDate, $endDate);
         $total        = array_sum($distribution) ?: 1;

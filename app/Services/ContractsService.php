@@ -38,7 +38,11 @@ class ContractsService
     //---------------
     public function createContract(array $data)
     {
-        return $this->repository->create($data);
+        $created = $this->repository->create($data);
+        if ($created && !empty($data['company_id'])) {
+            AnalyticsCacheService::dispatchRefresh((int) $data['company_id']);
+        }
+        return $created;
     }
     //---------------
     public function updateContract(int $id, array $data): bool
@@ -47,7 +51,11 @@ class ContractsService
         if (!$contract) {
             return false;
         }
-        return $this->repository->update($id, $data);
+        $updated = $this->repository->update($id, $data);
+        if ($updated) {
+            AnalyticsCacheService::dispatchRefresh((int) $contract->company_id);
+        }
+        return $updated;
     }
     //---------------
     public function deleteContract(int $id): bool
@@ -56,16 +64,36 @@ class ContractsService
         if (!$contract) {
             return false;
         }
-        return $this->repository->delete($id);
+        $deleted = $this->repository->delete($id);
+        if ($deleted) {
+            AnalyticsCacheService::dispatchRefresh((int) $contract->company_id);
+        }
+        return $deleted;
     }
     //---------------
     public function activateContract(int $id): bool
     {
-        return $this->repository->changeStatus($id, 'Active');
+        $contract = $this->repository->findContract($id);
+        if (!$contract) {
+            return false;
+        }
+        $updated = $this->repository->changeStatus($id, 'Active');
+        if ($updated) {
+            AnalyticsCacheService::dispatchRefresh((int) $contract->company_id);
+        }
+        return $updated;
     }
     //---------------
     public function deactivateContract(int $id): bool
     {
-        return $this->repository->changeStatus($id, 'Deactive');
+        $contract = $this->repository->findContract($id);
+        if (!$contract) {
+            return false;
+        }
+        $updated = $this->repository->changeStatus($id, 'Deactive');
+        if ($updated) {
+            AnalyticsCacheService::dispatchRefresh((int) $contract->company_id);
+        }
+        return $updated;
     }
 }

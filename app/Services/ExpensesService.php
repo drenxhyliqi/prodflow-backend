@@ -34,7 +34,11 @@ class ExpensesService
     //---------------
     public function createExpense(array $data, int $companyId)
     {
-        return $this->repository->create($data, $companyId);
+        $created = $this->repository->create($data, $companyId);
+        if ($created) {
+            AnalyticsCacheService::dispatchRefresh($companyId);
+        }
+        return $created;
     }
     //---------------
     public function updateExpense(int $id, array $data, int $companyId): bool
@@ -43,7 +47,11 @@ class ExpensesService
         if (!$expense) {
             return false;
         }
-        return $this->repository->update($id, $data, $companyId);
+        $updated = $this->repository->update($id, $data, $companyId);
+        if ($updated) {
+            AnalyticsCacheService::dispatchRefresh($companyId);
+        }
+        return $updated;
     }
     //---------------
     public function deleteExpense(int $id, int $companyId): bool
@@ -52,6 +60,10 @@ class ExpensesService
         if (!$expense) {
             return false;
         }
-        return $this->repository->delete($id, $companyId);
+        $deleted = $this->repository->delete($id, $companyId);
+        if ($deleted) {
+            AnalyticsCacheService::dispatchRefresh($companyId);
+        }
+        return $deleted;
     }
 }
