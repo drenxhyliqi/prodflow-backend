@@ -11,6 +11,8 @@ ProdFlow is a web-based management system designed for manufacturing and product
 - Laravel 12
 - Laravel Sanctum (API authentication)
 - MySQL / MariaDB
+- Redis (cache & optional queue)
+- Predis
 
 **Frontend**
 - Vue.js
@@ -20,24 +22,33 @@ ProdFlow is a web-based management system designed for manufacturing and product
 
 ## Features
 
-| Module | Status |
+| Module | Description |
 |---|---|
-| Companies | Done |
-| Users & Authentication | Done |
-| Staff / Employees | Done |
-| Products | Done |
-| Clients | Done |
-| Sales | Done |
-| Expenses | Done |
-| Machines | In progress |
-| Materials | In progress |
-| Materials Stock | In progress |
-| Production | In progress |
-| Warehouses | Planned |
-| Suppliers | Planned |
-| Salaries | Planned |
-| Contracts | Planned |
-| Reports | Planned |
+| Dashboard | KPIs, activity feed, and company overview |
+| Companies | Multi-tenant company setup and settings |
+| Users & Authentication | Login, roles, invitations (Sanctum) |
+| Staff / Employees | Employee records and management |
+| Clients | Customer registry and CRUD |
+| Products | Product catalog and pricing |
+| Materials | Raw materials and definitions |
+| Materials Stock | Stock levels, movements, and inventory |
+| Production | Production orders and workflow |
+| Machines | Machine registry and capacity |
+| Maintenances | Machine maintenance scheduling |
+| Warehouses | Warehouse locations and stock |
+| Suppliers | Supplier contacts and procurement |
+| Trucks | Fleet / delivery vehicles |
+| Sales | Sales records and invoicing |
+| Orders | Order management linked to sales |
+| Expenses | Company expenses tracking |
+| Planification | Production planning and scheduling |
+| Vacations | Staff leave requests and approval |
+| Contracts | Employment and business contracts |
+| Salaries | Payroll and salary records |
+| Reports | Batch reports, stock overview, async generation |
+| Production Reports | Production analytics (summary, trends, machines) |
+| Sales Reports | Sales analytics (summary, trends, top clients/products) |
+| AI Assistant | Chat, data queries, text analysis, alerts |
 
 ---
 
@@ -64,6 +75,8 @@ Request → Controller → Service → Repository → Database
 - Composer
 - Node.js & npm
 - MySQL or MariaDB
+- Redis (recommended for production cache)
+
 
 ### Installation
 
@@ -145,6 +158,10 @@ Authentication is handled via Laravel Sanctum. Protected routes require a Bearer
 | `DB_DATABASE` | Database name |
 | `DB_USERNAME` | Database user |
 | `DB_PASSWORD` | Database password |
+| `CACHE_STORE` | Cache driver (`redis` in production) |
+| `REDIS_HOST` | Redis host |
+| `REDIS_PORT` | Redis port |
+| `QUEUE_CONNECTION` | Queue driver (`database` or `redis`) |
 
 ---
 
