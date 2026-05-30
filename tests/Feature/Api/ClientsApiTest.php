@@ -2,20 +2,17 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\UsersModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
+use Tests\Concerns\SeedsApiFixtures;
 use Tests\TestCase;
 
 class ClientsApiTest extends TestCase
 {
     use RefreshDatabase;
-
-    private const DEFAULT_PASSWORD = 'password123';
+    use SeedsApiFixtures;
 
     protected function setUp(): void
     {
@@ -112,40 +109,5 @@ class ClientsApiTest extends TestCase
                 'phone' => '044999888',
                 'location' => 'Peja',
             ]);
-    }
-
-    private function seedUser(array $overrides = []): UsersModel
-    {
-        $companyId = $overrides['company_id'] ?? $this->seedCompany();
-
-        $userId = DB::table('users')->insertGetId(array_merge([
-            'user' => 'Test User',
-            'username' => 'test.user',
-            'password' => Hash::make(self::DEFAULT_PASSWORD),
-            'company_id' => $companyId,
-            'role' => 'manager',
-        ], $overrides), 'uid');
-
-        return UsersModel::findOrFail($userId);
-    }
-
-    private function seedCompany(): int
-    {
-        return DB::table('companies')->insertGetId([
-            'name' => 'Test Company',
-            'sector' => 'Manufacturing',
-            'location' => 'Prishtina',
-            'status' => 'Active',
-        ], 'cid');
-    }
-
-    private function seedClient(int $companyId, array $overrides = []): int
-    {
-        return DB::table('clients')->insertGetId(array_merge([
-            'client' => 'Test Client',
-            'phone' => '044111222',
-            'location' => 'Prishtina',
-            'company_id' => $companyId,
-        ], $overrides), 'cid');
     }
 }
