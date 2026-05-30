@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Repositories\ProductionReportRepository;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 class ProductionReportService
 {
@@ -17,47 +16,27 @@ class ProductionReportService
 
     public function getSummary(int $companyId, string $startDate, string $endDate): array
     {
-        $key = AnalyticsCacheService::productionReportKey($companyId, 'summary', $startDate, $endDate);
-
-        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
-            return $this->buildSummary($companyId, $startDate, $endDate);
-        });
+        return $this->buildSummary($companyId, $startDate, $endDate);
     }
 
     public function getTrends(int $companyId, string $startDate, string $endDate): array
     {
-        $key = AnalyticsCacheService::productionReportKey($companyId, 'trends', $startDate, $endDate);
-
-        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
-            return $this->buildTrends($companyId, $startDate, $endDate);
-        });
+        return $this->buildTrends($companyId, $startDate, $endDate);
     }
 
     public function getMachinePerformance(int $companyId, string $startDate, string $endDate): array
     {
-        $key = AnalyticsCacheService::productionReportKey($companyId, 'machines', $startDate, $endDate);
-
-        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
-            return $this->buildMachinePerformance($companyId, $startDate, $endDate);
-        });
+        return $this->buildMachinePerformance($companyId, $startDate, $endDate);
     }
 
     public function getTopProducts(int $companyId, string $startDate, string $endDate): array
     {
-        $key = AnalyticsCacheService::productionReportKey($companyId, 'top_products', $startDate, $endDate);
-
-        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
-            return $this->buildTopProducts($companyId, $startDate, $endDate);
-        });
+        return $this->buildTopProducts($companyId, $startDate, $endDate);
     }
 
     public function getStatusDistribution(int $companyId, string $startDate, string $endDate): array
     {
-        $key = AnalyticsCacheService::productionReportKey($companyId, 'status_distribution', $startDate, $endDate);
-
-        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
-            return $this->buildStatusDistribution($companyId, $startDate, $endDate);
-        });
+        return $this->buildStatusDistribution($companyId, $startDate, $endDate);
     }
 
     private function buildSummary(int $companyId, string $startDate, string $endDate): array
