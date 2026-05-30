@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Repositories\SalesReportRepository;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 class SalesReportService
 {
@@ -17,47 +16,27 @@ class SalesReportService
 
     public function getSummary(int $companyId, string $startDate, string $endDate): array
     {
-        $key = AnalyticsCacheService::salesReportKey($companyId, 'summary', $startDate, $endDate);
-
-        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
-            return $this->buildSummary($companyId, $startDate, $endDate);
-        });
+        return $this->buildSummary($companyId, $startDate, $endDate);
     }
 
     public function getTrends(int $companyId, string $startDate, string $endDate): array
     {
-        $key = AnalyticsCacheService::salesReportKey($companyId, 'trends', $startDate, $endDate);
-
-        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
-            return $this->buildTrends($companyId, $startDate, $endDate);
-        });
+        return $this->buildTrends($companyId, $startDate, $endDate);
     }
 
     public function getTopProducts(int $companyId, string $startDate, string $endDate): array
     {
-        $key = AnalyticsCacheService::salesReportKey($companyId, 'top_products', $startDate, $endDate);
-
-        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
-            return $this->buildTopProducts($companyId, $startDate, $endDate);
-        });
+        return $this->buildTopProducts($companyId, $startDate, $endDate);
     }
 
     public function getTopClients(int $companyId, string $startDate, string $endDate): array
     {
-        $key = AnalyticsCacheService::salesReportKey($companyId, 'top_clients', $startDate, $endDate);
-
-        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
-            return $this->buildTopClients($companyId, $startDate, $endDate);
-        });
+        return $this->buildTopClients($companyId, $startDate, $endDate);
     }
 
     public function getOrdersOverview(int $companyId, string $startDate, string $endDate): array
     {
-        $key = AnalyticsCacheService::salesReportKey($companyId, 'orders_overview', $startDate, $endDate);
-
-        return Cache::remember($key, now()->addMinutes(AnalyticsCacheService::TTL_MINUTES), function () use ($companyId, $startDate, $endDate) {
-            return $this->buildOrdersOverview($companyId, $startDate, $endDate);
-        });
+        return $this->buildOrdersOverview($companyId, $startDate, $endDate);
     }
 
     private function buildSummary(int $companyId, string $startDate, string $endDate): array
